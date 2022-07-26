@@ -141,21 +141,6 @@ lanelet::ConstLanelet generateOffsetLanelet(
 
 geometry_msgs::msg::Pose toPose(const geometry_msgs::msg::Point & p);
 
-/**
- * @brief check if ego is over the target_idx. If the index is same, compare the exact pose
- * @param path path
- * @param closest_idx ego's closest index on the path
- * @param current_pose ego's exact pose
- * @return true if ego is over the target_idx
- */
-bool isOverTargetIndex(
-  const autoware_auto_planning_msgs::msg::PathWithLaneId & path, const int closest_idx,
-  const geometry_msgs::msg::Pose & current_pose, const int target_idx);
-
-bool isBeforeTargetIndex(
-  const autoware_auto_planning_msgs::msg::PathWithLaneId & path, const int closest_idx,
-  const geometry_msgs::msg::Pose & current_pose, const int target_idx);
-
 }  // namespace util
 }  // namespace behavior_velocity_planner
 
