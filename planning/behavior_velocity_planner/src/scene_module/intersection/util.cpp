@@ -215,7 +215,7 @@ bool generateStopLine(
 
     const auto first_idx_inside_lane_opt =
       motion_utils::findNearestIndex(original_path->points, first_inside_point, 10.0, M_PI_4);
-    if (*first_idx_inside_lane_opt) {
+    if (first_idx_inside_lane_opt) {
       first_idx_inside_lane = first_idx_inside_lane_opt.get();
     }
 
