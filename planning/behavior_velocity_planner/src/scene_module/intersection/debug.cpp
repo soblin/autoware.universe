@@ -27,9 +27,9 @@ namespace
 {
 using State = IntersectionModule::State;
 
-visualization_msgs::msg::MarkerArray createLaneletPolygonsMarkerArray(
+static visualization_msgs::msg::MarkerArray createLaneletPolygonsMarkerArray(
   const std::vector<lanelet::CompoundPolygon3d> & polygons, const std::string & ns,
-  const int64_t lane_id)
+  const int64_t lane_id, const double r, const double g, const double b)
 {
   visualization_msgs::msg::MarkerArray msg;
 
@@ -46,7 +46,7 @@ visualization_msgs::msg::MarkerArray createLaneletPolygonsMarkerArray(
     marker.action = visualization_msgs::msg::Marker::ADD;
     marker.pose.orientation = createMarkerOrientation(0, 0, 0, 1.0);
     marker.scale = createMarkerScale(0.1, 0.0, 0.0);
-    marker.color = createMarkerColor(0.0, 1.0, 0.0, 0.999);
+    marker.color = createMarkerColor(r, g, b, 0.999);
     for (const auto & p : polygon) {
       geometry_msgs::msg::Point point;
       point.x = p.x();
@@ -201,21 +201,27 @@ visualization_msgs::msg::MarkerArray IntersectionModule::createDebugMarkerArray(
     &debug_marker_array);
 
   appendMarkerArray(
-    createLaneletPolygonsMarkerArray(debug_data_.detection_area, "detection_area", lane_id_),
+    createLaneletPolygonsMarkerArray(
+      debug_data_.detection_area, "detection_area", lane_id_, 0.0, 1.0, 0.0),
     current_time, &debug_marker_array);
 
   appendMarkerArray(
     createLaneletPolygonsMarkerArray(
-      debug_data_.detection_area_with_margin, "detection_area_with_margin", lane_id_),
-    current_time, &debug_marker_array);
-
-  appendMarkerArray(
-    createPolygonMarkerArray(debug_data_.ego_lane_polygon, "ego_lane", lane_id_, 0.0, 0.3, 0.7),
+      debug_data_.adjacent_area, "adjacent_area", lane_id_, 0.913, 0.639, 0.149),
     current_time, &debug_marker_array);
 
   appendMarkerArray(
     createPolygonMarkerArray(
-      debug_data_.stuck_vehicle_detect_area, "stuck_vehicle_detect_area", lane_id_, 0.0, 0.5, 0.5),
+      debug_data_.intersection_area, "intersection_area", lane_id_, 0.3, 0.0, 0.0),
+    current_time, &debug_marker_array);
+
+  appendMarkerArray(
+    createPolygonMarkerArray(debug_data_.ego_lane_polygon, "ego_lane", lane_id_, 0.3, 0.0, 0.0),
+    current_time, &debug_marker_array);
+
+  appendMarkerArray(
+    createPolygonMarkerArray(
+      debug_data_.stuck_vehicle_detect_area, "stuck_vehicle_detect_area", lane_id_, 0.3, 0.0, 0.0),
     current_time, &debug_marker_array);
 
   appendMarkerArray(
@@ -228,7 +234,7 @@ visualization_msgs::msg::MarkerArray IntersectionModule::createDebugMarkerArray(
   for (const auto & p : debug_data_.candidate_collision_object_polygons) {
     appendMarkerArray(
       createPolygonMarkerArray(
-        p, "candidate_collision_object_polygons", lane_id_ + i++, 0.0, 0.5, 0.5),
+        p, "candidate_collision_object_polygons", lane_id_ + i++, 0.3, 0.0, 0.0),
       current_time, &debug_marker_array);
   }
 
