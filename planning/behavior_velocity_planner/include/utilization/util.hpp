@@ -131,7 +131,7 @@ void extractClosePartition(
   const geometry_msgs::msg::Point position, const BasicPolygons2d & all_partitions,
   BasicPolygons2d & close_partition, const double distance_thresh = 30.0);
 void getAllPartitionLanelets(const lanelet::LaneletMapConstPtr ll, BasicPolygons2d & polys);
-void setVelocityFrom(const size_t idx, const double vel, PathWithLaneId * input);
+void setVelocityFrom(const unsigned long idx, const double vel, PathWithLaneId * input);
 void insertVelocity(
   PathWithLaneId & path, const PathPointWithLaneId & path_point, const double v,
   size_t & insert_index, const double min_distance = 0.001);
