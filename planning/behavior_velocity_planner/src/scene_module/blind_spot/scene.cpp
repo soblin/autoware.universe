@@ -164,7 +164,7 @@ bool BlindSpotModule::modifyPathVelocity(
     path->points, current_pose.pose.position, path->points.at(stop_line_idx).point.pose.position));
   if (!isActivated()) {
     constexpr double stop_vel = 0.0;
-    util::setVelocityFrom(stop_line_idx, stop_vel, path);
+    planning_utils::setVelocityFrom(stop_line_idx, stop_vel, path);
 
     /* get stop point and stop factor */
     tier4_planning_msgs::msg::StopFactor stop_factor;

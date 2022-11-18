@@ -38,10 +38,7 @@ namespace behavior_velocity_planner
 {
 namespace util
 {
-bool setVelocityFrom(
-  const size_t idx, const double vel, autoware_auto_planning_msgs::msg::PathWithLaneId * input);
-
-int insertPoint(
+std::optional<size_t> insertPoint(
   const geometry_msgs::msg::Pose & in_pose,
   autoware_auto_planning_msgs::msg::PathWithLaneId * inout_path);
 
@@ -53,9 +50,9 @@ bool isAheadOf(const geometry_msgs::msg::Pose & target, const geometry_msgs::msg
 bool hasLaneId(const autoware_auto_planning_msgs::msg::PathPointWithLaneId & p, const int id);
 std::optional<std::pair<size_t, size_t>> findLaneIdInterval(
   const autoware_auto_planning_msgs::msg::PathWithLaneId & p, const int lane_id);
-bool getDuplicatedPointIdx(
+std::optional<size_t> getDuplicatedPointIdx(
   const autoware_auto_planning_msgs::msg::PathWithLaneId & path,
-  const geometry_msgs::msg::Point & point, int * duplicated_point_idx);
+  const geometry_msgs::msg::Point & point);
 
 /**
  * @brief get objective polygons for detection area
@@ -66,11 +63,10 @@ std::tuple<lanelet::ConstLanelets, lanelet::ConstLanelets> getObjectiveLanelets(
 
 struct StopLineIdx
 {
-  // TODO(Mamoru Sobue): replace optional<size_t>
-  int first_idx_inside_lane = -1;
-  int pass_judge_line_idx = -1;
-  int stop_line_idx = -1;
-  int keep_detection_line_idx = -1;
+  size_t first_inside_lane = 0;
+  size_t pass_judge_line = 0;
+  size_t stop_line = 0;
+  size_t keep_detection_line = 0;
 };
 
 /**
@@ -80,32 +76,17 @@ struct StopLineIdx
  * @param original_path   ego-car lane
  * @param target_path     target lane to insert stop point (part of ego-car lane or same to ego-car
  * lane)
- * @param stop_line_idx   generated stop line index
- * @param pass_judge_line_idx  generated stop line index
- * @return false when path is not intersecting with detection area, or stop_line is behind path[0]
+ " @param use_stuck_stopline if true, a stop line is generated at the beginning of intersection lane
+ * @return nullopt if path is not intersecting with detection areas
  */
-bool generateStopLine(
-  const int lane_id, const std::vector<lanelet::CompoundPolygon3d> detection_areas,
+std::pair<std::optional<size_t>, std::optional<StopLineIdx>> generateStopLine(
+  const int lane_id, const std::vector<lanelet::CompoundPolygon3d> & detection_areas,
+  const std::vector<lanelet::CompoundPolygon3d> & conflicting_areas,
   const std::shared_ptr<const PlannerData> & planner_data, const double stop_line_margin,
-  const double keep_detection_line_margin,
+  const double keep_detection_line_margin, const bool use_stuck_stopline,
   autoware_auto_planning_msgs::msg::PathWithLaneId * original_path,
-  const autoware_auto_planning_msgs::msg::PathWithLaneId & target_path,
-  StopLineIdx * stop_line_idxs, const rclcpp::Logger logger);
-
-/**
- * @brief If use_stuck_stopline is true, a stop line is generated before the intersection.
- * @param input_path      input path
- * @param output_path     output path
- * @param stuck_stop_line_idx   generated stuck stop line index
- * @param pass_judge_line_idx  generated pass judge line index
- * @return false when generation failed
- */
-bool generateStopLineBeforeIntersection(
-  const int lane_id, lanelet::LaneletMapConstPtr lanelet_map_ptr,
-  const std::shared_ptr<const PlannerData> & planner_data,
-  const autoware_auto_planning_msgs::msg::PathWithLaneId & input_path,
-  autoware_auto_planning_msgs::msg::PathWithLaneId * output_path, int * stuck_stop_line_idx,
-  int * pass_judge_line_idx, const rclcpp::Logger logger);
+  const autoware_auto_planning_msgs::msg::PathWithLaneId & target_path, const rclcpp::Logger logger,
+  const rclcpp::Clock::SharedPtr clock);
 
 /**
  * @brief Calculate first path index that is in the polygon.
@@ -128,7 +109,7 @@ std::optional<size_t> getFirstPointInsidePolygons(
 bool getStopLineIndexFromMap(
   const autoware_auto_planning_msgs::msg::PathWithLaneId & path, const size_t lane_interval_start,
   const size_t lane_interval_end, const int lane_id,
-  const std::shared_ptr<const PlannerData> & planner_data, int * stop_idx_ip, int dist_thr,
+  const std::shared_ptr<const PlannerData> & planner_data, int & stop_idx_ip, const double dist_thr,
   const rclcpp::Logger logger);
 
 std::vector<lanelet::CompoundPolygon3d> getPolygon3dFromLaneletsVec(
@@ -173,6 +154,7 @@ lanelet::ConstLanelets extendedAdjacentDirectionLanes(
 std::optional<Polygon2d> getIntersectionArea(
   lanelet::ConstLanelet assigned_lane, lanelet::LaneletMapConstPtr lanelet_map_ptr);
 
+bool hasAssociatedTrafficLight(lanelet::ConstLanelet lane);
 bool isTrafficLightArrowActivated(
   lanelet::ConstLanelet lane,
   const std::map<int, autoware_auto_perception_msgs::msg::TrafficSignalStamped> & tl_infos);
