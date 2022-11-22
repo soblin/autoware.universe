@@ -57,3 +57,9 @@ rclcpp_components_register_node(behavior_velocity_planner
   PLUGIN "behavior_velocity_planner::BehaviorVelocityPlannerNode"
   EXECUTABLE behavior_velocity_planner_node
 )
+
+ament_auto_package(INSTALL_TO_SHARE
+  launch
+  config
+)
+
