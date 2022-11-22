@@ -100,8 +100,7 @@ geometry_msgs::msg::Pose getAheadPose(
 }
 
 bool setVelocityFrom(
-  const unsigned long idx, const double vel,
-  autoware_auto_planning_msgs::msg::PathWithLaneId * input)
+  const size_t idx, const double vel, autoware_auto_planning_msgs::msg::PathWithLaneId * input)
 {
   for (size_t i = idx; i < input->points.size(); ++i) {
     input->points.at(i).point.longitudinal_velocity_mps =
