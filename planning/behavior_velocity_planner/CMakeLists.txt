@@ -57,32 +57,3 @@ rclcpp_components_register_node(behavior_velocity_planner
   PLUGIN "behavior_velocity_planner::BehaviorVelocityPlannerNode"
   EXECUTABLE behavior_velocity_planner_node
 )
-
-if(BUILD_TESTING)
-  # Gtest for utilization
-  ament_add_ros_isolated_gtest(utilization-test
-    test/src/test_state_machine.cpp
-    test/src/test_arc_lane_util.cpp
-    test/src/test_utilization.cpp
-  )
-  target_link_libraries(utilization-test
-    gtest_main
-    behavior_velocity_planner
-  )
-
-  # Gtest for occlusion spot
-  ament_add_ros_isolated_gtest(occlusion_spot-test
-    test/src/test_occlusion_spot_utils.cpp
-    test/src/test_risk_predictive_braking.cpp
-    test/src/test_grid_utils.cpp
-  )
-  target_link_libraries(occlusion_spot-test
-    gtest_main
-    behavior_velocity_planner
-  )
-endif()
-
-ament_auto_package(INSTALL_TO_SHARE
-  launch
-  config
-)
