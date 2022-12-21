@@ -65,25 +65,27 @@ bool MergeFromPrivateRoadModule::modifyPathVelocity(
   const auto routing_graph_ptr = planner_data_->route_handler_->getRoutingGraphPtr();
 
   /* get detection area */
-  auto && [detection_lanelets, conflicting_lanelets] = util::getObjectiveLanelets(
-    lanelet_map_ptr, routing_graph_ptr, lane_id_, planner_param_.detection_area_length,
-    false /* tl_arrow_solid on does not matter here*/);
-  if (detection_lanelets.empty()) {
-    RCLCPP_DEBUG(logger_, "no detection area. skip computation.");
-    return true;
+  if (!intersection_lanelets_.has_value()) {
+    intersection_lanelets_ = util::getObjectiveLanelets(
+      lanelet_map_ptr, routing_graph_ptr, lane_id_, planner_param_.detection_area_length,
+      0.0 /*aux_detection_length does not matter here*/,
+      false /* tl_arrow_solid on does not matter here*/);
   }
-  const auto detection_area =
-    util::getPolygon3dFromLanelets(detection_lanelets, planner_param_.detection_area_length);
-  const std::vector<lanelet::CompoundPolygon3d> conflicting_area =
-    util::getPolygon3dFromLanelets(conflicting_lanelets);
-  debug_data_.detection_area = detection_area;
+  const auto & detection_area = intersection_lanelets_.value().attention_area;
+  const auto & conflicting_area = intersection_lanelets_.value().conflicting_area;
+
+  constexpr double interval = 0.2;  // NOTE same as intesection module
+  autoware_auto_planning_msgs::msg::PathWithLaneId path_ip;
+  if (!splineInterpolate(*path, interval, path_ip, logger_)) {
+    return false;
+  }
 
   /* set stop-line and stop-judgement-line for base_link */
   const auto private_path =
     extractPathNearExitOfPrivateRoad(*path, planner_data_->vehicle_info_.vehicle_length_m);
   const auto [stuck_line_idx_opt, stop_lines_idx_opt] = util::generateStopLine(
     lane_id_, detection_area, conflicting_area, planner_data_, planner_param_.stop_line_margin,
-    0.0 /* unnecessary in merge_from_private */, false /* same */, path, *path,
+    0.0 /* unnecessary in merge_from_private */, false /* same */, path, path_ip,
     logger_.get_child("util"), clock_);
   if (!stop_lines_idx_opt.has_value()) {
     RCLCPP_WARN_SKIPFIRST_THROTTLE(logger_, *clock_, 1000 /* ms */, "setStopLineIdx fail");

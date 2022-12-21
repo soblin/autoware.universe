@@ -15,7 +15,9 @@
 #ifndef SCENE_MODULE__INTERSECTION__SCENE_INTERSECTION_HPP_
 #define SCENE_MODULE__INTERSECTION__SCENE_INTERSECTION_HPP_
 
+#include <opencv2/opencv.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <scene_module/intersection/util_type.hpp>
 #include <scene_module/scene_module_interface.hpp>
 #include <tier4_autoware_utils/tier4_autoware_utils.hpp>
 #include <utilization/boost_geometry_helper.hpp>
@@ -24,9 +26,20 @@
 #include <autoware_auto_perception_msgs/msg/predicted_objects.hpp>
 #include <autoware_auto_planning_msgs/msg/path_with_lane_id.hpp>
 #include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 
 #include <lanelet2_core/LaneletMap.h>
 #include <lanelet2_routing/RoutingGraph.h>
+#include <tf2/convert.h>
+#include <tf2/utils.h>
+
+#ifdef ROS_DISTRO_GALACTIC
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#else
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#endif
 
 #include <algorithm>
 #include <memory>
@@ -158,6 +171,8 @@ private:
 
   // Parameter
   PlannerParam planner_param_;
+  std::optional<util::IntersectionLanelets> intersection_lanelets_;
+  std::optional<std::vector<util::DetectionLaneDivision>> detection_divisions_;
 
   /**
    * @brief check collision for all lanelet area & predicted objects (call checkPathCollision() as
@@ -315,6 +330,11 @@ private:
     const autoware_auto_perception_msgs::msg::PredictedObject & object) const;
   StateMachine state_machine_;  //! for state
 
+  void showOccupancyGridImage(
+    const int lane_id, const nav_msgs::msg::OccupancyGrid & occ_grid,
+    const std::vector<lanelet::CompoundPolygon3d> & detection_areas,
+    const autoware_auto_planning_msgs::msg::PathWithLaneId & path,
+    const std::vector<util::DetectionLaneDivision> & lane_divisions) const;
   // Debug
   mutable DebugData debug_data_;
 };

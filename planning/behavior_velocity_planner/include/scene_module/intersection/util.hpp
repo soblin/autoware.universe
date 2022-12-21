@@ -17,6 +17,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <scene_module/intersection/scene_intersection.hpp>
+#include <scene_module/intersection/util_type.hpp>
 
 #include <geometry_msgs/msg/point.hpp>
 
@@ -34,9 +35,7 @@
 #include <utility>
 #include <vector>
 
-namespace behavior_velocity_planner
-{
-namespace util
+namespace behavior_velocity_planner::util
 {
 std::optional<size_t> insertPoint(
   const geometry_msgs::msg::Pose & in_pose,
@@ -57,17 +56,10 @@ std::optional<size_t> getDuplicatedPointIdx(
 /**
  * @brief get objective polygons for detection area
  */
-std::tuple<lanelet::ConstLanelets, lanelet::ConstLanelets> getObjectiveLanelets(
+IntersectionLanelets getObjectiveLanelets(
   lanelet::LaneletMapConstPtr lanelet_map_ptr, lanelet::routing::RoutingGraphPtr routing_graph_ptr,
-  const int lane_id, const double detection_area_length, const bool tl_arrow_solid_on = false);
-
-struct StopLineIdx
-{
-  size_t first_inside_lane = 0;
-  size_t pass_judge_line = 0;
-  size_t stop_line = 0;
-  size_t keep_detection_line = 0;
-};
+  const int lane_id, const double detection_area_length, const double aux_detection_area_length,
+  const bool tl_arrow_solid_on = false);
 
 /**
  * @brief Generate a stop line and insert it into the path. If the stop line is defined in the map,
@@ -85,7 +77,7 @@ std::pair<std::optional<size_t>, std::optional<StopLineIdx>> generateStopLine(
   const std::shared_ptr<const PlannerData> & planner_data, const double stop_line_margin,
   const double keep_detection_line_margin, const bool use_stuck_stopline,
   autoware_auto_planning_msgs::msg::PathWithLaneId * original_path,
-  const autoware_auto_planning_msgs::msg::PathWithLaneId & target_path, const rclcpp::Logger logger,
+  const autoware_auto_planning_msgs::msg::PathWithLaneId & path_ip, const rclcpp::Logger logger,
   const rclcpp::Clock::SharedPtr clock);
 
 /**
@@ -148,7 +140,7 @@ bool isBeforeTargetIndex(
   const geometry_msgs::msg::Pose & current_pose, const int target_idx);
 
 lanelet::ConstLanelets extendedAdjacentDirectionLanes(
-  const lanelet::LaneletMapPtr map, const lanelet::routing::RoutingGraphPtr routing_graph,
+  lanelet::LaneletMapConstPtr map, const lanelet::routing::RoutingGraphPtr routing_graph,
   lanelet::ConstLanelet lane);
 
 std::optional<Polygon2d> getIntersectionArea(
@@ -159,7 +151,10 @@ bool isTrafficLightArrowActivated(
   lanelet::ConstLanelet lane,
   const std::map<int, autoware_auto_perception_msgs::msg::TrafficSignalStamped> & tl_infos);
 
-}  // namespace util
-}  // namespace behavior_velocity_planner
+std::vector<DetectionLaneDivision> generateDetectionLaneDivisions(
+  lanelet::ConstLanelets detection_lanelets,
+  const lanelet::routing::RoutingGraphPtr routing_graph_ptr, const double resolution);
+
+}  // namespace behavior_velocity_planner::util
 
 #endif  // SCENE_MODULE__INTERSECTION__UTIL_HPP_

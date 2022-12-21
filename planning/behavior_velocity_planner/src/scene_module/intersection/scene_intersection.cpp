@@ -16,6 +16,7 @@
 #include <lanelet2_extension/utility/message_conversion.hpp>
 #include <lanelet2_extension/utility/query.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
+#include <opencv2/imgproc.hpp>
 #include <scene_module/intersection/scene_intersection.hpp>
 #include <scene_module/intersection/util.hpp>
 #include <utilization/boost_geometry_helper.hpp>
@@ -23,10 +24,24 @@
 #include <utilization/trajectory_utils.hpp>
 #include <utilization/util.hpp>
 
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
+
 #include <lanelet2_core/geometry/Polygon.h>
 #include <lanelet2_core/primitives/BasicRegulatoryElements.h>
+#include <tf2/convert.h>
+#include <tf2/utils.h>
+
+#ifdef ROS_DISTRO_GALACTIC
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#else
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#endif
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <vector>
 
@@ -71,7 +86,6 @@ bool IntersectionModule::modifyPathVelocity(
   tier4_planning_msgs::msg::StopReason * stop_reason)
 {
   RCLCPP_DEBUG(logger_, "===== plan start =====");
-
   const bool external_go = isTargetExternalInputStatus(tier4_api_msgs::msg::IntersectionStatus::GO);
   const bool external_stop =
     isTargetExternalInputStatus(tier4_api_msgs::msg::IntersectionStatus::STOP);
@@ -100,16 +114,19 @@ bool IntersectionModule::modifyPathVelocity(
 
   /* get detection area*/
   /* dynamically change detection area based on tl_arrow_solid_on */
-  [[maybe_unused]] const bool has_tl = util::hasAssociatedTrafficLight(assigned_lanelet);
   const bool tl_arrow_solid_on =
     util::isTrafficLightArrowActivated(assigned_lanelet, planner_data_->traffic_light_id_map);
-  auto && [detection_lanelets, conflicting_lanelets] = util::getObjectiveLanelets(
-    lanelet_map_ptr, routing_graph_ptr, lane_id_, planner_param_.detection_area_length,
-    tl_arrow_solid_on);
-  const std::vector<lanelet::CompoundPolygon3d> detection_area =
-    util::getPolygon3dFromLanelets(detection_lanelets, planner_param_.detection_area_length);
-  const std::vector<lanelet::CompoundPolygon3d> conflicting_area =
-    util::getPolygon3dFromLanelets(conflicting_lanelets);
+  if (!intersection_lanelets_.has_value() || intersection_lanelets_.value().tl_arrow_solid_on) {
+    intersection_lanelets_ = util::getObjectiveLanelets(
+      lanelet_map_ptr, routing_graph_ptr, lane_id_, planner_param_.detection_area_length,
+      planner_data_->occupancy_grid->info.width * std::sqrt(2.0), tl_arrow_solid_on);
+  }
+  const auto & detection_lanelets = intersection_lanelets_.value().attention;
+  const auto & adjacent_lanelets = intersection_lanelets_.value().adjacent;
+  const auto & aux_detection_lanelets = intersection_lanelets_.value().aux_attention;
+  const auto & detection_area = intersection_lanelets_.value().attention_area;
+  const auto & conflicting_area = intersection_lanelets_.value().conflicting_area;
+  const auto & aux_attention_area = intersection_lanelets_.value().aux_attention_area;
   debug_data_.detection_area = detection_area;
 
   /* get intersection area */
@@ -119,10 +136,25 @@ bool IntersectionModule::modifyPathVelocity(
     debug_data_.intersection_area = toGeomMsg(intersection_area_2d);
   }
 
-  /* get adjacent lanelets */
-  const auto adjacent_lanelets =
-    util::extendedAdjacentDirectionLanes(lanelet_map_ptr, routing_graph_ptr, assigned_lanelet);
-  debug_data_.adjacent_area = util::getPolygon3dFromLanelets(adjacent_lanelets);
+  constexpr double interval = 0.2;  // NOTE should be smaller than occ_grid resolution
+  autoware_auto_planning_msgs::msg::PathWithLaneId path_ip;
+  if (!splineInterpolate(*path, interval, path_ip, logger_)) {
+    RCLCPP_DEBUG_SKIPFIRST_THROTTLE(logger_, *clock_, 1000 /* ms */, "interpolation failed");
+    setSafe(true);
+    setDistance(std::numeric_limits<double>::lowest());
+    return false;
+  }
+
+  if (!detection_divisions_.has_value()) {
+    detection_divisions_ = util::generateDetectionLaneDivisions(
+      aux_detection_lanelets, routing_graph_ptr,
+      planner_data_->occupancy_grid->info.resolution / std::sqrt(2.0));
+  }
+
+  // use interpolated path
+  showOccupancyGridImage(
+    lane_id_, *planner_data_->occupancy_grid, aux_attention_area, path_ip,
+    detection_divisions_.value());
 
   /* set stop lines for base_link */
   const auto [stuck_line_idx_opt, stop_lines_idx_opt] = util::generateStopLine(
@@ -314,8 +346,6 @@ bool IntersectionModule::checkCollision(
   lanelet::utils::query::getClosestLanelet(
     ego_lane_with_next_lane, tier4_autoware_utils::getPose(path.points.at(closest_idx).point),
     &closest_lanelet);
-
-  debug_data_.ego_lane_polygon = toGeomMsg(ego_poly);
 
   /* extract target objects */
   autoware_auto_perception_msgs::msg::PredictedObjects target_objects;
@@ -831,6 +861,269 @@ bool IntersectionModule::checkFrontVehicleDeceleration(
     return true;
   }
   return false;
+}
+
+void IntersectionModule::showOccupancyGridImage(
+  const int lane_id, const nav_msgs::msg::OccupancyGrid & occ_grid,
+  const std::vector<lanelet::CompoundPolygon3d> & detection_areas,
+  const autoware_auto_planning_msgs::msg::PathWithLaneId & path,
+  [[maybe_unused]] const std::vector<util::DetectionLaneDivision> & lane_divisions) const
+{
+  const int width = occ_grid.info.width;
+  const int height = occ_grid.info.height;
+  const double reso = occ_grid.info.resolution;
+  const auto & origin = occ_grid.info.origin.position;
+
+  // NOTE: interesting area is set to 0 for later masking
+  cv::Mat detection_mask(width, height, CV_8UC1, cv::Scalar(0));
+  cv::Mat unknown_mask(width, height, CV_8UC1, cv::Scalar(0));
+
+  // (1) prepare detection area mask
+  Polygon2d grid_poly;
+  grid_poly.outer().emplace_back(origin.x, origin.y);
+  grid_poly.outer().emplace_back(origin.x + (width - 1) * reso, origin.y);
+  grid_poly.outer().emplace_back(origin.x + (width - 1) * reso, origin.y + (height - 1) * reso);
+  grid_poly.outer().emplace_back(origin.x, origin.y + (height - 1) * reso);
+  grid_poly.outer().emplace_back(origin.x, origin.y);
+  bg::correct(grid_poly);
+
+  std::vector<std::vector<cv::Point>> detection_area_cv_polygons;
+  for (const auto & detection_area : detection_areas) {
+    const auto area2d = lanelet::utils::to2D(detection_area);
+    Polygon2d area2d_poly;
+    for (const auto & p : area2d) {
+      area2d_poly.outer().emplace_back(p.x(), p.y());
+    }
+    area2d_poly.outer().push_back(area2d_poly.outer().front());
+    bg::correct(area2d_poly);
+    std::vector<Polygon2d> common_areas;
+    bg::intersection(area2d_poly, grid_poly, common_areas);
+    if (common_areas.empty()) {
+      continue;
+    }
+    for (size_t i = 0; i < common_areas.size(); ++i) {
+      common_areas[i].outer().push_back(common_areas[i].outer().front());
+      bg::correct(common_areas[i]);
+    }
+    for (const auto & common_area : common_areas) {
+      std::vector<cv::Point> detection_area_cv_polygon;
+      for (const auto & p : common_area.outer()) {
+        const int idx_x = static_cast<int>((p.x() - origin.x) / reso);
+        const int idx_y = static_cast<int>((p.y() - origin.y) / reso);
+        detection_area_cv_polygon.emplace_back(idx_x, height - 1 - idx_y);
+      }
+      detection_area_cv_polygons.push_back(detection_area_cv_polygon);
+    }
+  }
+  for (const auto & poly : detection_area_cv_polygons) {
+    cv::fillPoly(detection_mask, poly, cv::Scalar(255), cv::LINE_AA);
+  }
+
+  // (2) prepare unknown mask
+  // In OpenCV the pixel at (X=x, Y=y) (with left-upper origin) is accesed by img[y, x]
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      const int idx = y * width + x;
+      const unsigned char intensity = occ_grid.data.at(idx);
+      if (43 <= intensity && intensity < 58) {
+        unknown_mask.at<unsigned char>(height - 1 - y, x) = 255;
+      }
+    }
+  }
+
+  // (3) occlusion mask
+  cv::Mat occlusion_mask(width, height, CV_8UC1, cv::Scalar(0));
+  cv::bitwise_and(detection_mask, unknown_mask, occlusion_mask);
+
+  // (4) create distance grid
+  // value: 0 - 254: signed distance representing [distamce_min, distance_max]
+  // 255: undefined value
+  const double distance_max = std::hypot(width * reso / 2.0, height * reso / 2.0);
+  const double distance_min = -distance_max;
+  auto dist2pixel = [=](const double dist) {
+    return std::min(
+      254, static_cast<int>((dist - distance_min) / (distance_max - distance_min) * 254));
+  };
+  auto pixel2dist = [=](const int pixel) {
+    return pixel * 1.0 / 254 * (distance_max - distance_min) + distance_min;
+  };
+
+  auto coord2index = [&](const double x, const double y) {
+    const int idx_x = (x - origin.x) / reso;
+    const int idx_y = (y - origin.y) / reso;
+    if (idx_x < 0 || idx_x >= width) return std::make_tuple(false, -1, -1);
+    if (idx_y < 0 || idx_y >= height) return std::make_tuple(false, -1, -1);
+    return std::make_tuple(true, idx_x, idx_y);
+  };
+
+  cv::Mat distance_grid(width, height, CV_8UC1, cv::Scalar(255));
+
+  // (4.1) first mark trajectory cell as 0.0
+  const auto intersection_interval_opt = util::findLaneIdInterval(path, lane_id);
+  if (!intersection_interval_opt.has_value()) {
+    return;
+  }
+  const int zero_dist_pixel = dist2pixel(0.0);
+  const auto [lane_start, lane_end] = intersection_interval_opt.value();
+  for (size_t i = lane_start; i <= lane_end; ++i) {
+    const auto & path_pos = path.points.at(i).point.pose.position;
+    const int idx_x = (path_pos.x - origin.x) / reso;
+    const int idx_y = (path_pos.y - origin.y) / reso;
+    if (idx_x < 0 || idx_x >= width) continue;
+    if (idx_y < 0 || idx_y >= height) continue;
+    distance_grid.at<unsigned char>(height - 1 - idx_y, idx_x) = zero_dist_pixel;
+  }
+
+  [[maybe_unused]] auto bresenham_line = [&](
+                                           const int x0, const int y0, const int x1, const int y1,
+                                           const std::optional<double> steep_opt, const int pixel) {
+    if (!steep_opt.has_value()) {
+      // x0 == x1
+      for (int y = y0; y <= y1; y++) {
+        const int cur = distance_grid.at<unsigned char>(height - 1 - y, x0);
+        if (cur == 255) distance_grid.at<unsigned char>(height - 1 - y, x0) = pixel;
+      }
+      return;
+    }
+    if (y0 == y1) {
+      for (int x = x0; x <= x1; x++) {
+        const int cur = distance_grid.at<unsigned char>(height - 1 - y0, x);
+        if (cur == 255) distance_grid.at<unsigned char>(height - 1 - y0, x) = pixel;
+      }
+      return;
+    }
+
+    const double steep = steep_opt.value();
+    const int x_dir = (x0 < x1) ? 1 : -1;
+    const int y_dir = (steep * x_dir) > 0 ? 1 : -1;
+    int x = x0, y = y0;
+    double error = 0;
+    while (x != x1) {
+      const int cur = distance_grid.at<unsigned char>(height - 1 - y, x);
+      if (cur == 255) distance_grid.at<unsigned char>(height - 1 - y, x) = pixel;
+      error += steep;
+      if (error >= 0.5) {
+        y = y + y_dir;
+        error = error - 1.0;
+      }
+      x = x + x_dir;
+    }
+  };
+
+  for (const auto & lane_division : lane_divisions) {
+    const auto & divisions = lane_division.divisions;
+    for (const auto & division : divisions) {
+      bool is_in_grid = false;
+      double acc_dist = 0.0;
+      bool cost_defined = false;
+      std::optional<double> prev_checkpoint_x = std::nullopt, prev_checkpoint_y = std::nullopt;
+      std::vector<lanelet::ConstPoint2d> prev_checkpoints;
+      for (const auto & point : division) {
+        const auto [valid, idx_x, idx_y] = coord2index(point.x(), point.y());
+        if (is_in_grid && !valid) break;  // exited grid just now
+        if (!is_in_grid && !valid) continue;
+        const int pixel = distance_grid.at<unsigned char>(height - 1 - idx_y, idx_x);
+        if (!is_in_grid && valid) {
+          // entered grid
+          is_in_grid = true;
+          if (pixel == 255) {
+            // cannot decide signed distance from PathPointWithLaneId at this momemt
+            cost_defined = false;
+            prev_checkpoints.push_back(point);
+          } else {
+            cost_defined = true;
+            acc_dist = pixel2dist(pixel);
+            prev_checkpoint_x = point.x();
+            prev_checkpoint_y = point.y();
+          }
+          continue;
+        }
+        if (is_in_grid && valid) {
+          if (pixel == 255 && !cost_defined) {
+            // still cannot decide signed distance from PathPointWithLaneId
+            prev_checkpoints.push_back(point);
+            continue;
+          }
+          if (pixel == 255 && cost_defined) {
+            const double dy = point.y() - prev_checkpoint_y.value(),
+                         dx = point.x() - prev_checkpoint_x.value();
+            [[maybe_unused]] const std::optional<double> steep =
+              (fabs(dx) < 0.05) ? std::nullopt : std::make_optional(dy / dx);
+            [[maybe_unused]] const auto [valid, prev_idx_x, prev_idx_y] =
+              coord2index(prev_checkpoint_x.value(), prev_checkpoint_y.value());
+            // bresenham_line(prev_idx_x, prev_idx_y, idx_x, idx_y, steep, dist2pixel(acc_dist));
+            acc_dist += std::hypot(dy, dx);
+            distance_grid.at<unsigned char>(height - 1 - idx_y, idx_x) = dist2pixel(acc_dist);
+            prev_checkpoint_x = point.x();
+            prev_checkpoint_y = point.y();
+            continue;
+          }
+          if (pixel == zero_dist_pixel) {
+            // actually, cells with minus signed distance are not negligible
+            double acc_dist_prev = 0.0;
+            auto prev_point = point;
+            for (const auto & cur_point : prev_checkpoints) {
+              const double dx = cur_point.x() - prev_point.x(), dy = cur_point.y() - prev_point.y();
+              [[maybe_unused]] const std::optional<double> steep =
+                (fabs(dx) < 0.05) ? std::nullopt : std::make_optional(dy / dx);
+              const double dd = std::hypot(dy, dx);
+              [[maybe_unused]] const auto [valid_prev, prev_idx_x, prev_idx_y] =
+                coord2index(prev_point.x(), prev_point.y());
+              const auto [valid, cur_idx_x, cur_idx_y] = coord2index(cur_point.x(), cur_point.y());
+              // bresenham_line(
+              //   prev_idx_x, prev_idx_y, cur_idx_x, cur_idx_y, steep, dist2pixel(acc_dist_prev));
+              acc_dist_prev -= dd;
+              distance_grid.at<unsigned char>(height - 1 - cur_idx_y, cur_idx_x) =
+                dist2pixel(acc_dist_prev);
+              prev_point = cur_point;
+            }
+            acc_dist = 0.0;
+            cost_defined = true;
+            prev_checkpoint_x = point.x();
+            prev_checkpoint_y = point.y();
+            continue;
+          } else {
+            // pixel != 255 and pixel != zero_dist_pixel
+            // Dynamic Programming to lower cost
+            if (!prev_checkpoint_x.has_value()) {
+              // assert(not cost_defined)
+              acc_dist = pixel2dist(pixel);
+              cost_defined = true;
+              prev_checkpoint_x = point.x();
+              prev_checkpoint_y = point.y();
+            } else {
+              // assert(cost_defined)
+              const double cur_dist = pixel2dist(pixel);
+              const double new_dist = acc_dist + std::hypot(
+                                                   point.x() - prev_checkpoint_x.value(),
+                                                   point.y() - prev_checkpoint_y.value());
+              if (new_dist < cur_dist) {
+                acc_dist = new_dist;
+                distance_grid.at<unsigned char>(height - 1 - idx_y, idx_x) = dist2pixel(acc_dist);
+              }
+              cost_defined = true;
+              prev_checkpoint_x = point.x();
+              prev_checkpoint_y = point.y();
+            }
+          }
+        }
+      }
+    }
+  }
+  for (int i = 0; i < width; ++i) {
+    for (int j = 0; j < height; ++j) {
+      if (distance_grid.at<unsigned char>(j, i) == 255) {
+        distance_grid.at<unsigned char>(j, i) = 0;
+      }
+    }
+  }
+  cv::Mat distance_grid_cropped;
+  cv::bitwise_and(distance_grid, occlusion_mask, distance_grid_cropped);
+  cv::Mat distance_grid_heatmap;
+  cv::applyColorMap(distance_grid_cropped, distance_grid_heatmap, cv::COLORMAP_JET);
+  cv::namedWindow("distance_grid_viz", cv::WINDOW_NORMAL);
+  cv::imshow("distance_grid_viz", distance_grid_heatmap);
+  cv::waitKey(1);
 }
 
 }  // namespace behavior_velocity_planner
