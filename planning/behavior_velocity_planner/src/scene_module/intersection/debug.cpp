@@ -113,18 +113,8 @@ visualization_msgs::msg::MarkerArray IntersectionModule::createDebugMarkerArray(
   const auto now = this->clock_->now();
 
   appendMarkerArray(
-    debug::createPathMarkerArray(
-      debug_data_.path_raw, "path_raw", lane_id_, now, 0.6, 0.3, 0.3, 0.0, 1.0, 1.0),
-    &debug_marker_array, now);
-
-  appendMarkerArray(
     createLaneletPolygonsMarkerArray(
       debug_data_.detection_area, "detection_area", lane_id_, 0.0, 1.0, 0.0),
-    &debug_marker_array);
-
-  appendMarkerArray(
-    createLaneletPolygonsMarkerArray(
-      debug_data_.adjacent_area, "adjacent_area", lane_id_, 0.913, 0.639, 0.149),
     &debug_marker_array);
 
   appendMarkerArray(
@@ -183,6 +173,10 @@ visualization_msgs::msg::MarkerArray IntersectionModule::createVirtualWallMarker
     appendMarkerArray(
       motion_utils::createStopVirtualWallMarker(
         debug_data_.stop_wall_pose, "intersection", now, module_id_),
+      &wall_marker, now);
+    appendMarkerArray(
+      motion_utils::createStopVirtualWallMarker(
+        debug_data_.extra_stop_wall_pose, "intersection", now, module_id_),
       &wall_marker, now);
   }
   return wall_marker;

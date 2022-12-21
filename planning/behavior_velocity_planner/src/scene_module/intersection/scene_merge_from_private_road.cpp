@@ -68,6 +68,7 @@ bool MergeFromPrivateRoadModule::modifyPathVelocity(
   if (!intersection_lanelets_.has_value()) {
     intersection_lanelets_ = util::getObjectiveLanelets(
       lanelet_map_ptr, routing_graph_ptr, lane_id_, planner_param_.detection_area_length,
+      0.0 /*aux_detection_length does not matter here*/,
       false /* tl_arrow_solid on does not matter here*/);
   }
   const auto & detection_area = intersection_lanelets_.value().attention_area;
@@ -92,15 +93,15 @@ bool MergeFromPrivateRoadModule::modifyPathVelocity(
     return false;
   }
 
-  const auto stop_lines_idx_opt = util::generateStopLine(
+  const auto stop_line_idx_opt = util::insertCollisionStopLine(
     lane_id_, detection_area, planner_data_, planner_param_.stop_line_margin, path, path_ip,
     interval, lane_interval_ip_opt.value(), logger_.get_child("util"));
-  if (!stop_lines_idx_opt.has_value()) {
+  if (!stop_line_idx_opt.has_value()) {
     RCLCPP_WARN_SKIPFIRST_THROTTLE(logger_, *clock_, 1000 /* ms */, "setStopLineIdx fail");
     return false;
   }
 
-  const size_t stop_line_idx = stop_lines_idx_opt.value().collision_stop_line;
+  const size_t stop_line_idx = stop_line_idx_opt.value();
   if (stop_line_idx == 0) {
     RCLCPP_DEBUG(logger_, "stop line is at path[0], ignore planning.");
     return true;

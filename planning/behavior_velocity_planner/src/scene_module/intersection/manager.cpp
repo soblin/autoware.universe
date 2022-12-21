@@ -34,6 +34,8 @@ IntersectionModuleManager::IntersectionModuleManager(rclcpp::Node & node)
   const auto vehicle_info = vehicle_info_util::VehicleInfoUtil(node).getVehicleInfo();
   ip.state_transit_margin_time = node.declare_parameter(ns + ".state_transit_margin_time", 2.0);
   ip.stop_line_margin = node.declare_parameter(ns + ".stop_line_margin", 1.0);
+  ip.occlusion_dist_thr = node.declare_parameter(ns + ".occlusion_dist_thr", 0.0);
+  ip.occlusion_creep_velocity = node.declare_parameter(ns + ".occlusion_creep_velocity", 0.833);
   ip.stuck_vehicle_detect_dist = node.declare_parameter(ns + ".stuck_vehicle_detect_dist", 3.0);
   ip.stuck_vehicle_ignore_dist = node.declare_parameter(ns + ".stuck_vehicle_ignore_dist", 5.0) +
                                  vehicle_info.max_longitudinal_offset_m;
@@ -44,6 +46,7 @@ IntersectionModuleManager::IntersectionModuleManager(rclcpp::Node & node)
   ip.detection_area_right_margin = node.declare_parameter(ns + ".detection_area_right_margin", 0.5);
   ip.detection_area_left_margin = node.declare_parameter(ns + ".detection_area_left_margin", 0.5);
   ip.detection_area_length = node.declare_parameter(ns + ".detection_area_length", 200.0);
+  ip.aux_detection_area_length = node.declare_parameter(ns + ".aux_detection_area_length", 200.0);
   ip.detection_area_angle_thr =
     node.declare_parameter(ns + ".detection_area_angle_threshold", M_PI / 4.0);
   ip.min_predicted_path_confidence =
@@ -58,6 +61,10 @@ IntersectionModuleManager::IntersectionModuleManager(rclcpp::Node & node)
   ip.enable_front_car_decel_prediction =
     node.declare_parameter(ns + ".enable_front_car_decel_prediction", false);
   ip.stop_overshoot_margin = node.declare_parameter(ns + ".stop_overshoot_margin", 0.5);
+  ip.occlusion_free_space_max = node.declare_parameter(ns + ".occlusion.free_space_max", 43);
+  ip.occlusion_occupied_min = node.declare_parameter(ns + ".occlusion.occupied_min", 58);
+  ip.extra_occlusion_margin = node.declare_parameter(ns + ".extra_occlusion_margin", 0.0);
+  ip.occlusion_do_dp = node.declare_parameter(ns + ".occlusion.do_dp", false);
 }
 
 MergeFromPrivateModuleManager::MergeFromPrivateModuleManager(rclcpp::Node & node)
@@ -80,6 +87,7 @@ void IntersectionModuleManager::launchNewModules(
 {
   const auto lanelets = planning_utils::getLaneletsOnPath(
     path, planner_data_->route_handler_->getLaneletMapPtr(), planner_data_->current_pose.pose);
+  bool is_first_intersection_primitive = true;
   for (size_t i = 0; i < lanelets.size(); i++) {
     const auto ll = lanelets.at(i);
     const auto lane_id = ll.id();
@@ -96,10 +104,13 @@ void IntersectionModuleManager::launchNewModules(
     if (!is_intersection) {
       continue;
     }
+
     registerModule(std::make_shared<IntersectionModule>(
-      module_id, lane_id, planner_data_, intersection_param_,
+      module_id, lane_id, planner_data_, is_first_intersection_primitive, intersection_param_,
       logger_.get_child("intersection_module"), clock_));
     generateUUID(module_id);
+
+    is_first_intersection_primitive = false;
   }
 }
 

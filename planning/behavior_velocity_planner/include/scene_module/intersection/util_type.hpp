@@ -27,15 +27,30 @@ struct IntersectionLanelets
   lanelet::ConstLanelets attention;
   lanelet::ConstLanelets conflicting;
   lanelet::ConstLanelets adjacent;
+  lanelet::ConstLanelets aux_attention;  // for occlusion detection
   std::vector<lanelet::CompoundPolygon3d> attention_area;
   std::vector<lanelet::CompoundPolygon3d> conflicting_area;
   std::vector<lanelet::CompoundPolygon3d> adjacent_area;
+  std::vector<lanelet::CompoundPolygon3d> aux_attention_area;
 };
 
 struct StopLineIdx
 {
-  size_t pass_judge_line = 0;
   size_t collision_stop_line = 0;
+  size_t occlusion_stop_line = 0;
+};
+
+enum class StopReason : int {
+  STUCK,
+  COLLISION,
+  OCCLUSION,
+};
+
+struct DetectionLaneDivision
+{
+  int lane_id;
+  // discrete fine lines from left to right
+  std::vector<lanelet::ConstLineString2d> divisions;
 };
 
 }  // namespace behavior_velocity_planner::util

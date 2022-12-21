@@ -16,6 +16,7 @@
 #include <lanelet2_extension/utility/message_conversion.hpp>
 #include <lanelet2_extension/utility/query.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
+#include <opencv2/imgproc.hpp>
 #include <scene_module/intersection/scene_intersection.hpp>
 #include <scene_module/intersection/util.hpp>
 #include <utilization/boost_geometry_helper.hpp>
@@ -23,11 +24,27 @@
 #include <utilization/trajectory_utils.hpp>
 #include <utilization/util.hpp>
 
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
+
 #include <lanelet2_core/geometry/Polygon.h>
 #include <lanelet2_core/primitives/BasicRegulatoryElements.h>
+#include <tf2/convert.h>
+#include <tf2/utils.h>
+
+#ifdef ROS_DISTRO_GALACTIC
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#else
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#endif
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
+#include <optional>
+#include <tuple>
 #include <vector>
 
 namespace behavior_velocity_planner
@@ -53,9 +70,15 @@ static geometry_msgs::msg::Pose getObjectPoseWithVelocityDirection(
 
 IntersectionModule::IntersectionModule(
   const int64_t module_id, const int64_t lane_id, std::shared_ptr<const PlannerData> planner_data,
-  const PlannerParam & planner_param, const rclcpp::Logger logger,
-  const rclcpp::Clock::SharedPtr clock)
-: SceneModuleInterface(module_id, logger, clock), lane_id_(lane_id), is_go_out_(false)
+  const bool enable_occlusion_detection, const PlannerParam & planner_param,
+  const rclcpp::Logger logger, const rclcpp::Clock::SharedPtr clock)
+: SceneModuleInterface(module_id, logger, clock),
+  lane_id_(lane_id),
+  is_go_out_(false),
+  intersection_lanelets_(std::nullopt),
+  enable_occlusion_detection_(enable_occlusion_detection),
+  detection_divisions_(std::nullopt),
+  prev_occlusion_stop_line_pose_(std::nullopt)
 {
   planner_param_ = planner_param;
   const auto & assigned_lanelet =
@@ -66,19 +89,19 @@ IntersectionModule::IntersectionModule(
   state_machine_.setMarginTime(planner_param_.state_transit_margin_time);
 }
 
+IntersectionModule::~IntersectionModule() { cv::destroyAllWindows(); }
+
 bool IntersectionModule::modifyPathVelocity(
   autoware_auto_planning_msgs::msg::PathWithLaneId * path,
   tier4_planning_msgs::msg::StopReason * stop_reason)
 {
   RCLCPP_DEBUG(logger_, "===== plan start =====");
-
   const bool external_go = isTargetExternalInputStatus(tier4_api_msgs::msg::IntersectionStatus::GO);
   const bool external_stop =
     isTargetExternalInputStatus(tier4_api_msgs::msg::IntersectionStatus::STOP);
   const State current_state = state_machine_.getState();
 
   debug_data_ = DebugData();
-  debug_data_.path_raw = *path;
 
   *stop_reason =
     planning_utils::initializeStopReason(tier4_planning_msgs::msg::StopReason::INTERSECTION);
@@ -101,17 +124,18 @@ bool IntersectionModule::modifyPathVelocity(
   /* dynamically change detection area based on tl_arrow_solid_on */
   const bool tl_arrow_solid_on =
     util::isTrafficLightArrowActivated(assigned_lanelet, planner_data_->traffic_light_id_map);
-  if (
-    !intersection_lanelets_.has_value() ||
-    intersection_lanelets_.value().tl_arrow_solid_on != tl_arrow_solid_on) {
+  if (!intersection_lanelets_.has_value() || intersection_lanelets_.value().tl_arrow_solid_on) {
     intersection_lanelets_ = util::getObjectiveLanelets(
       lanelet_map_ptr, routing_graph_ptr, lane_id_, planner_param_.detection_area_length,
-      tl_arrow_solid_on);
+      planner_param_.aux_detection_area_length, tl_arrow_solid_on);
   }
   const auto & detection_lanelets = intersection_lanelets_.value().attention;
   const auto & adjacent_lanelets = intersection_lanelets_.value().adjacent;
+  const auto & aux_detection_lanelets = intersection_lanelets_.value().aux_attention;
   const auto & detection_area = intersection_lanelets_.value().attention_area;
   const auto & conflicting_area = intersection_lanelets_.value().conflicting_area;
+  [[maybe_unused]] const auto & aux_attention_area =
+    intersection_lanelets_.value().aux_attention_area;
   debug_data_.detection_area = detection_area;
 
   /* get intersection area */
@@ -120,6 +144,19 @@ bool IntersectionModule::modifyPathVelocity(
     const auto intersection_area_2d = intersection_area.value();
     debug_data_.intersection_area = toGeomMsg(intersection_area_2d);
   }
+
+  /* calc closest index */
+  const auto closest_idx_opt =
+    motion_utils::findNearestIndex(path->points, current_pose.pose, 3.0, M_PI_4);
+  if (!closest_idx_opt) {
+    RCLCPP_WARN_SKIPFIRST_THROTTLE(
+      logger_, *clock_, 1000 /* ms */, "motion_utils::findNearestIndex fail");
+    RCLCPP_DEBUG(logger_, "===== plan end =====");
+    setSafe(true);
+    setDistance(std::numeric_limits<double>::lowest());
+    return false;
+  }
+  const size_t closest_idx = closest_idx_opt.get();
 
   /* spline interpolation */
   constexpr double interval = 0.2;
@@ -138,73 +175,104 @@ bool IntersectionModule::modifyPathVelocity(
     return false;
   }
 
-  const auto stuck_line_idx_opt = util::generateStuckStopLine(
-    lane_id_, conflicting_area, planner_data_, planner_param_.stop_line_margin,
-    planner_param_.use_stuck_stopline, path, path_ip, interval, lane_interval_ip_opt.value(),
-    logger_.get_child("util"));
-
-  /* set stop lines for base_link */
-  const auto stop_lines_idx_opt = util::generateStopLine(
-    lane_id_, detection_area, planner_data_, planner_param_.stop_line_margin, path, path_ip,
-    interval, lane_interval_ip_opt.value(), logger_.get_child("util"));
-
-  /* calc closest index */
-  int closest_idx = -1;
-  if (!planning_utils::calcClosestIndex(*path, current_pose.pose, closest_idx)) {
-    RCLCPP_WARN_SKIPFIRST_THROTTLE(logger_, *clock_, 1000 /* ms */, "calcClosestIndex fail");
-    RCLCPP_DEBUG(logger_, "===== plan end =====");
-    return false;
+  if (!detection_divisions_.has_value()) {
+    detection_divisions_ = util::generateDetectionLaneDivisions(
+      aux_detection_lanelets, routing_graph_ptr,
+      planner_data_->occupancy_grid->info.resolution / std::sqrt(2.0));
   }
-
-  if (stop_lines_idx_opt.has_value()) {
-    const auto stop_line_idx = stop_lines_idx_opt.value().collision_stop_line;
-    const auto pass_judge_line_idx = stop_lines_idx_opt.value().pass_judge_line;
-
-    const bool is_over_pass_judge_line =
-      util::isOverTargetIndex(*path, closest_idx, current_pose.pose, pass_judge_line_idx);
-
-    /* if ego is over the pass judge line before collision is detected, keep going */
-    if (is_over_pass_judge_line && is_go_out_ && !external_stop) {
-      RCLCPP_DEBUG(logger_, "over the pass judge line. no plan needed.");
-      RCLCPP_DEBUG(logger_, "===== plan end =====");
-      setSafe(true);
-      setDistance(motion_utils::calcSignedArcLength(
-        path->points, planner_data_->current_pose.pose.position,
-        path->points.at(stop_line_idx).point.pose.position));
-      return true;
-    }
-  }
-  /* collision checking */
-  bool is_entry_prohibited = false;
 
   /* get dynamic object */
   const auto objects_ptr = planner_data_->predicted_objects;
 
+  // NOTE: pay attention to insertion order
   /* check stuck vehicle */
-  const double ignore_length =
-    planner_param_.stuck_vehicle_ignore_dist + planner_data_->vehicle_info_.vehicle_length_m;
-  const double detect_dist =
-    planner_param_.stuck_vehicle_detect_dist + planner_data_->vehicle_info_.vehicle_length_m;
-  const auto stuck_vehicle_detect_area = generateEgoIntersectionLanePolygon(
-    lanelet_map_ptr, *path, closest_idx, detect_dist, ignore_length);
+  const auto stuck_line_idx_opt = util::insertStuckStopLine(
+    lane_id_, conflicting_area, planner_data_, planner_param_.stop_line_margin,
+    planner_param_.use_stuck_stopline, path, path_ip, interval, lane_interval_ip_opt.value(),
+    logger_.get_child("util"));
+  const auto stuck_vehicle_detect_area =
+    generateStuckVehicleDetectArea(lanelet_map_ptr, *path, closest_idx);
   const bool is_stuck = checkStuckVehicleInIntersection(objects_ptr, stuck_vehicle_detect_area);
 
   /* calculate dynamic collision around detection area */
+  const auto collision_stop_line_idx_opt = util::insertCollisionStopLine(
+    lane_id_, detection_area, planner_data_, planner_param_.stop_line_margin, path, path_ip,
+    interval, lane_interval_ip_opt.value(), logger_.get_child("util"));
   const double time_delay =
     is_go_out_ ? 0.0 : (planner_param_.state_transit_margin_time - state_machine_.getDuration());
   const bool has_collision = checkCollision(
     lanelet_map_ptr, *path, detection_lanelets, adjacent_lanelets, intersection_area, objects_ptr,
     closest_idx, stuck_vehicle_detect_area, time_delay);
 
+  const double baselink2front = planner_data_->vehicle_info_.max_longitudinal_offset_m;
+
+  /* check occlusion on detection lane */
+  // use interpolated path
+  const auto occlusion_stop_line_idx_ip_opt =
+    (enable_occlusion_detection_ && !aux_detection_lanelets.empty())
+      ? findNearestOcclusionProjectedPosition(
+          *planner_data_->occupancy_grid, aux_attention_area, path_ip, interval,
+          lane_interval_ip_opt.value(), detection_divisions_.value(),
+          planner_param_.occlusion_dist_thr, baselink2front, planner_param_.extra_occlusion_margin)
+      : std::nullopt;
+  std::optional<size_t> occlusion_stop_line_idx_opt = std::nullopt;
+  if (occlusion_stop_line_idx_ip_opt.has_value()) {
+    occlusion_stop_line_idx_opt =
+      util::insertPoint(path_ip.points.at(occlusion_stop_line_idx_ip_opt.value()).point.pose, path);
+  }
+
   /* calculate final stop lines */
+  /* collision checking */
+  bool is_entry_prohibited = false;
   std::optional<size_t> stop_line_idx = std::nullopt;
+  // for the second stop line when occlision is detected and ego is before collision_stop_line
+  std::optional<size_t> extra_stop_line_idx = std::nullopt;
+  std::optional<std::pair<size_t, size_t>> insert_creep_during_occlusion = std::nullopt;
+
   if (external_go) {
     is_entry_prohibited = false;
   } else if (external_stop) {
     is_entry_prohibited = true;
-    stop_line_idx = stop_lines_idx_opt.has_value()
-                      ? std::make_optional<size_t>(stop_lines_idx_opt.value().collision_stop_line)
-                      : std::nullopt;
+    stop_line_idx = collision_stop_line_idx_opt;
+  } else if (occlusion_stop_line_idx_opt.has_value()) {
+    if (!collision_stop_line_idx_opt.has_value()) {
+      is_entry_prohibited = true;
+      stop_line_idx = occlusion_stop_line_idx_opt;
+      // insert creep velocity [closest_idx, occlusion_stop_line)
+      insert_creep_during_occlusion =
+        std::make_pair(closest_idx, occlusion_stop_line_idx_opt.value());
+      prev_occlusion_stop_line_pose_ =
+        path_ip.points.at(occlusion_stop_line_idx_opt.value()).point.pose;
+    } else if (util::isBeforeTargetIndex(
+                 *path, closest_idx, current_pose.pose, collision_stop_line_idx_opt.value())) {
+      // do two phase stopping
+      is_entry_prohibited = true;
+      stop_line_idx = collision_stop_line_idx_opt;
+      extra_stop_line_idx = occlusion_stop_line_idx_opt;
+      // insert creep velocity [collision_stop_line, occlusion_stop_line)
+      insert_creep_during_occlusion =
+        std::make_pair(collision_stop_line_idx_opt.value(), occlusion_stop_line_idx_opt.value());
+      prev_occlusion_stop_line_pose_ =
+        path_ip.points.at(occlusion_stop_line_idx_opt.value()).point.pose;
+    } else {
+      is_entry_prohibited = true;
+      stop_line_idx = occlusion_stop_line_idx_opt;
+      // insert creep velocity [closest_idx, occlusion_stop_line)
+      insert_creep_during_occlusion =
+        std::make_pair(closest_idx, occlusion_stop_line_idx_opt.value());
+      prev_occlusion_stop_line_pose_ =
+        path_ip.points.at(occlusion_stop_line_idx_opt.value()).point.pose;
+    }
+  } else if (prev_occlusion_stop_line_pose_.has_value()) {
+    // previously occlusion existed, but now it is clear
+    const auto new_collision_stop_line_idx = motion_utils::findNearestIndex(
+      path->points, prev_occlusion_stop_line_pose_.value(), 3.0, M_PI_4);
+    if (new_collision_stop_line_idx && has_collision) {
+      // do collision checking at previous occlusion stop line
+      // NOTE: this works in case of suddel lane change
+      is_entry_prohibited = true;
+      stop_line_idx = new_collision_stop_line_idx.get();
+    }
   } else if (is_stuck && stuck_line_idx_opt.has_value()) {
     is_entry_prohibited = true;
     const double dist_stuck_stopline = motion_utils::calcSignedArcLength(
@@ -215,14 +283,12 @@ bool IntersectionModule::modifyPathVelocity(
       dist_stuck_stopline > planner_param_.stop_overshoot_margin;
     if (!is_over_stuck_stopline) {
       stop_line_idx = stuck_line_idx_opt.value();
-    } else if (is_over_stuck_stopline && stop_lines_idx_opt.has_value()) {
-      stop_line_idx = stop_lines_idx_opt.value().collision_stop_line;
+    } else if (is_over_stuck_stopline && collision_stop_line_idx_opt.has_value()) {
+      stop_line_idx = collision_stop_line_idx_opt.value();
     }
   } else if (has_collision) {
     is_entry_prohibited = true;
-    stop_line_idx = stop_lines_idx_opt.has_value()
-                      ? std::make_optional<size_t>(stop_lines_idx_opt.value().collision_stop_line)
-                      : std::nullopt;
+    stop_line_idx = collision_stop_line_idx_opt;
   }
 
   if (!stop_line_idx.has_value()) {
@@ -246,11 +312,25 @@ bool IntersectionModule::modifyPathVelocity(
     // if RTC says intersection entry is 'dangerous', insert stop_line(v == 0.0) in this block
     is_go_out_ = false;
 
-    constexpr double v = 0.0;
-    planning_utils::setVelocityFrom(stop_line_idx.value(), v, path);
+    /* next virtual wall */
+    planning_utils::setVelocityFrom(stop_line_idx.value(), 0.0 /* [m/s] */, path);
     debug_data_.stop_required = true;
-    const double base_link2front = planner_data_->vehicle_info_.max_longitudinal_offset_m;
-    debug_data_.stop_wall_pose = util::getAheadPose(stop_line_idx.value(), base_link2front, *path);
+    debug_data_.stop_wall_pose = util::getAheadPose(stop_line_idx.value(), baselink2front, *path);
+
+    /* in case of two phase stop */
+    if (extra_stop_line_idx.has_value()) {
+      debug_data_.extra_stop_wall_pose =
+        util::getAheadPose(extra_stop_line_idx.value(), baselink2front, *path);
+    }
+
+    /* in case of creeping */
+    if (insert_creep_during_occlusion.has_value()) {
+      const auto [start, end] = insert_creep_during_occlusion.value();
+      for (size_t i = start; i < end; ++i) {
+        planning_utils::setVelocityFrom(
+          i, planner_param_.occlusion_creep_velocity /* [m/s] */, path);
+      }
+    }
 
     /* get stop point and stop factor */
     tier4_planning_msgs::msg::StopFactor stop_factor;
@@ -464,15 +544,19 @@ bool IntersectionModule::checkCollision(
   return collision_detected;
 }
 
-Polygon2d IntersectionModule::generateEgoIntersectionLanePolygon(
+Polygon2d IntersectionModule::generateStuckVehicleDetectArea(
   lanelet::LaneletMapConstPtr lanelet_map_ptr,
-  const autoware_auto_planning_msgs::msg::PathWithLaneId & path, const int closest_idx,
-  const double extra_dist, const double ignore_dist) const
+  const autoware_auto_planning_msgs::msg::PathWithLaneId & path, const int closest_idx) const
 {
   using lanelet::utils::getArcCoordinates;
   using lanelet::utils::getLaneletLength3d;
   using lanelet::utils::getPolygonFromArcLength;
   using lanelet::utils::to2D;
+
+  const double ignore_length =
+    planner_param_.stuck_vehicle_ignore_dist + planner_data_->vehicle_info_.vehicle_length_m;
+  const double detect_length =
+    planner_param_.stuck_vehicle_detect_dist + planner_data_->vehicle_info_.vehicle_length_m;
 
   lanelet::ConstLanelets ego_lane_with_next_lane = getEgoLaneWithNextLane(lanelet_map_ptr, path);
 
@@ -481,11 +565,12 @@ Polygon2d IntersectionModule::generateEgoIntersectionLanePolygon(
   const auto closest_arc_coords = getArcCoordinates(
     ego_lane_with_next_lane, tier4_autoware_utils::getPose(path.points.at(closest_idx).point));
 
-  const double start_arc_length = intersection_exit_length - ignore_dist > closest_arc_coords.length
-                                    ? intersection_exit_length - ignore_dist
-                                    : closest_arc_coords.length;
+  const double start_arc_length =
+    intersection_exit_length - ignore_length > closest_arc_coords.length
+      ? intersection_exit_length - ignore_length
+      : closest_arc_coords.length;
 
-  const double end_arc_length = getLaneletLength3d(ego_lane_with_next_lane.front()) + extra_dist;
+  const double end_arc_length = getLaneletLength3d(ego_lane_with_next_lane.front()) + detect_length;
 
   const auto target_polygon =
     to2D(getPolygonFromArcLength(ego_lane_with_next_lane, start_arc_length, end_arc_length))
@@ -832,6 +917,215 @@ bool IntersectionModule::checkFrontVehicleDeceleration(
     return true;
   }
   return false;
+}
+
+std::optional<size_t> IntersectionModule::findNearestOcclusionProjectedPosition(
+  const nav_msgs::msg::OccupancyGrid & occ_grid,
+  const std::vector<lanelet::CompoundPolygon3d> & detection_areas,
+  const autoware_auto_planning_msgs::msg::PathWithLaneId & path_ip, const double interval,
+  const std::pair<size_t, size_t> & lane_interval,
+  const std::vector<util::DetectionLaneDivision> & lane_divisions, const double occlusion_dist_thr,
+  const double baselink2front, const double extra_occlusion_margin) const
+{
+  const int width = occ_grid.info.width;
+  const int height = occ_grid.info.height;
+  const double reso = occ_grid.info.resolution;
+  const auto & origin = occ_grid.info.origin.position;
+
+  const int undef_pixel = 255;
+  const int max_cost_pixel = 254;
+
+  // NOTE: interesting area is set to 0 for later masking
+  cv::Mat detection_mask(width, height, CV_8UC1, cv::Scalar(0));
+  cv::Mat unknown_mask(width, height, CV_8UC1, cv::Scalar(0));
+
+  // (1) prepare detection area mask
+  Polygon2d grid_poly;
+  grid_poly.outer().emplace_back(origin.x, origin.y);
+  grid_poly.outer().emplace_back(origin.x + (width - 1) * reso, origin.y);
+  grid_poly.outer().emplace_back(origin.x + (width - 1) * reso, origin.y + (height - 1) * reso);
+  grid_poly.outer().emplace_back(origin.x, origin.y + (height - 1) * reso);
+  grid_poly.outer().emplace_back(origin.x, origin.y);
+  bg::correct(grid_poly);
+
+  std::vector<std::vector<cv::Point>> detection_area_cv_polygons;
+  for (const auto & detection_area : detection_areas) {
+    const auto area2d = lanelet::utils::to2D(detection_area);
+    Polygon2d area2d_poly;
+    for (const auto & p : area2d) {
+      area2d_poly.outer().emplace_back(p.x(), p.y());
+    }
+    area2d_poly.outer().push_back(area2d_poly.outer().front());
+    bg::correct(area2d_poly);
+    std::vector<Polygon2d> common_areas;
+    bg::intersection(area2d_poly, grid_poly, common_areas);
+    if (common_areas.empty()) {
+      continue;
+    }
+    for (size_t i = 0; i < common_areas.size(); ++i) {
+      common_areas[i].outer().push_back(common_areas[i].outer().front());
+      bg::correct(common_areas[i]);
+    }
+    for (const auto & common_area : common_areas) {
+      std::vector<cv::Point> detection_area_cv_polygon;
+      for (const auto & p : common_area.outer()) {
+        const int idx_x = static_cast<int>((p.x() - origin.x) / reso);
+        const int idx_y = static_cast<int>((p.y() - origin.y) / reso);
+        detection_area_cv_polygon.emplace_back(idx_x, height - 1 - idx_y);
+      }
+      detection_area_cv_polygons.push_back(detection_area_cv_polygon);
+    }
+  }
+  for (const auto & poly : detection_area_cv_polygons) {
+    cv::fillPoly(detection_mask, poly, cv::Scalar(255), cv::LINE_AA);
+  }
+
+  // (2) prepare unknown mask
+  // In OpenCV the pixel at (X=x, Y=y) (with left-upper origin) is accesed by img[y, x]
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      const int idx = y * width + x;
+      const unsigned char intensity = occ_grid.data.at(idx);
+      if (
+        planner_param_.occlusion_free_space_max <= intensity &&
+        intensity < planner_param_.occlusion_occupied_min) {
+        unknown_mask.at<unsigned char>(height - 1 - y, x) = 255;
+      }
+    }
+  }
+
+  // (3) occlusion mask
+  cv::Mat occlusion_mask(width, height, CV_8UC1, cv::Scalar(0));
+  cv::bitwise_and(detection_mask, unknown_mask, occlusion_mask);
+
+  // (4) create distance grid
+  // value: 0 - 254: signed distance representing [distamce_min, distance_max]
+  // 255: undefined value
+  const double distance_max = std::hypot(width * reso / 2, height * reso / 2);
+  const double distance_min = -distance_max;
+  auto dist2pixel = [=](const double dist) {
+    return std::min(
+      max_cost_pixel,
+      static_cast<int>((dist - distance_min) / (distance_max - distance_min) * max_cost_pixel));
+  };
+  [[maybe_unused]] auto pixel2dist = [=](const int pixel) {
+    return pixel * 1.0 / max_cost_pixel * (distance_max - distance_min) + distance_min;
+  };
+
+  auto coord2index = [&](const double x, const double y) {
+    const int idx_x = (x - origin.x) / reso;
+    const int idx_y = (y - origin.y) / reso;
+    if (idx_x < 0 || idx_x >= width) return std::make_tuple(false, -1, -1);
+    if (idx_y < 0 || idx_y >= height) return std::make_tuple(false, -1, -1);
+    return std::make_tuple(true, idx_x, idx_y);
+  };
+
+  const int zero_dist_pixel = dist2pixel(0.0);
+
+  cv::Mat distance_grid(width, height, CV_8UC1, cv::Scalar(undef_pixel));
+  cv::Mat projection_ind_grid(width, height, CV_32S, cv::Scalar(0));
+
+  const auto [lane_start, lane_end] = lane_interval;
+  for (size_t i = lane_start; i <= lane_end; ++i) {
+    const auto & path_pos = path_ip.points.at(i).point.pose.position;
+    const int idx_x = (path_pos.x - origin.x) / reso;
+    const int idx_y = (path_pos.y - origin.y) / reso;
+    if (idx_x < 0 || idx_x >= width) continue;
+    if (idx_y < 0 || idx_y >= height) continue;
+    distance_grid.at<unsigned char>(height - 1 - idx_y, idx_x) = zero_dist_pixel;
+    projection_ind_grid.at<int>(height - 1 - idx_y, idx_x) = i;
+  }
+
+  for (const auto & lane_division : lane_divisions) {
+    const auto & divisions = lane_division.divisions;
+    for (const auto & division : divisions) {
+      bool is_in_grid = false;
+      bool zero_dist_cell_found = false;
+      int projection_ind = 0;
+      std::optional<std::tuple<double, double, double>> cost_prev_checkpoint = std::nullopt;
+      for (const auto & point : division) {
+        const auto [valid, idx_x, idx_y] = coord2index(point.x(), point.y());
+        // exited grid just now
+        if (is_in_grid && !valid) break;
+
+        // still not entering grid
+        if (!is_in_grid && !valid) continue;
+
+        // From here, "valid"
+        const int pixel = distance_grid.at<unsigned char>(height - 1 - idx_y, idx_x);
+
+        // entered grid for 1st time
+        if (!is_in_grid) {
+          assert(pixel == undef_pixel || pixel == zero_dist_pixel);
+          is_in_grid = true;
+          if (pixel == undef_pixel) {
+            continue;
+          }
+        }
+
+        if (pixel == zero_dist_pixel) {
+          zero_dist_cell_found = true;
+          projection_ind = projection_ind_grid.at<int>(height - 1 - idx_y, idx_x);
+          cost_prev_checkpoint =
+            std::make_optional<std::tuple<double, double, double>>(0.0, point.x(), point.y());
+          continue;
+        }
+
+        if (zero_dist_cell_found) {
+          // finally traversed to defined cell (first half)
+          const auto [prev_cost, prev_checkpoint_x, prev_checkpoint_y] =
+            cost_prev_checkpoint.value();
+          const double dy = point.y() - prev_checkpoint_y, dx = point.x() - prev_checkpoint_x;
+          double new_dist = prev_cost + std::hypot(dy, dx);
+          if (planner_param_.occlusion_do_dp && pixel != undef_pixel) {
+            const double cur_dist = pixel2dist(pixel);
+            if (cur_dist < new_dist) {
+              new_dist = cur_dist;
+            }
+          }
+          distance_grid.at<unsigned char>(height - 1 - idx_y, idx_x) = dist2pixel(new_dist);
+          projection_ind_grid.at<int>(height - 1 - idx_y, idx_x) =
+            projection_ind;  // if do_dp, this is not accurate
+          cost_prev_checkpoint =
+            std::make_optional<std::tuple<double, double, double>>(new_dist, point.x(), point.y());
+        }
+      }
+    }
+  }
+
+  cv::Mat distance_grid_cropped;
+  cv::bitwise_and(distance_grid, occlusion_mask, distance_grid_cropped);
+
+  // clean-up and find nearest risk
+  const int min_cost_thr = dist2pixel(occlusion_dist_thr);
+  int min_cost = 255;
+  int min_cost_projection_ind = -1;
+  for (int i = 0; i < width; ++i) {
+    for (int j = 0; j < height; ++j) {
+      const int pixel = static_cast<int>(distance_grid_cropped.at<unsigned char>(j, i));
+      if (0 < pixel && pixel < min_cost) {
+        min_cost = pixel;
+        min_cost_projection_ind = projection_ind_grid.at<int>(j, i);
+      }
+    }
+  }
+
+  /*
+  cv::Mat distance_grid_heatmap;
+  cv::applyColorMap(distance_grid_cropped, distance_grid_heatmap, cv::COLORMAP_JET);
+  cv::namedWindow("distance_grid_viz" + std::to_string(lane_id_), cv::WINDOW_NORMAL);
+  cv::imshow("distance_grid_viz" + std::to_string(lane_id_), distance_grid_heatmap);
+  cv::waitKey(1);
+  */
+
+  if (min_cost > min_cost_thr || min_cost_projection_ind == -1) {
+    return std::nullopt;
+  }
+  const size_t baselink_ind = static_cast<size_t>(std::min<int>(
+    lane_start, std::max<int>(
+                  lane_end, min_cost_projection_ind - std::ceil(baselink2front / interval) +
+                              std::ceil(extra_occlusion_margin / interval))));
+  return std::make_optional<size_t>(baselink_ind);
 }
 
 }  // namespace behavior_velocity_planner

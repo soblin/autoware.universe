@@ -35,9 +35,7 @@
 #include <utility>
 #include <vector>
 
-namespace behavior_velocity_planner
-{
-namespace util
+namespace behavior_velocity_planner::util
 {
 std::optional<size_t> insertPoint(
   const geometry_msgs::msg::Pose & in_pose,
@@ -60,7 +58,8 @@ std::optional<size_t> getDuplicatedPointIdx(
  */
 IntersectionLanelets getObjectiveLanelets(
   lanelet::LaneletMapConstPtr lanelet_map_ptr, lanelet::routing::RoutingGraphPtr routing_graph_ptr,
-  const int lane_id, const double detection_area_length, const bool tl_arrow_solid_on = false);
+  const int lane_id, const double detection_area_length, const double aux_detection_area_length,
+  const bool tl_arrow_solid_on = false);
 
 /**
  * @brief Generate a stop line and insert it into the path. If the stop line is defined in the map,
@@ -69,12 +68,28 @@ IntersectionLanelets getObjectiveLanelets(
  * @param original_path   ego-car lane
  * @param target_path     target lane to insert stop point (part of ego-car lane or same to ego-car
  * lane)
- " @param use_stuck_stopline if true, a stop line is generated at the beginning of intersection lane
  * @return nullopt if path is not intersecting with detection areas
  */
-std::optional<StopLineIdx> generateStopLine(
+std::optional<size_t> insertCollisionStopLine(
   const int lane_id, const std::vector<lanelet::CompoundPolygon3d> & detection_areas,
-  const std::shared_ptr<const PlannerData> & planner_data, const double stop_line_margin,
+  const std::shared_ptr<const PlannerData> & planner_data, const double collision_stop_line_margin,
+  autoware_auto_planning_msgs::msg::PathWithLaneId * original_path,
+  const autoware_auto_planning_msgs::msg::PathWithLaneId & path_ip, const double interval,
+  const std::pair<size_t, size_t> lane_interaval, const rclcpp::Logger logger);
+
+/**
+ * @brief Generate a stop line and insert it into the path. If the stop line is defined in the map,
+ * read it from the map; otherwise, generate a stop line at a position where it will not collide.
+ * @param detection_areas used to generate stop line
+ * @param original_path   ego-car lane
+ * @param target_path     target lane to insert stop point (part of ego-car lane or same to ego-car
+ * lane)
+ * @return nullopt if path is not intersecting with detection areas
+ */
+std::optional<std::pair<size_t, size_t>> insertOcclusionStopLines(
+  const int lane_id, const std::vector<lanelet::CompoundPolygon3d> & detection_areas,
+  const std::shared_ptr<const PlannerData> & planner_data, const double collision_stop_line_margin,
+  const size_t occlusion_projection_index, const double occlusion_extra_margin,
   autoware_auto_planning_msgs::msg::PathWithLaneId * original_path,
   const autoware_auto_planning_msgs::msg::PathWithLaneId & path_ip, const double interval,
   const std::pair<size_t, size_t> lane_interaval, const rclcpp::Logger logger);
@@ -87,7 +102,7 @@ std::optional<StopLineIdx> generateStopLine(
  * lane)
  " @param use_stuck_stopline if true, a stop line is generated at the beginning of intersection lane
  */
-std::optional<size_t> generateStuckStopLine(
+std::optional<size_t> insertStuckStopLine(
   const int lane_id, const std::vector<lanelet::CompoundPolygon3d> & conflicting_areas,
   const std::shared_ptr<const PlannerData> & planner_data, const double stop_line_margin,
   const bool use_stuck_stopline, autoware_auto_planning_msgs::msg::PathWithLaneId * original_path,
@@ -115,7 +130,7 @@ std::optional<size_t> getFirstPointInsidePolygons(
 bool getStopLineIndexFromMap(
   const autoware_auto_planning_msgs::msg::PathWithLaneId & path, const size_t lane_interval_start,
   const size_t lane_interval_end, const int lane_id,
-  const std::shared_ptr<const PlannerData> & planner_data, size_t & stop_idx_ip,
+  const std::shared_ptr<const PlannerData> & planner_data, size_t * stop_idx_ip,
   const double dist_thr, const rclcpp::Logger logger);
 
 std::vector<lanelet::CompoundPolygon3d> getPolygon3dFromLaneletsVec(
@@ -165,7 +180,10 @@ bool isTrafficLightArrowActivated(
   lanelet::ConstLanelet lane,
   const std::map<int, autoware_auto_perception_msgs::msg::TrafficSignalStamped> & tl_infos);
 
-}  // namespace util
-}  // namespace behavior_velocity_planner
+std::vector<DetectionLaneDivision> generateDetectionLaneDivisions(
+  lanelet::ConstLanelets detection_lanelets,
+  const lanelet::routing::RoutingGraphPtr routing_graph_ptr, const double resolution);
+
+}  // namespace behavior_velocity_planner::util
 
 #endif  // SCENE_MODULE__INTERSECTION__UTIL_HPP_
