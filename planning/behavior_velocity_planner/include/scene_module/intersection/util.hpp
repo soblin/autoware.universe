@@ -109,8 +109,8 @@ std::optional<size_t> getFirstPointInsidePolygons(
 bool getStopLineIndexFromMap(
   const autoware_auto_planning_msgs::msg::PathWithLaneId & path, const size_t lane_interval_start,
   const size_t lane_interval_end, const int lane_id,
-  const std::shared_ptr<const PlannerData> & planner_data, int & stop_idx_ip, const double dist_thr,
-  const rclcpp::Logger logger);
+  const std::shared_ptr<const PlannerData> & planner_data, size_t & stop_idx_ip,
+  const double dist_thr, const rclcpp::Logger logger);
 
 std::vector<lanelet::CompoundPolygon3d> getPolygon3dFromLaneletsVec(
   const std::vector<lanelet::ConstLanelets> & ll_vec, double clip_length);

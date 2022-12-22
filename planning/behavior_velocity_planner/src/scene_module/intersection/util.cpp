@@ -411,8 +411,8 @@ std::pair<std::optional<size_t>, std::optional<StopLineIdx>> generateStopLine(
 bool getStopLineIndexFromMap(
   const autoware_auto_planning_msgs::msg::PathWithLaneId & path, const size_t lane_interval_start,
   const size_t lane_interval_end, const int lane_id,
-  const std::shared_ptr<const PlannerData> & planner_data, int & stop_idx_ip, const double dist_thr,
-  const rclcpp::Logger logger)
+  const std::shared_ptr<const PlannerData> & planner_data, size_t & stop_idx_ip,
+  const double dist_thr, const rclcpp::Logger logger)
 {
   lanelet::ConstLanelet lanelet =
     planner_data->route_handler_->getLaneletMapPtr()->laneletLayer.get(lane_id);
@@ -454,16 +454,18 @@ bool getStopLineIndexFromMap(
     return true;
   }
 
-  geometry_msgs::msg::Point stop_point_from_map;
-  stop_point_from_map.x = 0.5 * (p_start.x() + p_end.x());
-  stop_point_from_map.y = 0.5 * (p_start.y() + p_end.y());
-  stop_point_from_map.z = 0.5 * (p_start.z() + p_end.z());
+  geometry_msgs::msg::Pose stop_point_from_map;
+  stop_point_from_map.position.x = 0.5 * (p_start.x() + p_end.x());
+  stop_point_from_map.position.y = 0.5 * (p_start.y() + p_end.y());
+  stop_point_from_map.position.z = 0.5 * (p_start.z() + p_end.z());
 
-  if (!planning_utils::calcClosestIndex(
-        path, stop_point_from_map, stop_idx_ip, static_cast<double>(dist_thr))) {
+  const auto stop_idx_ip_opt =
+    motion_utils::findNearestIndex(path.points, stop_point_from_map, dist_thr);
+  if (!stop_idx_ip_opt) {
     RCLCPP_DEBUG(logger, "found stop line, but not found stop index");
     return false;
   }
+  stop_idx_ip = stop_idx_ip_opt.get();
 
   RCLCPP_DEBUG(logger, "found stop line and stop index");
 
