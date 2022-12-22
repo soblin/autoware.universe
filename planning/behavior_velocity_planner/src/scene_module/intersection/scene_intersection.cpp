@@ -146,6 +146,33 @@ bool IntersectionModule::modifyPathVelocity(
     return false;
   }
 
+  if (stop_lines_idx_opt.has_value()) {
+    const auto stop_line_idx = stop_lines_idx_opt.value().stop_line;
+    const auto pass_judge_line_idx = stop_lines_idx_opt.value().pass_judge_line;
+    const auto keep_detection_line_idx = stop_lines_idx_opt.value().keep_detection_line;
+
+    const bool is_over_pass_judge_line =
+      util::isOverTargetIndex(*path, closest_idx, current_pose.pose, pass_judge_line_idx);
+    const bool is_before_keep_detection_line =
+      stop_lines_idx_opt.has_value()
+        ? util::isBeforeTargetIndex(*path, closest_idx, current_pose.pose, keep_detection_line_idx)
+        : false;
+    const bool keep_detection = is_before_keep_detection_line &&
+                                std::fabs(current_vel) < planner_param_.keep_detection_vel_thr;
+
+    if (is_over_pass_judge_line && keep_detection) {
+      // in case ego could not stop exactly before the stop line, but with some overshoot,
+      // keep detection within some margin under low velocity threshold
+    } else if (is_over_pass_judge_line && is_go_out_ && !external_stop) {
+      RCLCPP_INFO(logger_, "over the keep_detection line and not low speed. no plan needed.");
+      RCLCPP_DEBUG(logger_, "===== plan end =====");
+      setSafe(true);
+      setDistance(motion_utils::calcSignedArcLength(
+        path->points, planner_data_->current_pose.pose.position,
+        path->points.at(stop_line_idx).point.pose.position));
+      return true;
+    }
+  }
   /* collision checking */
   bool is_entry_prohibited = false;
 
@@ -167,8 +194,10 @@ bool IntersectionModule::modifyPathVelocity(
     closest_idx, stuck_vehicle_detect_area);
 
   /* calculate final stop lines */
-  int stop_line_idx_final = -1;
-  int pass_judge_line_idx_final = -1;
+  int stop_line_idx_final =
+    stop_lines_idx_opt.has_value() ? stop_lines_idx_opt.value().stop_line : -1;
+  int pass_judge_line_idx_final =
+    stop_lines_idx_opt.has_value() ? stop_lines_idx_opt.value().pass_judge_line : -1;
   if (external_go) {
     is_entry_prohibited = false;
   } else if (external_stop) {
@@ -198,29 +227,6 @@ bool IntersectionModule::modifyPathVelocity(
     setSafe(true);
     setDistance(std::numeric_limits<double>::lowest());
     return false;
-  }
-
-  const bool is_over_pass_judge_line =
-    util::isOverTargetIndex(*path, closest_idx, current_pose.pose, pass_judge_line_idx_final);
-  const bool is_before_keep_detection_line =
-    stop_lines_idx_opt.has_value()
-      ? util::isBeforeTargetIndex(
-          *path, closest_idx, current_pose.pose, stop_lines_idx_opt.value().keep_detection_line)
-      : false;
-  const bool keep_detection =
-    is_before_keep_detection_line && std::fabs(current_vel) < planner_param_.keep_detection_vel_thr;
-
-  if (is_over_pass_judge_line && keep_detection) {
-    // in case ego could not stop exactly before the stop line, but with some overshoot,
-    // keep detection within some margin under low velocity threshold
-  } else if (is_over_pass_judge_line && is_go_out_ && !external_stop) {
-    RCLCPP_DEBUG(logger_, "over the keep_detection line and not low speed. no plan needed.");
-    RCLCPP_DEBUG(logger_, "===== plan end =====");
-    setSafe(true);
-    setDistance(motion_utils::calcSignedArcLength(
-      path->points, planner_data_->current_pose.pose.position,
-      path->points.at(stop_line_idx_final).point.pose.position));
-    return true;
   }
 
   state_machine_.setStateWithMarginTime(
