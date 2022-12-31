@@ -18,7 +18,7 @@
 #include <motion_utils/motion_utils.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <scene_module/scene_module_interface.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+// #include <tier4_autoware_utils/tier4_autoware_utils.hpp>
 #include <utilization/boost_geometry_helper.hpp>
 #include <utilization/state_machine.hpp>
 
@@ -28,7 +28,7 @@
 #include <geometry_msgs/msg/point.hpp>
 
 #include <lanelet2_core/LaneletMap.h>
-#include <lanelet2_routing/RoutingGraph.h>
+// #include <lanelet2_routing/RoutingGraph.h>
 
 #include <algorithm>
 #include <memory>
