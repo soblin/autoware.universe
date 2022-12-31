@@ -20,10 +20,6 @@
 #include <autoware_auto_perception_msgs/msg/detected_object.hpp>
 #include <autoware_auto_perception_msgs/msg/predicted_object.hpp>
 #include <autoware_auto_perception_msgs/msg/tracked_object.hpp>
-#include <geometry_msgs/msg/pose.hpp>
-
-#include <boost/geometry.hpp>
-#include <boost/optional.hpp>
 
 #include <vector>
 

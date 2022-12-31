@@ -16,6 +16,8 @@
 
 #include "tier4_autoware_utils/geometry/geometry.hpp"
 
+#include <boost/geometry/algorithms/reverse.hpp>
+
 #include <tf2/utils.h>
 
 namespace
