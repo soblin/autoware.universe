@@ -31,7 +31,6 @@
 #include <boost/geometry/geometries/polygon.hpp>
 #include <boost/geometry/geometries/register/point.hpp>
 
-#include <lanelet2_core/primitives/Polygon.h>
 #include <tf2/utils.h>
 
 #include <algorithm>
