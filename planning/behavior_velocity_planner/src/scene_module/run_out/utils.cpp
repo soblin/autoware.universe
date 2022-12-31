@@ -188,12 +188,12 @@ Polygon2d createBoostPolyFromMsg(const std::vector<geometry_msgs::msg::Point> & 
 {
   Polygon2d bg_poly;
   for (const auto & p : input_poly) {
-    bg_poly.outer().emplace_back(bg::make<Point2d>(p.x, p.y));
+    bg_poly.outer().emplace_back(p.x, p.y);
   }
 
   // one more point to close polygon
   const auto & first_point = input_poly.front();
-  bg_poly.outer().emplace_back(bg::make<Point2d>(first_point.x, first_point.y));
+  bg_poly.outer().emplace_back(first_point.x, first_point.y);
 
   bg::correct(bg_poly);
   return bg_poly;

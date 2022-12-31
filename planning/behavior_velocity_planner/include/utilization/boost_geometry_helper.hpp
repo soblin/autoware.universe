@@ -24,14 +24,7 @@
 #include <geometry_msgs/msg/polygon.hpp>
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 
-#include <boost/assign/list_of.hpp>
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/linestring.hpp>
-#include <boost/geometry/geometries/point_xy.hpp>
-#include <boost/geometry/geometries/polygon.hpp>
-#include <boost/geometry/geometries/register/point.hpp>
-
-#include <tf2/utils.h>
+#include <boost/geometry/algorithms/correct.hpp>
 
 #include <algorithm>
 #include <vector>
