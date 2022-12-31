@@ -19,6 +19,7 @@
 
 #include <motion_velocity_smoother/smoother/analytical_jerk_constrained_smoother/analytical_jerk_constrained_smoother.hpp>
 #include <motion_velocity_smoother/smoother/smoother_base.hpp>
+#include <pcl/impl/point_types.hpp>
 #include <vehicle_info_util/vehicle_info_util.hpp>
 
 #include <autoware_auto_mapping_msgs/msg/had_map_bin.hpp>
@@ -43,7 +44,6 @@
 #include <lanelet2_routing/RoutingGraphContainer.h>
 #include <lanelet2_traffic_rules/TrafficRulesFactory.h>
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <tf2_ros/transform_listener.h>
 
 #include <algorithm>
