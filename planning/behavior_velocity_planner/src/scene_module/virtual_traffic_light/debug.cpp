@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <motion_utils/motion_utils.hpp>
+#include <motion_utils/marker/marker_helper.hpp>
 #include <scene_module/virtual_traffic_light/scene.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/ros/marker_helper.hpp>
 
 using motion_utils::createStopVirtualWallMarker;
 using tier4_autoware_utils::appendMarkerArray;

@@ -18,6 +18,7 @@
 #include "behavior_path_planner/scene_module/pull_over/util.hpp"
 #include "lanelet2_extension/utility/utilities.hpp"
 
+#include <boost/geometry/algorithms/union.hpp>
 #include <boost/optional.hpp>
 
 #include <memory>

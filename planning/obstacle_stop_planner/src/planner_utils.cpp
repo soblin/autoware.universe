@@ -20,6 +20,8 @@
 #include <diagnostic_msgs/msg/key_value.hpp>
 
 #include <boost/format.hpp>
+#include <boost/geometry/algorithms/distance.hpp>
+#include <boost/geometry/algorithms/within.hpp>
 
 #include <pcl_conversions/pcl_conversions.h>
 
@@ -433,9 +435,9 @@ bool withinPolygon(
   Polygon2d boost_polygon;
   bool find_within_points = false;
   for (const auto & point : cv_polygon) {
-    boost_polygon.outer().push_back(bg::make<Point2d>(point.x, point.y));
+    boost_polygon.outer().emplace_back(point.x, point.y);
   }
-  boost_polygon.outer().push_back(bg::make<Point2d>(cv_polygon.front().x, cv_polygon.front().y));
+  boost_polygon.outer().emplace_back(cv_polygon.front().x, cv_polygon.front().y);
 
   for (size_t j = 0; j < candidate_points_ptr->size(); ++j) {
     Point2d point(candidate_points_ptr->at(j).x, candidate_points_ptr->at(j).y);

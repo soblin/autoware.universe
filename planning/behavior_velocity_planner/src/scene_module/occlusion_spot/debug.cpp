@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <motion_utils/motion_utils.hpp>
+#include <motion_utils/marker/marker_helper.hpp>
 #include <scene_module/occlusion_spot/occlusion_spot_utils.hpp>
 #include <scene_module/occlusion_spot/scene_occlusion_spot.hpp>
 #include <tier4_autoware_utils/ros/marker_helper.hpp>

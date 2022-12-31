@@ -23,6 +23,9 @@
 #include "nav_msgs/msg/map_meta_data.hpp"
 
 #include "boost/assign/list_of.hpp"
+#include "boost/geometry/algorithms/intersection.hpp"
+#include "boost/geometry/geometries/linestring.hpp"
+#include "boost/geometry/geometries/point_xy.hpp"
 #include "boost/optional.hpp"
 
 #include <algorithm>
