@@ -713,9 +713,9 @@ bool IntersectionModule::checkFrontVehicleDeceleration(
 
   std::vector<geometry_msgs::msg::Point> center_points;
   for (auto && p : ego_lane_with_next_lane[0].centerline())
-    center_points.push_back(std::move(lanelet::utils::conversion::toGeomMsgPt(p)));
+    center_points.push_back(lanelet::utils::conversion::toGeomMsgPt(p));
   for (auto && p : ego_lane_with_next_lane[1].centerline())
-    center_points.push_back(std::move(lanelet::utils::conversion::toGeomMsgPt(p)));
+    center_points.push_back(lanelet::utils::conversion::toGeomMsgPt(p));
   const double lat_offset =
     std::fabs(motion_utils::calcLateralOffset(center_points, object_pose.position));
   // get the nearest centerpoint to object

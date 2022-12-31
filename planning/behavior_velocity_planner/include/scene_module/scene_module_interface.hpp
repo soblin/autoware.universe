@@ -312,7 +312,7 @@ protected:
 
   template <class T>
   size_t findEgoIndex(
-    const std::vector<T> & points, const geometry_msgs::msg::Pose & ego_pose) const
+    const std::vector<T> & points, [[maybe_unused]] const geometry_msgs::msg::Pose & ego_pose) const
   {
     const auto & p = planner_data_;
     return motion_utils::findFirstNearestIndexWithSoftConstraints(
