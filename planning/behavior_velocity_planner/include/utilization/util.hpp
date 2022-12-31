@@ -41,7 +41,6 @@
 #include <lanelet2_core/geometry/Lanelet.h>
 #include <lanelet2_core/geometry/Point.h>
 #include <lanelet2_routing/RoutingGraph.h>
-#include <pcl/point_types.h>
 #include <tf2/utils.h>
 
 #include <algorithm>
@@ -191,7 +190,6 @@ void appendStopReason(const StopFactor stop_factor, StopReason * stop_reason);
 
 std::vector<geometry_msgs::msg::Point> toRosPoints(const PredictedObjects & object);
 
-geometry_msgs::msg::Point toRosPoint(const pcl::PointXYZ & pcl_point);
 geometry_msgs::msg::Point toRosPoint(const Point2d & boost_point, const double z);
 
 LineString2d extendLine(

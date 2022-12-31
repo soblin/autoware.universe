@@ -203,6 +203,15 @@ bool DetectionAreaModule::modifyPathVelocity(PathWithLaneId * path, StopReason *
   return true;
 }
 
+static geometry_msgs::msg::Point toRosPoint(const pcl::PointXYZ & pcl_point)
+{
+  geometry_msgs::msg::Point point;
+  point.x = pcl_point.x;
+  point.y = pcl_point.y;
+  point.z = pcl_point.z;
+  return point;
+}
+
 std::vector<geometry_msgs::msg::Point> DetectionAreaModule::getObstaclePoints() const
 {
   std::vector<geometry_msgs::msg::Point> obstacle_points;
@@ -213,7 +222,7 @@ std::vector<geometry_msgs::msg::Point> DetectionAreaModule::getObstaclePoints() 
   for (const auto & detection_area : detection_areas) {
     for (const auto p : points) {
       if (bg::within(Point2d{p.x, p.y}, lanelet::utils::to2D(detection_area).basicPolygon())) {
-        obstacle_points.push_back(planning_utils::toRosPoint(p));
+        obstacle_points.push_back(toRosPoint(p));
         // get all obstacle point becomes high computation cost so skip if any point is found
         break;
       }

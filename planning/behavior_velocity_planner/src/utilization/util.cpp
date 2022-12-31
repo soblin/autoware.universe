@@ -488,15 +488,6 @@ std::vector<geometry_msgs::msg::Point> toRosPoints(const PredictedObjects & obje
   return points;
 }
 
-geometry_msgs::msg::Point toRosPoint(const pcl::PointXYZ & pcl_point)
-{
-  geometry_msgs::msg::Point point;
-  point.x = pcl_point.x;
-  point.y = pcl_point.y;
-  point.z = pcl_point.z;
-  return point;
-}
-
 geometry_msgs::msg::Point toRosPoint(const Point2d & boost_point, const double z)
 {
   geometry_msgs::msg::Point point;
