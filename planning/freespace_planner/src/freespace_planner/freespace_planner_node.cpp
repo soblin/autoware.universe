@@ -32,7 +32,9 @@
 
 #include "freespace_planning_algorithms/abstract_algorithm.hpp"
 
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <motion_utils/trajectory/trajectory.hpp>
+#include <tier4_autoware_utils/geometry/geometry.hpp>
+#include <vehicle_info_util/vehicle_info_util.hpp>
 
 #include <algorithm>
 #include <deque>

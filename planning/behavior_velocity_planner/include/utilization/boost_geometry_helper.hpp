@@ -26,11 +26,6 @@
 
 #include <boost/assign/list_of.hpp>
 #include <boost/geometry.hpp>
-#include <boost/geometry/algorithms/area.hpp>
-#include <boost/geometry/algorithms/disjoint.hpp>
-#include <boost/geometry/algorithms/distance.hpp>
-#include <boost/geometry/algorithms/equals.hpp>
-#include <boost/geometry/algorithms/intersection.hpp>
 #include <boost/geometry/geometries/linestring.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>

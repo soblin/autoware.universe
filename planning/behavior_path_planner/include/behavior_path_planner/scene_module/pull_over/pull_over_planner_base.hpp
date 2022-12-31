@@ -20,6 +20,8 @@
 #include "behavior_path_planner/scene_module/pull_over/pull_over_parameters.hpp"
 #include "behavior_path_planner/util/create_vehicle_footprint.hpp"
 
+#include <motion_utils/trajectory/trajectory.hpp>
+
 #include <autoware_auto_planning_msgs/msg/path_with_lane_id.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 

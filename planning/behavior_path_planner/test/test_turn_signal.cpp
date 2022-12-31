@@ -13,6 +13,8 @@
 // limitations under the License.
 #include "behavior_path_planner/turn_signal_decider.hpp"
 
+#include <motion_utils/trajectory/trajectory.hpp>
+
 #include "autoware_auto_planning_msgs/msg/path_point.hpp"
 
 #include <gmock/gmock.h>

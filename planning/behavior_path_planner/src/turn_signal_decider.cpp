@@ -18,8 +18,8 @@
 
 #include <lanelet2_extension/utility/message_conversion.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
+#include <motion_utils/constants.hpp>
 #include <motion_utils/resample/resample.hpp>
-#include <motion_utils/trajectory/trajectory.hpp>
 #include <tier4_autoware_utils/tier4_autoware_utils.hpp>
 
 #include <limits>

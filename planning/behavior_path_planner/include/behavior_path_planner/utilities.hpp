@@ -19,6 +19,7 @@
 #include "behavior_path_planner/debug_utilities.hpp"
 #include "behavior_path_planner/scene_module/pull_out/pull_out_path.hpp"
 
+#include <motion_utils/trajectory/trajectory.hpp>
 #include <opencv2/opencv.hpp>
 #include <route_handler/route_handler.hpp>
 #include <tier4_autoware_utils/tier4_autoware_utils.hpp>
