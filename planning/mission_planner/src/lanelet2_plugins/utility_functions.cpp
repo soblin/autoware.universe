@@ -14,7 +14,7 @@
 
 #include "utility_functions.hpp"
 
-#include <boost/geometry.hpp>
+#include <boost/geometry/algorithms/correct.hpp>
 
 #include <lanelet2_core/geometry/Lanelet.h>
 
