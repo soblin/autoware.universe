@@ -15,7 +15,8 @@
 #include "obstacle_avoidance_planner/node.hpp"
 
 #include "interpolation/spline_interpolation_points_2d.hpp"
-#include "motion_utils/motion_utils.hpp"
+#include "motion_utils/resample/resample.hpp"
+#include "motion_utils/trajectory/tmp_conversion.hpp"
 #include "obstacle_avoidance_planner/utils/debug_utils.hpp"
 #include "obstacle_avoidance_planner/utils/utils.hpp"
 #include "rclcpp/time.hpp"

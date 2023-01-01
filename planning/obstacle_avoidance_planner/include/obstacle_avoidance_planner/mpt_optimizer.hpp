@@ -47,7 +47,6 @@
 #include "obstacle_avoidance_planner/vehicle_model/vehicle_model_interface.hpp"
 #include "osqp_interface/osqp_interface.hpp"
 #include "tier4_autoware_utils/system/stop_watch.hpp"
-#include "tier4_autoware_utils/tier4_autoware_utils.hpp"
 
 #include "autoware_auto_planning_msgs/msg/path_point.hpp"
 #include "autoware_auto_planning_msgs/msg/trajectory_point.hpp"
