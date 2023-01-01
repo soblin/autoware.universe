@@ -14,7 +14,7 @@
 
 #include "planning_error_monitor/planning_error_monitor_node.hpp"
 
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/geometry/geometry.hpp>
 
 #include <memory>
 #include <string>
