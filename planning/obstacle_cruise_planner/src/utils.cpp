@@ -14,6 +14,7 @@
 
 #include "obstacle_cruise_planner/utils.hpp"
 
+#include "motion_utils/trajectory/trajectory.hpp"
 #include "perception_utils/predicted_path_utils.hpp"
 
 namespace obstacle_cruise_utils

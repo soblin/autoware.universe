@@ -14,6 +14,9 @@
 
 #include "obstacle_cruise_planner/planner_interface.hpp"
 
+#include "motion_utils/marker/marker_helper.hpp"
+#include "motion_utils/trajectory/trajectory.hpp"
+
 namespace
 {
 StopSpeedExceeded createStopSpeedExceededMsg(
