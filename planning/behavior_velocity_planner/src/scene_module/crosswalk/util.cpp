@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include <scene_module/crosswalk/util.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/geometry/geometry.hpp>
 #include <utilization/util.hpp>
 
 #include <autoware_auto_perception_msgs/msg/predicted_objects.hpp>

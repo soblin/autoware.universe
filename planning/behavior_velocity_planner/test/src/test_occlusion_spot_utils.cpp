@@ -14,7 +14,6 @@
 
 #include "gtest/gtest.h"
 #include "scene_module/occlusion_spot/occlusion_spot_utils.hpp"
-#include "tier4_autoware_utils/tier4_autoware_utils.hpp"
 #include "utilization/path_utilization.hpp"
 #include "utilization/util.hpp"
 #include "utils.hpp"

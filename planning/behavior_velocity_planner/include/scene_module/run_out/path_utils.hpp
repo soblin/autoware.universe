@@ -15,8 +15,6 @@
 #ifndef SCENE_MODULE__RUN_OUT__PATH_UTILS_HPP_
 #define SCENE_MODULE__RUN_OUT__PATH_UTILS_HPP_
 
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
-
 #include <algorithm>
 #include <limits>
 #include <memory>

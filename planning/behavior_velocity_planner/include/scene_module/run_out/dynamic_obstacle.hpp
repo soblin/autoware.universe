@@ -19,8 +19,6 @@
 #include "utilization/path_utilization.hpp"
 #include "utilization/util.hpp"
 
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
-
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
 #include <pcl/common/transforms.h>

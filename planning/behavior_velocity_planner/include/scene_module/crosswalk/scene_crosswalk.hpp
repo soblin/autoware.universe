@@ -20,7 +20,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <scene_module/crosswalk/util.hpp>
 #include <scene_module/scene_module_interface.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/system/stop_watch.hpp>
 
 #include <autoware_auto_perception_msgs/msg/predicted_objects.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>

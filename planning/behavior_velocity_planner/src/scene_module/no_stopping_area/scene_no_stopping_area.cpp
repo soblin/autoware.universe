@@ -19,7 +19,7 @@
 #include "utilization/util.hpp"
 
 #include <interpolation/spline_interpolation.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/geometry/boost_polygon_utils.hpp>
 
 #include <lanelet2_core/utility/Optional.h>
 
