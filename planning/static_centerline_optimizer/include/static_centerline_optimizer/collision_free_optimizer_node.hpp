@@ -18,14 +18,12 @@
 #ifndef STATIC_CENTERLINE_OPTIMIZER__COLLISION_FREE_OPTIMIZER_NODE_HPP_
 #define STATIC_CENTERLINE_OPTIMIZER__COLLISION_FREE_OPTIMIZER_NODE_HPP_
 
-#include "motion_utils/motion_utils.hpp"
 #include "obstacle_avoidance_planner/common_structs.hpp"
 #include "obstacle_avoidance_planner/eb_path_optimizer.hpp"
 #include "obstacle_avoidance_planner/mpt_optimizer.hpp"
 #include "rclcpp/clock.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "static_centerline_optimizer/type_alias.hpp"
-#include "tier4_autoware_utils/tier4_autoware_utils.hpp"
 
 #include "boost/optional.hpp"
 

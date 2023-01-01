@@ -18,10 +18,12 @@
 #include "static_centerline_optimizer/collision_free_optimizer_node.hpp"
 
 #include "interpolation/spline_interpolation_points_2d.hpp"
-#include "motion_utils/motion_utils.hpp"
+#include "motion_utils/resample/resample.hpp"
+#include "motion_utils/trajectory/tmp_conversion.hpp"
+#include "motion_utils/trajectory/trajectory.hpp"
 #include "rclcpp/time.hpp"
 #include "tf2/utils.h"
-#include "tier4_autoware_utils/tier4_autoware_utils.hpp"
+#include "tier4_autoware_utils/geometry/geometry.hpp"
 #include "vehicle_info_util/vehicle_info_util.hpp"
 
 #include <algorithm>
