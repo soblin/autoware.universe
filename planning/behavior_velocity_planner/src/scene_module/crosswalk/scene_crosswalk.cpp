@@ -15,7 +15,6 @@
 #include <autoware_auto_tf2/tf2_autoware_auto_msgs.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <scene_module/crosswalk/scene_crosswalk.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
 #include <utilization/path_utilization.hpp>
 #include <utilization/util.hpp>
 
