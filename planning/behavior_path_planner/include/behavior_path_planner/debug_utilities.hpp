@@ -15,7 +15,7 @@
 #define BEHAVIOR_PATH_PLANNER__DEBUG_UTILITIES_HPP_
 
 #include "behavior_path_planner/scene_module/utils/path_shifter.hpp"
-#include "tier4_autoware_utils/tier4_autoware_utils.hpp"
+#include "tier4_autoware_utils/geometry/boost_geometry.hpp"
 
 #include <tier4_autoware_utils/ros/marker_helper.hpp>
 

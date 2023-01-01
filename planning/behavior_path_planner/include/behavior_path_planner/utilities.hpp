@@ -22,7 +22,8 @@
 #include <motion_utils/trajectory/trajectory.hpp>
 #include <opencv2/opencv.hpp>
 #include <route_handler/route_handler.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry.hpp>
+#include <tier4_autoware_utils/geometry/geometry.hpp>
 
 #include <autoware_auto_perception_msgs/msg/object_classification.hpp>
 #include <autoware_auto_perception_msgs/msg/predicted_object.hpp>

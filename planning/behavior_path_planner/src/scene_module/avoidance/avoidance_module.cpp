@@ -22,7 +22,6 @@
 
 #include <lanelet2_extension/utility/message_conversion.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
 
 #include <tier4_planning_msgs/msg/avoidance_debug_factor.hpp>
 #include <tier4_planning_msgs/msg/avoidance_debug_msg.hpp>

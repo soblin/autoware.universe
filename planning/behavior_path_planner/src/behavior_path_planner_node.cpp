@@ -18,7 +18,6 @@
 #include "behavior_path_planner/path_utilities.hpp"
 #include "behavior_path_planner/scene_module/avoidance/avoidance_module.hpp"
 
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
 #include <vehicle_info_util/vehicle_info_util.hpp>
 
 #include <tier4_planning_msgs/msg/path_change_module_id.hpp>

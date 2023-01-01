@@ -18,7 +18,7 @@
 #include "behavior_path_planner/scene_module/utils/path_shifter.hpp"
 
 #include <rclcpp/rclcpp.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry.hpp>
 
 #include <autoware_auto_perception_msgs/msg/predicted_objects.hpp>
 #include <autoware_auto_planning_msgs/msg/path_with_lane_id.hpp>

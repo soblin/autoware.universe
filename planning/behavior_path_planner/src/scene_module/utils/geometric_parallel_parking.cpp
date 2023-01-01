@@ -17,11 +17,12 @@
 #include "behavior_path_planner/path_utilities.hpp"
 #include "behavior_path_planner/utilities.hpp"
 #include "tier4_autoware_utils/geometry/geometry.hpp"
+#include "tier4_autoware_utils/math/normalization.hpp"
+#include "tier4_autoware_utils/math/unit_conversion.hpp"
 
 #include <interpolation/spline_interpolation.hpp>
 #include <lanelet2_extension/utility/message_conversion.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
 
 #ifdef ROS_DISTRO_GALACTIC
 #include <tf2_eigen/tf2_eigen.h>

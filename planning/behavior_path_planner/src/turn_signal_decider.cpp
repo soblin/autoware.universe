@@ -20,7 +20,9 @@
 #include <lanelet2_extension/utility/utilities.hpp>
 #include <motion_utils/constants.hpp>
 #include <motion_utils/resample/resample.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/geometry/geometry.hpp>
+#include <tier4_autoware_utils/math/normalization.hpp>
+#include <tier4_autoware_utils/math/unit_conversion.hpp>
 
 #include <limits>
 #include <string>

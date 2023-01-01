@@ -22,7 +22,6 @@
 #include <autoware_auto_tf2/tf2_autoware_auto_msgs.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
 #include <motion_utils/resample/resample.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
 
 #include <boost/geometry/algorithms/buffer.hpp>
 
