@@ -16,7 +16,7 @@
 
 #include "eigen3/Eigen/Core"
 #include "motion_utils/trajectory/trajectory.hpp"
-#include "tier4_autoware_utils/tier4_autoware_utils.hpp"
+#include "tier4_autoware_utils/geometry/geometry.hpp"
 
 #include "autoware_auto_planning_msgs/msg/trajectory_point.hpp"
 
