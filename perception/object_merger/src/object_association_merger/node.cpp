@@ -16,16 +16,12 @@
 
 #include "object_association_merger/utils/utils.hpp"
 #include "perception_utils/perception_utils.hpp"
-#include "tier4_autoware_utils/tier4_autoware_utils.hpp"
+#include "tier4_autoware_utils/geometry/geometry.hpp"
 
 #include <boost/optional.hpp>
 
 #include <chrono>
 #include <unordered_map>
-
-#define EIGEN_MPL2_ONLY
-#include <Eigen/Core>
-#include <Eigen/Geometry>
 
 using Label = autoware_auto_perception_msgs::msg::ObjectClassification;
 

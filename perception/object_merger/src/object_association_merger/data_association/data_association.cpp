@@ -18,6 +18,7 @@
 #include "object_association_merger/utils/utils.hpp"
 #include "perception_utils/perception_utils.hpp"
 #include "tier4_autoware_utils/geometry/geometry.hpp"
+#include "tier4_autoware_utils/math/normalization.hpp"
 
 #include <algorithm>
 #include <list>
