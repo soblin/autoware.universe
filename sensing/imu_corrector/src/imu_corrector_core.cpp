@@ -14,6 +14,10 @@
 
 #include "imu_corrector/imu_corrector_core.hpp"
 
+#include "tier4_autoware_utils/ros/msg_covariance.hpp"
+
+#include "geometry_msgs/msg/vector3_stamped.hpp"
+
 std::array<double, 9> transformCovariance(const std::array<double, 9> & cov)
 {
   using COV_IDX = tier4_autoware_utils::xyz_covariance_index::XYZ_COV_IDX;

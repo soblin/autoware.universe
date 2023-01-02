@@ -14,7 +14,7 @@
 
 #include "mpc_lateral_controller/mpc_lateral_controller.hpp"
 
-#include "motion_utils/motion_utils.hpp"
+#include "motion_utils/trajectory/trajectory.hpp"
 #include "tf2_ros/create_timer_ros.h"
 
 #include <algorithm>
