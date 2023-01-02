@@ -15,7 +15,7 @@
 #include "detected_object_filter/object_lanelet_filter.hpp"
 
 #include <perception_utils/perception_utils.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/geometry/geometry.hpp>
 
 #include <boost/geometry/algorithms/convex_hull.hpp>
 #include <boost/geometry/algorithms/disjoint.hpp>

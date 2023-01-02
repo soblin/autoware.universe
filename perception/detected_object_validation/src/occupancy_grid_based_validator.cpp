@@ -16,7 +16,7 @@
 
 #include <perception_utils/object_classification.hpp>
 #include <perception_utils/perception_utils.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/geometry/boost_polygon_utils.hpp>
 
 #include <boost/optional.hpp>
 
@@ -25,10 +25,6 @@
 #else
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #endif
-
-#define EIGEN_MPL2_ONLY
-#include <Eigen/Core>
-#include <Eigen/Geometry>
 
 namespace occupancy_grid_based_validator
 {

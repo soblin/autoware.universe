@@ -15,7 +15,7 @@
 #include "obstacle_pointcloud_based_validator/obstacle_pointcloud_based_validator.hpp"
 
 #include <perception_utils/perception_utils.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/geometry/boost_polygon_utils.hpp>
 
 #include <boost/geometry.hpp>
 
@@ -30,10 +30,6 @@
 #else
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #endif
-
-#define EIGEN_MPL2_ONLY
-#include <Eigen/Core>
-#include <Eigen/Geometry>
 
 namespace
 {
