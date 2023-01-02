@@ -22,6 +22,7 @@
 
 #include <autoware_auto_perception_msgs/msg/predicted_objects.hpp>
 #include <autoware_auto_planning_msgs/msg/path_with_lane_id.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 #include <tier4_planning_msgs/msg/avoidance_debug_msg_array.hpp>
 
 #include <lanelet2_core/geometry/Lanelet.h>

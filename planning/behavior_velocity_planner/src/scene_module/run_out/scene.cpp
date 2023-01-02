@@ -18,6 +18,9 @@
 #include "utilization/trajectory_utils.hpp"
 #include "utilization/util.hpp"
 
+#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
+#include <tier4_autoware_utils/math/unit_conversion.hpp>
+
 namespace behavior_velocity_planner
 {
 namespace bg = boost::geometry;

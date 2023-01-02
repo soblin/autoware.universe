@@ -20,6 +20,7 @@
 #include "obstacle_cruise_planner/utils.hpp"
 #include "perception_utils/predicted_path_utils.hpp"
 #include "tier4_autoware_utils/geometry/boost_polygon_utils.hpp"
+#include "tier4_autoware_utils/ros/marker_helper.hpp"
 #include "tier4_autoware_utils/ros/update_param.hpp"
 
 #include <boost/format.hpp>

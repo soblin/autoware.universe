@@ -14,6 +14,8 @@
 
 #include "scene_module/run_out/utils.hpp"
 
+#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
+
 namespace behavior_velocity_planner
 {
 namespace run_out_utils

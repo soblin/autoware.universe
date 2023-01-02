@@ -15,6 +15,7 @@
 #ifndef UTILIZATION__DEBUG_HPP_
 #define UTILIZATION__DEBUG_HPP_
 
+#include <tier4_autoware_utils/ros/marker_helper.hpp>
 #include <utilization/util.hpp>
 
 #include <visualization_msgs/msg/marker_array.hpp>

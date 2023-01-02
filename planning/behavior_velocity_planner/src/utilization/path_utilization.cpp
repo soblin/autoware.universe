@@ -17,6 +17,7 @@
 #include <interpolation/zero_order_hold.hpp>
 #include <motion_utils/resample/resample.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <tier4_autoware_utils/geometry/geometry.hpp>
 #include <utilization/path_utilization.hpp>
 
 #include <tf2/LinearMath/Quaternion.h>

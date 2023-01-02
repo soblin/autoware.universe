@@ -19,7 +19,8 @@
 #include "tier4_autoware_utils/geometry/boost_geometry.hpp"
 #include "vehicle_info_util/vehicle_info_util.hpp"
 
-#include <boost/geometry.hpp>
+#include "geometry_msgs/msg/pose_stamped.hpp"
+
 #include <boost/optional.hpp>
 
 #include <limits>

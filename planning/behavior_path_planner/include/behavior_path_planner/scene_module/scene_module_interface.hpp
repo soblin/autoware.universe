@@ -25,6 +25,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <route_handler/route_handler.hpp>
 #include <rtc_interface/rtc_interface.hpp>
+#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
 
 #include <autoware_adapi_v1_msgs/msg/steering_factor_array.hpp>
 #include <autoware_auto_planning_msgs/msg/path_with_lane_id.hpp>

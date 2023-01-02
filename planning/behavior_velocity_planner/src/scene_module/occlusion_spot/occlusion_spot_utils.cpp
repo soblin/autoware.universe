@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp"
-
 #include <interpolation/spline_interpolation.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <scene_module/occlusion_spot/occlusion_spot_utils.hpp>
 #include <scene_module/occlusion_spot/risk_predictive_braking.hpp>
 #include <tier4_autoware_utils/geometry/boost_polygon_utils.hpp>
+#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
 #include <tier4_autoware_utils/math/normalization.hpp>
 #include <utilization/path_utilization.hpp>
 #include <utilization/util.hpp>

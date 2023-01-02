@@ -16,6 +16,7 @@
 
 #include "motion_utils/marker/marker_helper.hpp"
 #include "motion_utils/trajectory/trajectory.hpp"
+#include "tier4_autoware_utils/ros/marker_helper.hpp"
 
 namespace
 {

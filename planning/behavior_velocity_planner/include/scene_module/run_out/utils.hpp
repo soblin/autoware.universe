@@ -19,6 +19,8 @@
 
 #include <vehicle_info_util/vehicle_info_util.hpp>
 
+#include <tier4_debug_msgs/msg/float32_stamped.hpp>
+
 #include <string>
 #include <vector>
 

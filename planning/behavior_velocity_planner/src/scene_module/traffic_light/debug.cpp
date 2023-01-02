@@ -14,6 +14,7 @@
 
 #include <motion_utils/marker/marker_helper.hpp>
 #include <scene_module/traffic_light/scene.hpp>
+#include <utilization/debug.hpp>
 #include <utilization/util.hpp>
 
 #ifdef ROS_DISTRO_GALACTIC

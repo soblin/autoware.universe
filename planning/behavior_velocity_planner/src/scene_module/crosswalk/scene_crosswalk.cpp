@@ -15,6 +15,8 @@
 #include <autoware_auto_tf2/tf2_autoware_auto_msgs.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <scene_module/crosswalk/scene_crosswalk.hpp>
+#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
+#include <tier4_autoware_utils/ros/uuid_helper.hpp>
 #include <utilization/path_utilization.hpp>
 #include <utilization/util.hpp>
 

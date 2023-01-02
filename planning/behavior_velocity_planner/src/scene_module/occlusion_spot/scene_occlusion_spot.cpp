@@ -17,6 +17,7 @@
 #include <scene_module/occlusion_spot/occlusion_spot_utils.hpp>
 #include <scene_module/occlusion_spot/risk_predictive_braking.hpp>
 #include <scene_module/occlusion_spot/scene_occlusion_spot.hpp>
+#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
 #include <utilization/boost_geometry_helper.hpp>
 #include <utilization/path_utilization.hpp>
 #include <utilization/trajectory_utils.hpp>

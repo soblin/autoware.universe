@@ -16,7 +16,10 @@
 
 #include "scene_module/run_out/dynamic_obstacle.hpp"
 
-#include <memory>
+#include <tier4_debug_msgs/msg/float32_multi_array_stamped.hpp>
+#include <tier4_debug_msgs/msg/int32_stamped.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
+
 #include <string>
 #include <vector>
 namespace behavior_velocity_planner

@@ -14,8 +14,8 @@
 
 #include <motion_utils/marker/marker_helper.hpp>
 #include <scene_module/stop_line/scene.hpp>
+#include <utilization/debug.hpp>
 #include <utilization/util.hpp>
-
 #ifdef ROS_DISTRO_GALACTIC
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #else

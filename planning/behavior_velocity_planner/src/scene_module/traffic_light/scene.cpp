@@ -14,6 +14,7 @@
 
 #include <motion_utils/trajectory/trajectory.hpp>
 #include <scene_module/traffic_light/scene.hpp>
+#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
 #include <utilization/util.hpp>
 
 #include <boost/optional.hpp>  // To be replaced by std::optional in C++17
