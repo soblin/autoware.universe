@@ -11,6 +11,8 @@ ament_auto_add_library(tier4_autoware_utils SHARED
   src/geometry/boost_polygon_utils.cpp
   src/geometry/pose_deviation.cpp
   src/ros/msg_operation.cpp
+  src/ros/marker_helper.cpp
+  src/ros/uuid_helper.cpp
 )
 
 if(BUILD_TESTING)
@@ -18,7 +20,6 @@ if(BUILD_TESTING)
 
   file(GLOB_RECURSE test_files test/**/*.cpp)
 
-  message(${test_files})
   ament_add_ros_isolated_gtest(test_tier4_autoware_utils ${test_files})
 
   target_link_libraries(test_tier4_autoware_utils

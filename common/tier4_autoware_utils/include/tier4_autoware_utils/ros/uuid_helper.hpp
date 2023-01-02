@@ -18,17 +18,9 @@
 #include <unique_identifier_msgs/msg/uuid.hpp>
 
 #include <string>
-
 namespace tier4_autoware_utils
 {
-std::string toHexString(const unique_identifier_msgs::msg::UUID & id)
-{
-  std::stringstream ss;
-  for (auto i = 0; i < 16; ++i) {
-    ss << std::hex << std::setfill('0') << std::setw(2) << +id.uuid[i];
-  }
-  return ss.str();
-}
+std::string toHexString(const unique_identifier_msgs::msg::UUID & id);
 }  // namespace tier4_autoware_utils
 
 #endif  // TIER4_AUTOWARE_UTILS__ROS__UUID_HELPER_HPP_

@@ -25,7 +25,7 @@
 
 namespace tier4_autoware_utils
 {
-geometry_msgs::msg::Point createMarkerPosition(double x, double y, double z)
+inline geometry_msgs::msg::Point createMarkerPosition(double x, double y, double z)
 {
   geometry_msgs::msg::Point point;
   point.x = x;
@@ -34,7 +34,8 @@ geometry_msgs::msg::Point createMarkerPosition(double x, double y, double z)
   return point;
 }
 
-geometry_msgs::msg::Quaternion createMarkerOrientation(double x, double y, double z, double w)
+inline geometry_msgs::msg::Quaternion createMarkerOrientation(
+  double x, double y, double z, double w)
 {
   geometry_msgs::msg::Quaternion quaternion;
   quaternion.x = x;
@@ -44,7 +45,7 @@ geometry_msgs::msg::Quaternion createMarkerOrientation(double x, double y, doubl
   return quaternion;
 }
 
-geometry_msgs::msg::Vector3 createMarkerScale(double x, double y, double z)
+inline geometry_msgs::msg::Vector3 createMarkerScale(double x, double y, double z)
 {
   geometry_msgs::msg::Vector3 scale;
   scale.x = x;
@@ -53,7 +54,7 @@ geometry_msgs::msg::Vector3 createMarkerScale(double x, double y, double z)
   return scale;
 }
 
-std_msgs::msg::ColorRGBA createMarkerColor(float r, float g, float b, float a)
+inline std_msgs::msg::ColorRGBA createMarkerColor(float r, float g, float b, float a)
 {
   std_msgs::msg::ColorRGBA color;
   color.r = r;
@@ -66,53 +67,15 @@ std_msgs::msg::ColorRGBA createMarkerColor(float r, float g, float b, float a)
 visualization_msgs::msg::Marker createDefaultMarker(
   const std::string & frame_id, const rclcpp::Time & now, const std::string & ns, const int32_t id,
   const int32_t type, const geometry_msgs::msg::Vector3 & scale,
-  const std_msgs::msg::ColorRGBA & color)
-{
-  visualization_msgs::msg::Marker marker;
-
-  marker.header.frame_id = frame_id;
-  marker.header.stamp = now;
-  marker.ns = ns;
-  marker.id = id;
-  marker.type = type;
-  marker.action = visualization_msgs::msg::Marker::ADD;
-  marker.lifetime = rclcpp::Duration::from_seconds(0.5);
-
-  marker.pose.position = createMarkerPosition(0.0, 0.0, 0.0);
-  marker.pose.orientation = createMarkerOrientation(0.0, 0.0, 0.0, 1.0);
-  marker.scale = scale;
-  marker.color = color;
-  marker.frame_locked = true;
-
-  return marker;
-}
+  const std_msgs::msg::ColorRGBA & color);
 
 visualization_msgs::msg::Marker createDeletedDefaultMarker(
-  const rclcpp::Time & now, const std::string & ns, const int32_t id)
-{
-  visualization_msgs::msg::Marker marker;
-
-  marker.header.stamp = now;
-  marker.ns = ns;
-  marker.id = id;
-  marker.action = visualization_msgs::msg::Marker::DELETE;
-
-  return marker;
-}
+  const rclcpp::Time & now, const std::string & ns, const int32_t id);
 
 void appendMarkerArray(
   const visualization_msgs::msg::MarkerArray & additional_marker_array,
   visualization_msgs::msg::MarkerArray * marker_array,
-  const boost::optional<rclcpp::Time> & current_time = {})
-{
-  for (const auto & marker : additional_marker_array.markers) {
-    marker_array->markers.push_back(marker);
-
-    if (current_time) {
-      marker_array->markers.back().header.stamp = current_time.get();
-    }
-  }
-}
+  const boost::optional<rclcpp::Time> & current_time = {});
 }  // namespace tier4_autoware_utils
 
 #endif  // TIER4_AUTOWARE_UTILS__ROS__MARKER_HELPER_HPP_

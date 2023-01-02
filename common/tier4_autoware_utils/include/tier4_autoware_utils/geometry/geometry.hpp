@@ -387,9 +387,13 @@ geometry_msgs::msg::Pose transformPose(
 geometry_msgs::msg::Pose transformPose(
   const geometry_msgs::msg::Pose & pose, const geometry_msgs::msg::Pose & pose_transform);
 
+/* TODO(Mamoru Sobue):
+ * This two overload is not actually used and fail to link because
+ * corresponding tf2::fromMsg does not exist
 // Transform pose in world coordinates to local coordinates
 geometry_msgs::msg::Pose inverseTransformPose(
   const geometry_msgs::msg::Pose & pose, const geometry_msgs::msg::TransformStamped & transform);
+*/
 
 // Transform pose in world coordinates to local coordinates
 geometry_msgs::msg::Pose inverseTransformPose(
