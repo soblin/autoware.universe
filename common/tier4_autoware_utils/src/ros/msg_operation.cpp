@@ -14,6 +14,8 @@
 
 #include "tier4_autoware_utils/ros/msg_operation.hpp"
 
+#include "tier4_autoware_utils/geometry/geometry.hpp"
+
 #include <tf2/utils.h>
 
 #ifdef ROS_DISTRO_GALACTIC

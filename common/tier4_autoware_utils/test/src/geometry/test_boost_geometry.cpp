@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "tier4_autoware_utils/geometry/boost_geometry.hpp"
+#include "tier4_autoware_utils/geometry/geometry.hpp"
 
 #include <boost/geometry/geometry.hpp>
 
