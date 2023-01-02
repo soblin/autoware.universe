@@ -615,7 +615,7 @@ double calcArcLength(const T & points)
 }
 
 template <class T>
-inline std::vector<double> calcCurvature(const T & points)
+std::vector<double> calcCurvature(const T & points)
 {
   std::vector<double> curvature_vec(points.size());
 
@@ -632,7 +632,7 @@ inline std::vector<double> calcCurvature(const T & points)
 }
 
 template <class T>
-inline std::vector<std::pair<double, double>> calcCurvatureAndArcLength(const T & points)
+std::vector<std::pair<double, double>> calcCurvatureAndArcLength(const T & points)
 {
   // Note that arclength is for the segment, not the sum.
   std::vector<std::pair<double, double>> curvature_arc_length_vec;
@@ -722,7 +722,7 @@ boost::optional<double> calcDistanceToForwardStopPoint(
  * @return offset point
  */
 template <class T>
-inline boost::optional<geometry_msgs::msg::Point> calcLongitudinalOffsetPoint(
+boost::optional<geometry_msgs::msg::Point> calcLongitudinalOffsetPoint(
   const T & points, const size_t src_idx, const double offset, const bool throw_exception = false)
 {
   try {
@@ -784,7 +784,7 @@ inline boost::optional<geometry_msgs::msg::Point> calcLongitudinalOffsetPoint(
  * @return offset point
  */
 template <class T>
-inline boost::optional<geometry_msgs::msg::Point> calcLongitudinalOffsetPoint(
+boost::optional<geometry_msgs::msg::Point> calcLongitudinalOffsetPoint(
   const T & points, const geometry_msgs::msg::Point & src_point, const double offset)
 {
   try {
@@ -817,7 +817,7 @@ inline boost::optional<geometry_msgs::msg::Point> calcLongitudinalOffsetPoint(
  * @return offset pose
  */
 template <class T>
-inline boost::optional<geometry_msgs::msg::Pose> calcLongitudinalOffsetPose(
+boost::optional<geometry_msgs::msg::Pose> calcLongitudinalOffsetPose(
   const T & points, const size_t src_idx, const double offset,
   const bool set_orientation_from_position_direction = true, const bool throw_exception = false)
 {
@@ -898,7 +898,7 @@ inline boost::optional<geometry_msgs::msg::Pose> calcLongitudinalOffsetPose(
  * @return offset pase
  */
 template <class T>
-inline boost::optional<geometry_msgs::msg::Pose> calcLongitudinalOffsetPose(
+boost::optional<geometry_msgs::msg::Pose> calcLongitudinalOffsetPose(
   const T & points, const geometry_msgs::msg::Point & src_point, const double offset,
   const bool set_orientation_from_position_direction = true)
 {
@@ -926,7 +926,7 @@ inline boost::optional<geometry_msgs::msg::Pose> calcLongitudinalOffsetPose(
  * @return index of insert point
  */
 template <class T>
-inline boost::optional<size_t> insertTargetPoint(
+boost::optional<size_t> insertTargetPoint(
   const size_t seg_idx, const geometry_msgs::msg::Point & p_target, T & points,
   const double overlap_threshold = 1e-3)
 {
@@ -1010,7 +1010,7 @@ inline boost::optional<size_t> insertTargetPoint(
  * @return index of insert point
  */
 template <class T>
-inline boost::optional<size_t> insertTargetPoint(
+boost::optional<size_t> insertTargetPoint(
   const double insert_point_length, const geometry_msgs::msg::Point & p_target, T & points,
   const double overlap_threshold = 1e-3)
 {
@@ -1045,7 +1045,7 @@ inline boost::optional<size_t> insertTargetPoint(
  * @return index of insert point
  */
 template <class T>
-inline boost::optional<size_t> insertTargetPoint(
+boost::optional<size_t> insertTargetPoint(
   const size_t src_segment_idx, const double insert_point_length, T & points,
   const double overlap_threshold = 1e-3)
 {
@@ -1089,7 +1089,7 @@ inline boost::optional<size_t> insertTargetPoint(
  * @return index of insert point
  */
 template <class T>
-inline boost::optional<size_t> insertTargetPoint(
+boost::optional<size_t> insertTargetPoint(
   const geometry_msgs::msg::Pose & src_pose, const double insert_point_length, T & points,
   const double max_dist = std::numeric_limits<double>::max(),
   const double max_yaw = std::numeric_limits<double>::max(), const double overlap_threshold = 1e-3)
@@ -1120,7 +1120,7 @@ inline boost::optional<size_t> insertTargetPoint(
  * @return index of stop point
  */
 template <class T>
-inline boost::optional<size_t> insertStopPoint(
+boost::optional<size_t> insertStopPoint(
   const size_t src_segment_idx, const double distance_to_stop_point, T & points_with_twist,
   const double overlap_threshold = 1e-3)
 {
@@ -1151,7 +1151,7 @@ inline boost::optional<size_t> insertStopPoint(
  * @return index of stop point
  */
 template <class T>
-inline boost::optional<size_t> insertStopPoint(
+boost::optional<size_t> insertStopPoint(
   const geometry_msgs::msg::Pose & src_pose, const double distance_to_stop_point,
   T & points_with_twist, const double max_dist = std::numeric_limits<double>::max(),
   const double max_yaw = std::numeric_limits<double>::max(), const double overlap_threshold = 1e-3)

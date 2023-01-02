@@ -21,7 +21,7 @@
 
 namespace tier4_autoware_utils
 {
-inline std::string toHexString(const unique_identifier_msgs::msg::UUID & id)
+std::string toHexString(const unique_identifier_msgs::msg::UUID & id)
 {
   std::stringstream ss;
   for (auto i = 0; i < 16; ++i) {

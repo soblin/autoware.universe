@@ -29,7 +29,7 @@ struct PoseDeviation
   double yaw{0.0};
 };
 
-inline double calcLateralDeviation(
+double calcLateralDeviation(
   const geometry_msgs::msg::Pose & base_pose, const geometry_msgs::msg::Point & target_point)
 {
   const auto & base_point = base_pose.position;
@@ -46,7 +46,7 @@ inline double calcLateralDeviation(
   return cross_vec.z();
 }
 
-inline double calcLongitudinalDeviation(
+double calcLongitudinalDeviation(
   const geometry_msgs::msg::Pose & base_pose, const geometry_msgs::msg::Point & target_point)
 {
   const auto & base_point = base_pose.position;
@@ -61,7 +61,7 @@ inline double calcLongitudinalDeviation(
   return base_unit_vec.dot(diff_vec);
 }
 
-inline double calcYawDeviation(
+double calcYawDeviation(
   const geometry_msgs::msg::Pose & base_pose, const geometry_msgs::msg::Pose & target_pose)
 {
   const auto base_yaw = tf2::getYaw(base_pose.orientation);
@@ -69,7 +69,7 @@ inline double calcYawDeviation(
   return normalizeRadian(target_yaw - base_yaw);
 }
 
-inline PoseDeviation calcPoseDeviation(
+PoseDeviation calcPoseDeviation(
   const geometry_msgs::msg::Pose & base_pose, const geometry_msgs::msg::Pose & target_pose)
 {
   PoseDeviation deviation{};

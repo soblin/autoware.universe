@@ -21,7 +21,7 @@
 
 namespace tier4_autoware_utils
 {
-inline double normalizeDegree(const double deg, const double min_deg = -180)
+double normalizeDegree(const double deg, const double min_deg = -180)
 {
   const auto max_deg = min_deg + 360.0;
 
@@ -33,7 +33,7 @@ inline double normalizeDegree(const double deg, const double min_deg = -180)
   return value - std::copysign(360.0, value);
 }
 
-inline double normalizeRadian(const double rad, const double min_rad = -pi)
+double normalizeRadian(const double rad, const double min_rad = -pi)
 {
   const auto max_rad = min_rad + 2 * pi;
 

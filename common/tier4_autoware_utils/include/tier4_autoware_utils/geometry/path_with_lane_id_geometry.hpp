@@ -22,35 +22,32 @@
 namespace tier4_autoware_utils
 {
 template <>
-inline geometry_msgs::msg::Point getPoint(
-  const autoware_auto_planning_msgs::msg::PathPointWithLaneId & p)
+geometry_msgs::msg::Point getPoint(const autoware_auto_planning_msgs::msg::PathPointWithLaneId & p)
 {
   return p.point.pose.position;
 }
 
 template <>
-inline geometry_msgs::msg::Pose getPose(
-  const autoware_auto_planning_msgs::msg::PathPointWithLaneId & p)
+geometry_msgs::msg::Pose getPose(const autoware_auto_planning_msgs::msg::PathPointWithLaneId & p)
 {
   return p.point.pose;
 }
 
 template <>
-inline double getLongitudinalVelocity(
-  const autoware_auto_planning_msgs::msg::PathPointWithLaneId & p)
+double getLongitudinalVelocity(const autoware_auto_planning_msgs::msg::PathPointWithLaneId & p)
 {
   return p.point.longitudinal_velocity_mps;
 }
 
 template <>
-inline void setPose(
+void setPose(
   const geometry_msgs::msg::Pose & pose, autoware_auto_planning_msgs::msg::PathPointWithLaneId & p)
 {
   p.point.pose = pose;
 }
 
 template <>
-inline void setLongitudinalVelocity(
+void setLongitudinalVelocity(
   const double velocity, autoware_auto_planning_msgs::msg::PathPointWithLaneId & p)
 {
   p.point.longitudinal_velocity_mps = velocity;

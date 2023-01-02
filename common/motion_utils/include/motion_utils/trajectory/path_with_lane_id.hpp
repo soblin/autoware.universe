@@ -26,7 +26,7 @@
 
 namespace motion_utils
 {
-inline boost::optional<std::pair<size_t, size_t>> getPathIndexRangeWithLaneId(
+boost::optional<std::pair<size_t, size_t>> getPathIndexRangeWithLaneId(
   const autoware_auto_planning_msgs::msg::PathWithLaneId & path, const int64_t target_lane_id)
 {
   size_t start_idx = 0;  // NOTE: to prevent from maybe-uninitialized error
@@ -57,7 +57,7 @@ inline boost::optional<std::pair<size_t, size_t>> getPathIndexRangeWithLaneId(
   return {};
 }
 
-inline size_t findNearestIndexFromLaneId(
+size_t findNearestIndexFromLaneId(
   const autoware_auto_planning_msgs::msg::PathWithLaneId & path,
   const geometry_msgs::msg::Point & pos, const int64_t lane_id)
 {
@@ -78,7 +78,7 @@ inline size_t findNearestIndexFromLaneId(
   return findNearestIndex(path.points, pos);
 }
 
-inline size_t findNearestSegmentIndexFromLaneId(
+size_t findNearestSegmentIndexFromLaneId(
   const autoware_auto_planning_msgs::msg::PathWithLaneId & path,
   const geometry_msgs::msg::Point & pos, const int64_t lane_id)
 {

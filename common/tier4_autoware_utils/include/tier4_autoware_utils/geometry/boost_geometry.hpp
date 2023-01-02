@@ -65,11 +65,11 @@ struct Point3d : public Eigen::Vector3d
   [[nodiscard]] Point2d to_2d() const;
 };
 
-inline Point3d Point2d::to_3d(const double z) const { return Point3d{x(), y(), z}; }
+Point3d Point2d::to_3d(const double z) const { return Point3d{x(), y(), z}; }
 
-inline Point2d Point3d::to_2d() const { return Point2d{x(), y()}; }
+Point2d Point3d::to_2d() const { return Point2d{x(), y()}; }
 
-inline geometry_msgs::msg::Point toMsg(const Point3d & point)
+geometry_msgs::msg::Point toMsg(const Point3d & point)
 {
   geometry_msgs::msg::Point msg;
   msg.x = point.x();
@@ -78,7 +78,7 @@ inline geometry_msgs::msg::Point toMsg(const Point3d & point)
   return msg;
 }
 
-inline Point3d fromMsg(const geometry_msgs::msg::Point & msg)
+Point3d fromMsg(const geometry_msgs::msg::Point & msg)
 {
   Point3d point;
   point.x() = msg.x;

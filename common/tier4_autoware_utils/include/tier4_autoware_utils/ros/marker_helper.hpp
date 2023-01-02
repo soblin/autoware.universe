@@ -25,7 +25,7 @@
 
 namespace tier4_autoware_utils
 {
-inline geometry_msgs::msg::Point createMarkerPosition(double x, double y, double z)
+geometry_msgs::msg::Point createMarkerPosition(double x, double y, double z)
 {
   geometry_msgs::msg::Point point;
   point.x = x;
@@ -34,8 +34,7 @@ inline geometry_msgs::msg::Point createMarkerPosition(double x, double y, double
   return point;
 }
 
-inline geometry_msgs::msg::Quaternion createMarkerOrientation(
-  double x, double y, double z, double w)
+geometry_msgs::msg::Quaternion createMarkerOrientation(double x, double y, double z, double w)
 {
   geometry_msgs::msg::Quaternion quaternion;
   quaternion.x = x;
@@ -45,7 +44,7 @@ inline geometry_msgs::msg::Quaternion createMarkerOrientation(
   return quaternion;
 }
 
-inline geometry_msgs::msg::Vector3 createMarkerScale(double x, double y, double z)
+geometry_msgs::msg::Vector3 createMarkerScale(double x, double y, double z)
 {
   geometry_msgs::msg::Vector3 scale;
   scale.x = x;
@@ -54,7 +53,7 @@ inline geometry_msgs::msg::Vector3 createMarkerScale(double x, double y, double 
   return scale;
 }
 
-inline std_msgs::msg::ColorRGBA createMarkerColor(float r, float g, float b, float a)
+std_msgs::msg::ColorRGBA createMarkerColor(float r, float g, float b, float a)
 {
   std_msgs::msg::ColorRGBA color;
   color.r = r;
@@ -64,7 +63,7 @@ inline std_msgs::msg::ColorRGBA createMarkerColor(float r, float g, float b, flo
   return color;
 }
 
-inline visualization_msgs::msg::Marker createDefaultMarker(
+visualization_msgs::msg::Marker createDefaultMarker(
   const std::string & frame_id, const rclcpp::Time & now, const std::string & ns, const int32_t id,
   const int32_t type, const geometry_msgs::msg::Vector3 & scale,
   const std_msgs::msg::ColorRGBA & color)
@@ -88,7 +87,7 @@ inline visualization_msgs::msg::Marker createDefaultMarker(
   return marker;
 }
 
-inline visualization_msgs::msg::Marker createDeletedDefaultMarker(
+visualization_msgs::msg::Marker createDeletedDefaultMarker(
   const rclcpp::Time & now, const std::string & ns, const int32_t id)
 {
   visualization_msgs::msg::Marker marker;
@@ -101,7 +100,7 @@ inline visualization_msgs::msg::Marker createDeletedDefaultMarker(
   return marker;
 }
 
-inline void appendMarkerArray(
+void appendMarkerArray(
   const visualization_msgs::msg::MarkerArray & additional_marker_array,
   visualization_msgs::msg::MarkerArray * marker_array,
   const boost::optional<rclcpp::Time> & current_time = {})
