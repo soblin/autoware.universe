@@ -18,6 +18,9 @@
 
 #include "rclcpp/logging.hpp"
 
+#define EIGEN_MPL2_ONLY
+#include <Eigen/Dense>
+
 #include <algorithm>
 #include <limits>
 #include <memory>

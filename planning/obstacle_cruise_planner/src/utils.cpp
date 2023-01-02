@@ -16,6 +16,7 @@
 
 #include "motion_utils/trajectory/trajectory.hpp"
 #include "perception_utils/predicted_path_utils.hpp"
+#include "tier4_autoware_utils/ros/marker_helper.hpp"
 
 namespace obstacle_cruise_utils
 {

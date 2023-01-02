@@ -15,7 +15,7 @@
 #ifndef VEHICLE_INFO_UTIL__VEHICLE_INFO_HPP_
 #define VEHICLE_INFO_UTIL__VEHICLE_INFO_HPP_
 
-#include "tier4_autoware_utils/tier4_autoware_utils.hpp"
+#include "tier4_autoware_utils/geometry/boost_geometry.hpp"
 
 namespace vehicle_info_util
 {

@@ -28,8 +28,11 @@
 #include <diagnostic_msgs/msg/diagnostic_status.hpp>
 #include <geometry_msgs/msg/point.hpp>
 #include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 
 #include <boost/optional.hpp>
+
+#include <tf2_ros/buffer.h>
 
 #include <map>
 #include <string>

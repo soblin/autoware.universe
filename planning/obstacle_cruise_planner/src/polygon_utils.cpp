@@ -17,6 +17,8 @@
 #include "motion_utils/trajectory/trajectory.hpp"
 #include "tier4_autoware_utils/geometry/boost_polygon_utils.hpp"
 
+#include "geometry_msgs/msg/pose_stamped.hpp"
+
 namespace
 {
 namespace bg = boost::geometry;
