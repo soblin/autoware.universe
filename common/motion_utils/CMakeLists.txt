@@ -12,6 +12,7 @@ ament_auto_add_library(motion_utils SHARED
   src/trajectory/interpolation.cpp
   src/trajectory/path_with_lane_id.cpp
   src/trajectory/tmp_conversion.cpp
+  src/trajectory/trajectory.cpp
   src/vehicle/vehicle_state_checker.cpp
 )
 

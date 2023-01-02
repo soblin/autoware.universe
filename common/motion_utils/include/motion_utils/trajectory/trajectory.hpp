@@ -19,6 +19,9 @@
 #include "tier4_autoware_utils/geometry/pose_deviation.hpp"
 #include "tier4_autoware_utils/math/constants.hpp"
 
+#include "autoware_auto_planning_msgs/msg/path_point_with_lane_id.hpp"
+#include "autoware_auto_planning_msgs/msg/trajectory_point.hpp"
+
 #include <boost/optional.hpp>
 
 #include <algorithm>
@@ -74,7 +77,7 @@ boost::optional<bool> isDrivingForward(const T points)
 }
 
 template <class T>
-boost::optional<bool> isDrivingForwardWithTwist(const T points_with_twist)
+boost::optional<bool> isDrivingForwardWithTwist(const T & points_with_twist)
 {
   if (points_with_twist.empty()) {
     return boost::none;
@@ -1356,6 +1359,38 @@ size_t findFirstNearestSegmentIndexWithSoftConstraints(
 
   return nearest_idx;
 }
+
+/*
+ * extern explicit specification (for faster compilation)
+ * For frequently-used types listed below, these templates are not instantiated
+ * in each translation unit, and instead the definitions in src/trajectory.cpp are
+ * linked through the shared library
+ */
+extern template void validateNonEmpty(
+  const std::vector<autoware_auto_planning_msgs::msg::PathPointWithLaneId> &);
+extern template void validateNonSharpAngle(
+  const autoware_auto_planning_msgs::msg::PathPointWithLaneId &,
+  const autoware_auto_planning_msgs::msg::PathPointWithLaneId &,
+  const autoware_auto_planning_msgs::msg::PathPointWithLaneId &,
+  const double angle_threshold = tier4_autoware_utils::pi / 4);
+extern template boost::optional<bool> isDrivingForward(
+  const std::vector<autoware_auto_planning_msgs::msg::TrajectoryPoint> &);
+extern template boost::optional<bool> isDrivingForwardWithTwist(
+  const std::vector<autoware_auto_planning_msgs::msg::TrajectoryPoint> &);
+extern template std::vector<autoware_auto_planning_msgs::msg::PathPointWithLaneId>
+removeOverlapPoints(
+  const std::vector<autoware_auto_planning_msgs::msg::PathPointWithLaneId> &, const size_t & = 0);
+extern template boost::optional<size_t> searchZeroVelocityIndex(
+  const std::vector<autoware_auto_planning_msgs::msg::TrajectoryPoint> &, const size_t,
+  const size_t);
+extern template boost::optional<size_t> searchZeroVelocityIndex(
+  const std::vector<autoware_auto_planning_msgs::msg::TrajectoryPoint> &, const size_t &);
+extern template boost::optional<size_t> searchZeroVelocityIndex(
+  const std::vector<autoware_auto_planning_msgs::msg::TrajectoryPoint> &);
+extern template size_t findNearestIndex(
+  const std::vector<autoware_auto_planning_msgs::msg::PathPointWithLaneId> &,
+  const geometry_msgs::msg::Point &);
+
 }  // namespace motion_utils
 
 #endif  // MOTION_UTILS__TRAJECTORY__TRAJECTORY_HPP_
