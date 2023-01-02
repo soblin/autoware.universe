@@ -16,6 +16,10 @@
 
 #include "perception_utils/perception_utils.hpp"
 
+#include <tier4_autoware_utils/geometry/geometry.hpp>
+#include <tier4_autoware_utils/math/normalization.hpp>
+#include <tier4_autoware_utils/math/unit_conversion.hpp>
+
 #include <chrono>
 #include <memory>
 #include <optional>
