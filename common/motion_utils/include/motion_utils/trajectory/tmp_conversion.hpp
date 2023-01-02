@@ -40,29 +40,14 @@ namespace motion_utils
  * points larger than the capacity. (Tier IV)
  */
 autoware_auto_planning_msgs::msg::Trajectory convertToTrajectory(
-  const std::vector<autoware_auto_planning_msgs::msg::TrajectoryPoint> & trajectory)
-{
-  autoware_auto_planning_msgs::msg::Trajectory output{};
-  for (const auto & pt : trajectory) {
-    output.points.push_back(pt);
-    if (output.points.size() >= output.CAPACITY) {
-      break;
-    }
-  }
-  return output;
-}
+  const std::vector<autoware_auto_planning_msgs::msg::TrajectoryPoint> & trajectory);
 
 /**
  * @brief Convert autoware_auto_planning_msgs::msg::Trajectory to
  * std::vector<autoware_auto_planning_msgs::msg::TrajectoryPoint>.
  */
 std::vector<autoware_auto_planning_msgs::msg::TrajectoryPoint> convertToTrajectoryPointArray(
-  const autoware_auto_planning_msgs::msg::Trajectory & trajectory)
-{
-  std::vector<autoware_auto_planning_msgs::msg::TrajectoryPoint> output(trajectory.points.size());
-  std::copy(trajectory.points.begin(), trajectory.points.end(), output.begin());
-  return output;
-}
+  const autoware_auto_planning_msgs::msg::Trajectory & trajectory);
 
 }  // namespace motion_utils
 
