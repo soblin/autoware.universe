@@ -14,6 +14,8 @@
 
 #include "radar_tracks_msgs_converter/radar_tracks_msgs_converter_node.hpp"
 
+#include <tier4_autoware_utils/ros/msg_covariance.hpp>
+
 #include <tf2/utils.h>
 
 #ifdef ROS_DISTRO_GALACTIC

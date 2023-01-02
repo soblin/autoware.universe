@@ -14,7 +14,9 @@
 
 #include "front_vehicle_velocity_estimator/front_vehicle_velocity_estimator.hpp"
 
-#include <boost/geometry.hpp>
+#include <tier4_autoware_utils/geometry/geometry.hpp>
+
+#include <boost/geometry/algorithms/within.hpp>
 
 #include <memory>
 #include <numeric>

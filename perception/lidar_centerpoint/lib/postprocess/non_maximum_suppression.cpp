@@ -16,7 +16,7 @@
 
 #include "perception_utils/geometry.hpp"
 #include "perception_utils/perception_utils.hpp"
-#include "tier4_autoware_utils/tier4_autoware_utils.hpp"
+#include "tier4_autoware_utils/geometry/geometry.hpp"
 
 namespace centerpoint
 {

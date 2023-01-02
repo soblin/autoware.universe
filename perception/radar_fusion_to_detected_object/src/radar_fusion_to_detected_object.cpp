@@ -15,6 +15,10 @@
 
 #include "radar_fusion_to_detected_object.hpp"
 
+#include <tier4_autoware_utils/geometry/geometry.hpp>
+#include <tier4_autoware_utils/math/normalization.hpp>
+#include <tier4_autoware_utils/ros/msg_covariance.hpp>
+
 #include <boost/geometry.hpp>
 
 #include <algorithm>

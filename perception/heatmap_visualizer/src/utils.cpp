@@ -15,7 +15,7 @@
 #include "heatmap_visualizer/utils.hpp"
 
 #include <rclcpp/rclcpp.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/math/normalization.hpp>
 
 #include <tf2/utils.h>
 
