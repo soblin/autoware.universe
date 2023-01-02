@@ -32,8 +32,6 @@
 #include "multi_object_tracker/utils/utils.hpp"
 #include "perception_utils/perception_utils.hpp"
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
 #include <rclcpp_components/register_node_macro.hpp>
 
 using Label = autoware_auto_perception_msgs::msg::ObjectClassification;

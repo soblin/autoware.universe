@@ -27,6 +27,7 @@ namespace tier4_autoware_utils
 {
 bool isClockwise(const Polygon2d & polygon);
 Polygon2d inverseClockwise(const Polygon2d & polygon);
+// TODO(Mamoru Sobue): move this to geometry.hpp
 geometry_msgs::msg::Polygon rotatePolygon(
   const geometry_msgs::msg::Polygon & polygon, const double & angle);
 Polygon2d toPolygon2d(
