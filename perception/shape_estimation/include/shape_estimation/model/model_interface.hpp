@@ -15,14 +15,11 @@
 #ifndef SHAPE_ESTIMATION__MODEL__MODEL_INTERFACE_HPP_
 #define SHAPE_ESTIMATION__MODEL__MODEL_INTERFACE_HPP_
 
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
-
 #include <autoware_auto_perception_msgs/msg/shape.hpp>
 #include <geometry_msgs/msg/pose.hpp>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl_conversions/pcl_conversions.h>
 
 #include <string>
 

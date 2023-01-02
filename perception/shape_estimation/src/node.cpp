@@ -15,10 +15,11 @@
 #include "shape_estimation/shape_estimator.hpp"
 
 #include <node.hpp>
-#include <tier4_autoware_utils/tier4_autoware_utils.hpp>
+#include <tier4_autoware_utils/math/unit_conversion.hpp>
 
 #include <autoware_auto_perception_msgs/msg/object_classification.hpp>
 
+#include <pcl_conversions/pcl_conversions.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/utils.h>
