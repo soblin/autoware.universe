@@ -15,7 +15,6 @@
 #ifndef UTILIZATION__UTIL_HPP_
 #define UTILIZATION__UTIL_HPP_
 
-#include <lanelet2_extension/utility/query.hpp>
 #include <motion_utils/trajectory/trajectory.hpp>
 #include <tier4_autoware_utils/geometry/geometry.hpp>
 #include <utilization/boost_geometry_helper.hpp>
@@ -28,7 +27,6 @@
 #include <autoware_auto_planning_msgs/msg/trajectory.hpp>
 #include <autoware_auto_planning_msgs/msg/trajectory_point.hpp>
 #include <geometry_msgs/msg/point.hpp>
-#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <tier4_planning_msgs/msg/stop_reason.hpp>
 #include <visualization_msgs/msg/marker.hpp>
@@ -36,8 +34,6 @@
 #include <lanelet2_core/LaneletMap.h>
 #include <lanelet2_core/geometry/Lanelet.h>
 #include <lanelet2_core/geometry/Point.h>
-#include <lanelet2_routing/RoutingGraph.h>
-#include <tf2/utils.h>
 
 #include <algorithm>
 #include <limits>
@@ -98,43 +94,13 @@ using tier4_planning_msgs::msg::StopReason;
 
 namespace planning_utils
 {
-template <class T>
 size_t calcPointIndexFromSegmentIndex(
-  const std::vector<T> & points, const geometry_msgs::msg::Point & point, const size_t seg_idx)
-{
-  const size_t prev_point_idx = seg_idx;
-  const size_t next_point_idx = seg_idx + 1;
+  const std::vector<PathPointWithLaneId> & points, const geometry_msgs::msg::Point & point,
+  const size_t seg_idx);
 
-  const double prev_dist = tier4_autoware_utils::calcDistance2d(point, points.at(prev_point_idx));
-  const double next_dist = tier4_autoware_utils::calcDistance2d(point, points.at(next_point_idx));
-
-  if (prev_dist < next_dist) {
-    return prev_point_idx;
-  }
-  return next_point_idx;
-}
-
-template <class T>
 size_t calcSegmentIndexFromPointIndex(
-  const std::vector<T> & points, const geometry_msgs::msg::Point & point, const size_t idx)
-{
-  if (idx == 0) {
-    return 0;
-  }
-  if (idx == points.size() - 1) {
-    return idx - 1;
-  }
-  if (points.size() < 3) {
-    return 0;
-  }
-
-  const double offset_to_seg = motion_utils::calcLongitudinalOffsetToSegment(points, idx, point);
-  if (0 < offset_to_seg) {
-    return idx;
-  }
-  return idx - 1;
-}
-
+  const std::vector<PathPointWithLaneId> & points, const geometry_msgs::msg::Point & point,
+  const size_t idx);
 // create detection area from given range return false if creation failure
 bool createDetectionAreaPolygons(
   Polygons2d & da_polys, const PathWithLaneId & path, const geometry_msgs::msg::Pose & target_pose,

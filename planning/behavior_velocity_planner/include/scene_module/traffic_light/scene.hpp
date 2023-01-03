@@ -78,14 +78,14 @@ public:
   visualization_msgs::msg::MarkerArray createDebugMarkerArray() override;
   visualization_msgs::msg::MarkerArray createVirtualWallMarkerArray() override;
 
-  inline autoware_auto_perception_msgs::msg::LookingTrafficSignal getTrafficSignal() const
+  autoware_auto_perception_msgs::msg::LookingTrafficSignal getTrafficSignal() const
   {
     return looking_tl_state_;
   }
 
-  inline State getTrafficLightModuleState() const { return state_; }
+  State getTrafficLightModuleState() const { return state_; }
 
-  inline boost::optional<int> getFirstRefStopPathPointIndex() const
+  boost::optional<int> getFirstRefStopPathPointIndex() const
   {
     return first_ref_stop_path_point_index_;
   }

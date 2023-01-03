@@ -70,48 +70,20 @@ LineString2d to_bg2d(const std::vector<T> & vec)
   return ps;
 }
 
-inline Polygon2d lines2polygon(const LineString2d & left_line, const LineString2d & right_line)
-{
-  Polygon2d polygon;
+/*
+ * extern explicit specification (for faster compilation)
+ * declaration part
+ */
+extern template Point2d to_bg2d(const geometry_msgs::msg::Point &);
+extern template Point2d to_bg2d(const geometry_msgs::msg::Pose &);
+extern template LineString2d to_bg2d(const std::vector<geometry_msgs::msg::Pose> &);
 
-  polygon.outer().push_back(left_line.front());
+Polygon2d lines2polygon(const LineString2d & left_line, const LineString2d & right_line);
 
-  for (auto itr = right_line.begin(); itr != right_line.end(); ++itr) {
-    polygon.outer().push_back(*itr);
-  }
+Polygon2d upScalePolygon(
+  const geometry_msgs::msg::Point & position, const Polygon2d & polygon, const double scale);
 
-  for (auto itr = left_line.rbegin(); itr != left_line.rend(); ++itr) {
-    polygon.outer().push_back(*itr);
-  }
-
-  bg::correct(polygon);
-  return polygon;
-}
-
-inline Polygon2d upScalePolygon(
-  const geometry_msgs::msg::Point & position, const Polygon2d & polygon, const double scale)
-{
-  Polygon2d transformed_polygon;
-  // upscale
-  for (size_t i = 0; i < polygon.outer().size(); i++) {
-    const double upscale_x = (polygon.outer().at(i).x() - position.x) * scale + position.x;
-    const double upscale_y = (polygon.outer().at(i).y() - position.y) * scale + position.y;
-    transformed_polygon.outer().emplace_back(Point2d(upscale_x, upscale_y));
-  }
-  return transformed_polygon;
-}
-
-inline geometry_msgs::msg::Polygon toGeomPoly(const Polygon2d & polygon)
-{
-  geometry_msgs::msg::Polygon polygon_msg;
-  geometry_msgs::msg::Point32 point_msg;
-  for (const auto & p : polygon.outer()) {
-    point_msg.x = p.x();
-    point_msg.y = p.y();
-    polygon_msg.points.push_back(point_msg);
-  }
-  return polygon_msg;
-}
+geometry_msgs::msg::Polygon toGeomPoly(const Polygon2d & polygon);
 }  // namespace behavior_velocity_planner
 
 #endif  // UTILIZATION__BOOST_GEOMETRY_HELPER_HPP_

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <lanelet2_extension/utility/query.hpp>
 #include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
 #include <utilization/util.hpp>
 
@@ -20,10 +21,45 @@
 #include <string>
 #include <vector>
 
-namespace behavior_velocity_planner
+namespace behavior_velocity_planner::planning_utils
 {
-namespace planning_utils
+size_t calcPointIndexFromSegmentIndex(
+  const std::vector<PathPointWithLaneId> & points, const geometry_msgs::msg::Point & point,
+  const size_t seg_idx)
 {
+  const size_t prev_point_idx = seg_idx;
+  const size_t next_point_idx = seg_idx + 1;
+
+  const double prev_dist = tier4_autoware_utils::calcDistance2d(point, points.at(prev_point_idx));
+  const double next_dist = tier4_autoware_utils::calcDistance2d(point, points.at(next_point_idx));
+
+  if (prev_dist < next_dist) {
+    return prev_point_idx;
+  }
+  return next_point_idx;
+}
+
+size_t calcSegmentIndexFromPointIndex(
+  const std::vector<PathPointWithLaneId> & points, const geometry_msgs::msg::Point & point,
+  const size_t idx)
+{
+  if (idx == 0) {
+    return 0;
+  }
+  if (idx == points.size() - 1) {
+    return idx - 1;
+  }
+  if (points.size() < 3) {
+    return 0;
+  }
+
+  const double offset_to_seg = motion_utils::calcLongitudinalOffsetToSegment(points, idx, point);
+  if (0 < offset_to_seg) {
+    return idx;
+  }
+  return idx - 1;
+}
+
 Point2d calculateOffsetPoint2d(const Pose & pose, const double offset_x, const double offset_y)
 {
   return to_bg2d(calcOffsetPose(pose, offset_x, offset_y, 0.0));
@@ -660,5 +696,4 @@ boost::optional<geometry_msgs::msg::Pose> insertStopPoint(
 
   return tier4_autoware_utils::getPose(output.points.at(insert_idx.get()));
 }
-}  // namespace planning_utils
-}  // namespace behavior_velocity_planner
+}  // namespace behavior_velocity_planner::planning_utils

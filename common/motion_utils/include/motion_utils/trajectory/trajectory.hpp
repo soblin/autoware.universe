@@ -1362,8 +1362,9 @@ size_t findFirstNearestSegmentIndexWithSoftConstraints(
 
 /*
  * extern explicit specification (for faster compilation)
+ * decalaration part
  * For frequently-used types listed below, these templates are not instantiated
- * in each translation unit, and instead the definitions in src/trajectory.cpp are
+ * in each translation unit, but instead the definitions in src/trajectory.cpp are
  * linked through the shared library
  */
 extern template void validateNonEmpty(

@@ -17,6 +17,10 @@
 
 namespace motion_utils
 {
+/*
+ * extern explicit specification (for faster compilation)
+ * definition part
+ */
 template void validateNonEmpty(
   const std::vector<autoware_auto_planning_msgs::msg::PathPointWithLaneId> &);
 template void validateNonSharpAngle(
