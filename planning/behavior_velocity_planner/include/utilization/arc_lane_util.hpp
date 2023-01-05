@@ -16,7 +16,6 @@
 #define UTILIZATION__ARC_LANE_UTIL_HPP_
 
 #include <tier4_autoware_utils/geometry/geometry.hpp>
-#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
 #include <utilization/boost_geometry_helper.hpp>
 
 #include <autoware_auto_planning_msgs/msg/path_with_lane_id.hpp>

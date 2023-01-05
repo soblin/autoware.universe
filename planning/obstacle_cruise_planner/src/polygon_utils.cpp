@@ -15,11 +15,8 @@
 #include "obstacle_cruise_planner/polygon_utils.hpp"
 
 #include "motion_utils/trajectory/trajectory.hpp"
-#include "tier4_autoware_utils/geometry/boost_geometry.hpp"
 #include "tier4_autoware_utils/geometry/boost_polygon_utils.hpp"
-#include "tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp"
-
-#include "geometry_msgs/msg/pose_stamped.hpp"
+#include "tier4_autoware_utils/geometry/geometry.hpp"
 
 #include <boost/geometry/algorithms/area.hpp>
 #include <boost/geometry/algorithms/convex_hull.hpp>

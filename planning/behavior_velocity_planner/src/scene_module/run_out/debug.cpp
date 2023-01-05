@@ -17,7 +17,6 @@
 #include "scene_module/run_out/scene.hpp"
 
 #include <motion_utils/marker/marker_helper.hpp>
-#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
 #include <tier4_autoware_utils/ros/marker_helper.hpp>
 
 #include <tier4_debug_msgs/msg/float32_multi_array_stamped.hpp>

@@ -15,7 +15,6 @@
 #include "behavior_velocity_planner/node.hpp"
 
 #include <lanelet2_extension/utility/message_conversion.hpp>
-#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
 #include <tier4_autoware_utils/ros/wait_for_param.hpp>
 #include <utilization/path_utilization.hpp>
 

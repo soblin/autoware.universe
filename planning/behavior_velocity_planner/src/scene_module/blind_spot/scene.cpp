@@ -16,7 +16,6 @@
 #include <lanelet2_extension/utility/query.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
 #include <scene_module/blind_spot/scene.hpp>
-#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
 #include <utilization/boost_geometry_helper.hpp>
 #include <utilization/path_utilization.hpp>
 #include <utilization/util.hpp>

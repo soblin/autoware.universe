@@ -14,7 +14,6 @@
 
 #include "scene_module/run_out/dynamic_obstacle.hpp"
 
-#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
 #include <tier4_autoware_utils/math/unit_conversion.hpp>
 
 #include <pcl/filters/voxel_grid.h>

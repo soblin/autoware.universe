@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include <lanelet2_extension/utility/query.hpp>
-#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
 #include <utilization/util.hpp>
 
 #include <algorithm>

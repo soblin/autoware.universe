@@ -16,7 +16,8 @@
 #define MOTION_UTILS__TRAJECTORY__PATH_WITH_LANE_ID_HPP_
 
 #include "motion_utils/trajectory/trajectory.hpp"
-#include "tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp"
+
+#include "autoware_auto_planning_msgs/msg/path_with_lane_id.hpp"
 
 #include <boost/optional.hpp>
 

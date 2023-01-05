@@ -17,7 +17,6 @@
 #include <scene_module/intersection/scene_intersection.hpp>
 #include <scene_module/intersection/util.hpp>
 #include <tier4_autoware_utils/geometry/boost_polygon_utils.hpp>
-#include <tier4_autoware_utils/geometry/path_with_lane_id_geometry.hpp>
 #include <utilization/path_utilization.hpp>
 #include <utilization/trajectory_utils.hpp>
 #include <utilization/util.hpp>
