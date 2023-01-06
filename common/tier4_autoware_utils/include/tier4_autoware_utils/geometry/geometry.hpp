@@ -15,16 +15,14 @@
 #ifndef TIER4_AUTOWARE_UTILS__GEOMETRY__GEOMETRY_HPP_
 #define TIER4_AUTOWARE_UTILS__GEOMETRY__GEOMETRY_HPP_
 
-#include <exception>
-#include <string>
-#include <vector>
-
-#define EIGEN_MPL2_ONLY
 #include "tier4_autoware_utils/geometry/boost_geometry.hpp"
 #include "tier4_autoware_utils/math/constants.hpp"
 #include "tier4_autoware_utils/math/normalization.hpp"
 #include "tier4_autoware_utils/ros/msg_covariance.hpp"
 
+#include <string>
+
+#define EIGEN_MPL2_ONLY
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 

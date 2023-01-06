@@ -12,7 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <tier4_autoware_utils/geometry/pose_deviation.hpp>
+#include "tier4_autoware_utils/geometry/pose_deviation.hpp"
+
+#include "tier4_autoware_utils/math/normalization.hpp"
+
+#include <tf2/utils.h>
+
+#ifdef ROS_DISTRO_GALACTIC
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#else
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#endif
+
+#define EIGEN_MPL2_ONLY
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
 namespace tier4_autoware_utils
 {

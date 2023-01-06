@@ -15,10 +15,8 @@
 #ifndef TIER4_AUTOWARE_UTILS__GEOMETRY__POSE_DEVIATION_HPP_
 #define TIER4_AUTOWARE_UTILS__GEOMETRY__POSE_DEVIATION_HPP_
 
-#include "tier4_autoware_utils/geometry/geometry.hpp"
-#include "tier4_autoware_utils/math/normalization.hpp"
-
-#include <tf2/utils.h>
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/pose.hpp>
 
 namespace tier4_autoware_utils
 {
