@@ -16,6 +16,7 @@
 #include <lanelet2_extension/utility/utilities.hpp>
 #include <scene_module/intersection/scene_intersection.hpp>
 #include <scene_module/intersection/util.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <tier4_autoware_utils/geometry/boost_polygon_utils.hpp>
 #include <utilization/path_utilization.hpp>
 #include <utilization/trajectory_utils.hpp>
@@ -317,7 +318,8 @@ bool IntersectionModule::checkCollision(
 
     // ignore vehicle in ego-lane && behind ego
     const auto object_pose = object.kinematics.initial_pose_with_covariance.pose;
-    const bool is_in_ego_lane = bg::within(to_bg2d(object_pose.position), ego_poly);
+    const bool is_in_ego_lane =
+      tier4_autoware_utils::bg::within(to_bg2d(object_pose.position), ego_poly);
     if (is_in_ego_lane) {
       if (!planning_utils::isAheadOf(object_pose, planner_data_->current_odometry->pose)) {
         continue;
@@ -380,17 +382,19 @@ bool IntersectionModule::checkCollision(
       for (const auto & pose : predicted_path.path) {
         predicted_poses.push_back(pose);
       }
-      has_collision = bg::intersects(ego_poly, to_bg2d(predicted_poses));
+      has_collision = tier4_autoware_utils::bg::intersects(ego_poly, to_bg2d(predicted_poses));
       if (has_collision) {
         const auto first_itr = std::adjacent_find(
           predicted_path.path.cbegin(), predicted_path.path.cend(),
           [&ego_poly](const auto & a, const auto & b) {
-            return bg::intersects(ego_poly, LineString2d{to_bg2d(a), to_bg2d(b)});
+            return tier4_autoware_utils::bg::intersects(
+              ego_poly, LineString2d{to_bg2d(a), to_bg2d(b)});
           });
         const auto last_itr = std::adjacent_find(
           predicted_path.path.crbegin(), predicted_path.path.crend(),
           [&ego_poly](const auto & a, const auto & b) {
-            return bg::intersects(ego_poly, LineString2d{to_bg2d(a), to_bg2d(b)});
+            return tier4_autoware_utils::bg::intersects(
+              ego_poly, LineString2d{to_bg2d(a), to_bg2d(b)});
           });
         const double ref_object_enter_time =
           static_cast<double>(first_itr - predicted_path.path.begin()) *
@@ -431,7 +435,7 @@ bool IntersectionModule::checkCollision(
 
         polygon.outer().emplace_back(polygon.outer().front());
 
-        bg::correct(polygon);
+        tier4_autoware_utils::bg::correct(polygon);
 
         debug_data_.candidate_collision_ego_lane_polygon = toGeomPoly(polygon);
 
@@ -439,7 +443,7 @@ bool IntersectionModule::checkCollision(
           const auto footprint_polygon = tier4_autoware_utils::toPolygon2d(*itr, object.shape);
           debug_data_.candidate_collision_object_polygons.emplace_back(
             toGeomPoly(footprint_polygon));
-          if (bg::intersects(polygon, footprint_polygon)) {
+          if (tier4_autoware_utils::bg::intersects(polygon, footprint_polygon)) {
             collision_detected = true;
             break;
           }
@@ -493,7 +497,7 @@ Polygon2d IntersectionModule::generateEgoIntersectionLanePolygon(
   }
 
   polygon.outer().emplace_back(polygon.outer().front());
-  bg::correct(polygon);
+  tier4_autoware_utils::bg::correct(polygon);
 
   return polygon;
 }
@@ -572,7 +576,8 @@ bool IntersectionModule::checkStuckVehicleInIntersection(
 
     // check if the footprint is in the stuck detect area
     const auto obj_footprint = tier4_autoware_utils::toPolygon2d(object);
-    const bool is_in_stuck_area = !bg::disjoint(obj_footprint, stuck_vehicle_detect_area);
+    const bool is_in_stuck_area =
+      !tier4_autoware_utils::bg::disjoint(obj_footprint, stuck_vehicle_detect_area);
     if (is_in_stuck_area) {
       RCLCPP_DEBUG(logger_, "stuck vehicle found.");
       debug_data_.stuck_targets.objects.push_back(object);
@@ -757,7 +762,8 @@ bool IntersectionModule::checkFrontVehicleDeceleration(
   predicted_object.kinematics.initial_pose_with_covariance.pose.orientation =
     tier4_autoware_utils::createQuaternionFromRPY(0, 0, lane_yaw);
   auto predicted_obj_footprint = tier4_autoware_utils::toPolygon2d(predicted_object);
-  const bool is_in_stuck_area = !bg::disjoint(predicted_obj_footprint, stuck_vehicle_detect_area);
+  const bool is_in_stuck_area =
+    !tier4_autoware_utils::bg::disjoint(predicted_obj_footprint, stuck_vehicle_detect_area);
   debug_data_.predicted_obj_pose.position = stopping_point;
   debug_data_.predicted_obj_pose.orientation =
     tier4_autoware_utils::createQuaternionFromRPY(0, 0, lane_yaw);

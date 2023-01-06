@@ -11,6 +11,7 @@ ament_auto_add_library(tier4_autoware_utils SHARED
   src/geometry/boost_polygon_utils.cpp
   src/geometry/pose_deviation.cpp
   src/geometry/boost_geometry.cpp
+  src/geometry/boost_geometry_algorithms.cpp
   src/ros/msg_operation.cpp
   src/ros/marker_helper.cpp
   src/ros/uuid_helper.cpp

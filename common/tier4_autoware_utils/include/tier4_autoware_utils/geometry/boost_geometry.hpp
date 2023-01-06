@@ -15,16 +15,9 @@
 #ifndef TIER4_AUTOWARE_UTILS__GEOMETRY__BOOST_GEOMETRY_HPP_
 #define TIER4_AUTOWARE_UTILS__GEOMETRY__BOOST_GEOMETRY_HPP_
 
-#include <boost/geometry/algorithms/convex_hull.hpp>
-#include <boost/geometry/algorithms/correct.hpp>
-#include <boost/geometry/algorithms/intersection.hpp>
-#include <boost/geometry/algorithms/intersects.hpp>
-#include <boost/geometry/algorithms/is_empty.hpp>
-#include <boost/geometry/algorithms/within.hpp>
 #include <boost/geometry/core/cs.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
 #include <boost/geometry/geometries/register/point.hpp>
-#include <boost/geometry/strategies/strategies.hpp>
 
 #define EIGEN_MPL2_ONLY
 #include <Eigen/Core>
@@ -99,38 +92,5 @@ BOOST_GEOMETRY_REGISTER_POINT_2D(                                       // NOLIN
   tier4_autoware_utils::Point2d, double, cs::cartesian, x(), y())       // NOLINT
 BOOST_GEOMETRY_REGISTER_POINT_3D(                                       // NOLINT
   tier4_autoware_utils::Point3d, double, cs::cartesian, x(), y(), z())  // NOLINT
-
-/*
- * extern template of part of boost::geometry algorithms specified for the above types
- * declarations
- */
-namespace boost::geometry
-{
-// correct
-extern template void correct(tier4_autoware_utils::Polygon2d &);
-// within
-extern template bool within(
-  const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::Polygon2d &);
-extern template bool within(
-  const tier4_autoware_utils::Point2d &, const tier4_autoware_utils::Polygon2d &);
-extern template bool within(
-  const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::LinearRing2d &);
-extern template bool within(
-  const tier4_autoware_utils::Point2d &, const tier4_autoware_utils::LinearRing2d &);
-// is_empty
-extern template bool is_empty(const tier4_autoware_utils::Polygon2d &);
-// convex_hull
-extern template void convex_hull(
-  const tier4_autoware_utils::Polygon2d &, tier4_autoware_utils::Polygon2d &);
-extern template void convex_hull(
-  const tier4_autoware_utils::MultiPoint2d &, tier4_autoware_utils::LinearRing2d &);
-// intersects
-extern template bool intersects(
-  const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::LineString2d &);
-extern template bool intersects(
-  const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::Polygon2d &);
-extern template bool intersects(
-  const tier4_autoware_utils::LineString2d &, const tier4_autoware_utils::LineString2d &);
-}  // namespace boost::geometry
 
 #endif  // TIER4_AUTOWARE_UTILS__GEOMETRY__BOOST_GEOMETRY_HPP_
