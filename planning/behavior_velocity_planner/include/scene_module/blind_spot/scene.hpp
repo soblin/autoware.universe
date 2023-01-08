@@ -17,7 +17,6 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <scene_module/scene_module_interface.hpp>
-#include <utilization/boost_geometry_helper.hpp>
 #include <utilization/state_machine.hpp>
 
 #include <autoware_auto_perception_msgs/msg/predicted_object.hpp>
@@ -27,8 +26,8 @@
 
 #include <boost/optional.hpp>
 
-#include <lanelet2_core/LaneletMap.h>
-#include <lanelet2_routing/RoutingGraph.h>
+#include <lanelet2_core/Forward.h>
+#include <lanelet2_routing/Forward.h>
 
 #include <memory>
 #include <string>

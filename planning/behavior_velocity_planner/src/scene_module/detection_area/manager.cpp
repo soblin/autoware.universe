@@ -15,13 +15,8 @@
 #include <lanelet2_extension/utility/query.hpp>
 #include <scene_module/detection_area/manager.hpp>
 
-#include <tf2/utils.h>
-
 #include <memory>
-#include <set>
 #include <string>
-#include <unordered_map>
-#include <utility>
 #include <vector>
 
 namespace behavior_velocity_planner

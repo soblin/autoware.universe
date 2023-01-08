@@ -17,7 +17,6 @@
 #include <utilization/arc_lane_util.hpp>
 #include <utilization/util.hpp>
 
-#include <algorithm>
 #include <vector>
 
 namespace behavior_velocity_planner

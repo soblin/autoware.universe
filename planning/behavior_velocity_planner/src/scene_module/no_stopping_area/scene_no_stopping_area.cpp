@@ -19,6 +19,7 @@
 #include "utilization/util.hpp"
 
 #include <interpolation/spline_interpolation.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <tier4_autoware_utils/geometry/boost_polygon_utils.hpp>
 
 #ifdef ROS_DISTRO_GALACTIC
@@ -231,7 +232,7 @@ bool NoStoppingAreaModule::checkStuckVehiclesInNoStoppingArea(
     }
     // check if the footprint is in the stuck detect area
     const Polygon2d obj_footprint = tier4_autoware_utils::toPolygon2d(object);
-    const bool is_in_stuck_area = !bg::disjoint(obj_footprint, poly);
+    const bool is_in_stuck_area = !tier4_autoware_utils::bg::disjoint(obj_footprint, poly);
     if (is_in_stuck_area) {
       RCLCPP_DEBUG(logger_, "stuck vehicle found.");
       for (const auto & p : obj_footprint.outer()) {
@@ -261,7 +262,7 @@ bool NoStoppingAreaModule::checkStopLinesInNoStoppingArea(
     }
     const LineString2d line{{p0.x, p0.y}, {p1.x, p1.y}};
     std::vector<Point2d> collision_points;
-    bg::intersection(poly, line, collision_points);
+    tier4_autoware_utils::bg::intersection(poly, line, collision_points);
     if (!collision_points.empty()) {
       geometry_msgs::msg::Point point;
       point.x = collision_points.front().x();
@@ -308,7 +309,8 @@ Polygon2d NoStoppingAreaModule::generateEgoNoStoppingAreaLanePolygon(
   for (size_t i = closest_idx + num_ignore_nearest; i < pp.size() - 1; ++i) {
     dist_from_start_sum += tier4_autoware_utils::calcDistance2d(pp.at(i), pp.at(i - 1));
     const auto & p = pp.at(i).point.pose.position;
-    if (bg::within(Point2d{p.x, p.y}, lanelet::utils::to2D(no_stopping_area).basicPolygon())) {
+    if (tier4_autoware_utils::bg::within(
+          Point2d{p.x, p.y}, lanelet::utils::to2D(no_stopping_area).basicPolygon())) {
       is_in_area = true;
       break;
     }
@@ -329,7 +331,8 @@ Polygon2d NoStoppingAreaModule::generateEgoNoStoppingAreaLanePolygon(
   for (size_t i = ego_area_start_idx; i < pp.size() - 1; ++i) {
     dist_from_start_sum += tier4_autoware_utils::calcDistance2d(pp.at(i), pp.at(i - 1));
     const auto & p = pp.at(i).point.pose.position;
-    if (!bg::within(Point2d{p.x, p.y}, lanelet::utils::to2D(no_stopping_area).basicPolygon())) {
+    if (!tier4_autoware_utils::bg::within(
+          Point2d{p.x, p.y}, lanelet::utils::to2D(no_stopping_area).basicPolygon())) {
       dist_from_area_sum += tier4_autoware_utils::calcDistance2d(pp.at(i), pp.at(i - 1));
     }
     if (dist_from_start_sum > extra_dist || dist_from_area_sum > margin) {

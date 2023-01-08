@@ -20,8 +20,6 @@
 #include <tier4_autoware_utils/geometry/geometry.hpp>
 #include <utilization/path_utilization.hpp>
 
-#include <tf2/LinearMath/Quaternion.h>
-
 #ifdef ROS_DISTRO_GALACTIC
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #else

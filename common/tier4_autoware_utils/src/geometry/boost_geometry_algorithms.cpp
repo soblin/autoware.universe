@@ -28,6 +28,7 @@ namespace tier4_autoware_utils::bg
 {
 // correct
 void correct(tier4_autoware_utils::Polygon2d & polygon) { boost::geometry::correct(polygon); }
+void correct(tier4_autoware_utils::LineString2d & polygon) { boost::geometry::correct(polygon); }
 
 // within
 bool within(
@@ -99,6 +100,12 @@ void intersection(
 }
 void intersection(
   const tier4_autoware_utils::Polygon2d & poly1, const tier4_autoware_utils::LineString2d & poly2,
+  std::vector<tier4_autoware_utils::Point2d> & poly3)
+{
+  boost::geometry::intersection(poly1, poly2, poly3);
+}
+void intersection(
+  const tier4_autoware_utils::Polygon2d & poly1, const tier4_autoware_utils::Polygon2d & poly2,
   std::vector<tier4_autoware_utils::Point2d> & poly3)
 {
   boost::geometry::intersection(poly1, poly2, poly3);

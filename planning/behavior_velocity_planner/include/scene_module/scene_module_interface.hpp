@@ -34,7 +34,7 @@
 #include <tier4_v2x_msgs/msg/infrastructure_command_array.hpp>
 #include <unique_identifier_msgs/msg/uuid.hpp>
 
-#include <algorithm>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <random>

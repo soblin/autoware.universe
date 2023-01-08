@@ -17,10 +17,7 @@
 #include <utilization/boost_geometry_helper.hpp>
 #include <utilization/util.hpp>
 
-#include <lanelet2_core/primitives/BasicRegulatoryElements.h>
-
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 

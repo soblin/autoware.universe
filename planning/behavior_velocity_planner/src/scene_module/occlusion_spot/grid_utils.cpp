@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <scene_module/occlusion_spot/grid_utils.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 
 #include <algorithm>
 #include <stdexcept>
@@ -37,7 +38,7 @@ Polygon2d pointsToPoly(const Point2d p0, const Point2d p1, const double radius)
   // std::cout << boost::geometry::wkt(line_poly) << std::endl;
   // std::cout << boost::geometry::wkt(line) << std::endl;
 
-  bg::correct(line_poly);
+  tier4_autoware_utils::bg::correct(line_poly);
   return line_poly;
 }
 
@@ -144,8 +145,8 @@ boost::optional<Polygon2d> generateOcclusionPolygon(
   occlusion_poly.outer() = {min_theta_pos, max_theta_pos};
   std::vector<Point2d> min_intersections;
   std::vector<Point2d> max_intersections;
-  boost::geometry::intersection(occupancy_poly, theta_min_ray, min_intersections);
-  boost::geometry::intersection(occupancy_poly, theta_max_ray, max_intersections);
+  tier4_autoware_utils::bg::intersection(occupancy_poly, theta_min_ray, min_intersections);
+  tier4_autoware_utils::bg::intersection(occupancy_poly, theta_max_ray, max_intersections);
   if (!min_intersections.empty()) {
     // has min theta intersection
     occlusion_poly.outer().emplace_back(min_intersections.front());
@@ -156,9 +157,9 @@ boost::optional<Polygon2d> generateOcclusionPolygon(
   }
   //! case outside detection area
   if (occlusion_poly.outer().size() == 2) return boost::none;
-  boost::geometry::correct(occlusion_poly);
+  tier4_autoware_utils::bg::correct(occlusion_poly);
   Polygon2d hull_poly;
-  boost::geometry::convex_hull(occlusion_poly, hull_poly);
+  tier4_autoware_utils::bg::convex_hull(occlusion_poly, hull_poly);
   return hull_poly;
 }
 
@@ -172,7 +173,7 @@ Polygon2d generateOccupancyPolygon(const nav_msgs::msg::MapMetaData & info, cons
   poly.outer().emplace_back(to_bg2d(calcOffsetPose(info.origin, r, r, 0).position));
   poly.outer().emplace_back(to_bg2d(calcOffsetPose(info.origin, 0, r, 0).position));
 
-  bg::correct(poly);
+  tier4_autoware_utils::bg::correct(poly);
   return poly;
 }
 

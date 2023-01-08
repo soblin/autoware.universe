@@ -14,6 +14,8 @@
 
 #include "tier4_autoware_utils/ros/marker_helper.hpp"
 
+#include <rclcpp/duration.hpp>
+
 namespace tier4_autoware_utils
 {
 visualization_msgs::msg::Marker createDefaultMarker(

@@ -15,10 +15,7 @@
 #ifndef UTILIZATION__ARC_LANE_UTIL_HPP_
 #define UTILIZATION__ARC_LANE_UTIL_HPP_
 
-#include <tier4_autoware_utils/geometry/geometry.hpp>
-#include <utilization/boost_geometry_helper.hpp>
-
-#include <autoware_auto_planning_msgs/msg/path_with_lane_id.hpp>
+#include <utilization/util.hpp>
 
 #include <boost/optional.hpp>
 
@@ -31,10 +28,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #endif
 
-#include <algorithm>
-#include <memory>
 #include <utility>
-#include <vector>
 
 namespace behavior_velocity_planner
 {

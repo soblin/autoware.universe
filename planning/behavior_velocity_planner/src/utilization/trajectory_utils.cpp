@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <motion_velocity_smoother/trajectory_utils.hpp>
 #include <utilization/trajectory_utils.hpp>
 
 #include <tf2/utils.h>

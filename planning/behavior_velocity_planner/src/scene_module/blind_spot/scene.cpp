@@ -12,18 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <lanelet2_extension/regulatory_elements/road_marking.hpp>
 #include <lanelet2_extension/utility/query.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
 #include <scene_module/blind_spot/scene.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <utilization/boost_geometry_helper.hpp>
 #include <utilization/path_utilization.hpp>
 #include <utilization/util.hpp>
 
-#include <boost/geometry/algorithms/distance.hpp>
-
-#include <lanelet2_core/geometry/Polygon.h>
-#include <lanelet2_core/primitives/BasicRegulatoryElements.h>
+#include <lanelet2_core/LaneletMap.h>
+#include <lanelet2_routing/RoutingGraph.h>
 
 #include <algorithm>
 #include <memory>
@@ -385,7 +383,7 @@ bool BlindSpotModule::checkObstacleInBlindSpot(
         continue;
       }
 
-      bool exist_in_detection_area = bg::within(
+      bool exist_in_detection_area = tier4_autoware_utils::bg::within(
         to_bg2d(object.kinematics.initial_pose_with_covariance.pose.position),
         lanelet::utils::to2D(areas_opt.get().detection_area));
       bool exist_in_conflict_area = isPredictedPathInArea(
@@ -415,7 +413,8 @@ bool BlindSpotModule::isPredictedPathInArea(
       return std::any_of(
         path.path.begin(), path.path.end(),
         [&area_2d, &ego_yaw, &threshold_yaw_diff](const auto & point) {
-          const auto is_in_area = bg::within(to_bg2d(point.position), area_2d);
+          const auto is_in_area =
+            tier4_autoware_utils::bg::within(to_bg2d(point.position), area_2d);
           const auto match_yaw =
             std::fabs(ego_yaw - tf2::getYaw(point.orientation)) < threshold_yaw_diff;
           return is_in_area && match_yaw;

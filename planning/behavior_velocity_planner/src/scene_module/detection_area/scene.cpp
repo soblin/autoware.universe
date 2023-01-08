@@ -16,6 +16,7 @@
 
 #include <motion_utils/trajectory/trajectory.hpp>
 #include <scene_module/detection_area/scene.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <utilization/util.hpp>
 
 #ifdef ROS_DISTRO_GALACTIC
@@ -24,9 +25,7 @@
 #include <tf2_eigen/tf2_eigen.hpp>
 #endif
 
-#include <algorithm>
 #include <memory>
-#include <utility>
 #include <vector>
 
 namespace behavior_velocity_planner
@@ -221,7 +220,8 @@ std::vector<geometry_msgs::msg::Point> DetectionAreaModule::getObstaclePoints() 
 
   for (const auto & detection_area : detection_areas) {
     for (const auto p : points) {
-      if (bg::within(Point2d{p.x, p.y}, lanelet::utils::to2D(detection_area).basicPolygon())) {
+      if (tier4_autoware_utils::bg::within(
+            Point2d{p.x, p.y}, lanelet::utils::to2D(detection_area).basicPolygon())) {
         obstacle_points.push_back(toRosPoint(p));
         // get all obstacle point becomes high computation cost so skip if any point is found
         break;

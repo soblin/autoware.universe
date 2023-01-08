@@ -16,10 +16,7 @@
 #include <tier4_autoware_utils/math/unit_conversion.hpp>
 
 #include <memory>
-#include <set>
 #include <string>
-#include <unordered_map>
-#include <utility>
 
 namespace behavior_velocity_planner
 {

@@ -13,9 +13,9 @@
 // limitations under the License.
 
 #include <interpolation/spline_interpolation.hpp>
-#include <rclcpp/rclcpp.hpp>
 #include <scene_module/occlusion_spot/occlusion_spot_utils.hpp>
 #include <scene_module/occlusion_spot/risk_predictive_braking.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <tier4_autoware_utils/geometry/boost_polygon_utils.hpp>
 #include <tier4_autoware_utils/math/normalization.hpp>
 #include <utilization/path_utilization.hpp>
@@ -25,7 +25,6 @@
 #include <functional>
 #include <limits>
 #include <numeric>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -362,7 +361,7 @@ std::vector<PredictedObject> filterVehiclesByDetectionArea(
     // check if the footprint is in the stuck detect area
     const auto obj_footprint = tier4_autoware_utils::toPolygon2d(object);
     for (const auto & p : polys) {
-      if (!bg::disjoint(obj_footprint, p)) {
+      if (!tier4_autoware_utils::bg::disjoint(obj_footprint, p)) {
         filtered_obj.emplace_back(object);
       }
     }

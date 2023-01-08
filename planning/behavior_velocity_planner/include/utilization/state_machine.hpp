@@ -19,7 +19,6 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 
 namespace behavior_velocity_planner
 {

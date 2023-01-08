@@ -16,9 +16,7 @@
 #define UTILIZATION__TRAJECTORY_UTILS_HPP_
 
 #include <behavior_velocity_planner/planner_data.hpp>
-#include <interpolation/linear_interpolation.hpp>
 #include <motion_utils/trajectory/trajectory.hpp>
-#include <motion_velocity_smoother/trajectory_utils.hpp>
 
 #include <autoware_auto_planning_msgs/msg/path_point_with_lane_id.hpp>
 #include <autoware_auto_planning_msgs/msg/path_with_lane_id.hpp>
@@ -28,9 +26,7 @@
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <geometry_msgs/msg/twist_stamped.hpp>
 
-#include <limits>
 #include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 

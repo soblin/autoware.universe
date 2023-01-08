@@ -18,6 +18,7 @@
 #include "utilization/trajectory_utils.hpp"
 #include "utilization/util.hpp"
 
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <tier4_autoware_utils/math/unit_conversion.hpp>
 
 namespace behavior_velocity_planner
@@ -451,7 +452,8 @@ bool RunOutModule::checkCollisionWithCylinder(
 
   // check collision with 2d polygon
   std::vector<tier4_autoware_utils::Point2d> collision_points_bg;
-  bg::intersection(vehicle_polygon, bg_bounding_box_for_points, collision_points_bg);
+  tier4_autoware_utils::bg::intersection(
+    vehicle_polygon, bg_bounding_box_for_points, collision_points_bg);
 
   // no collision detected
   if (collision_points_bg.empty()) {
@@ -516,7 +518,7 @@ bool RunOutModule::checkCollisionWithBoundingBox(
 
   // check collision with 2d polygon
   std::vector<tier4_autoware_utils::Point2d> collision_points_bg;
-  bg::intersection(vehicle_polygon, bg_bounding_box, collision_points_bg);
+  tier4_autoware_utils::bg::intersection(vehicle_polygon, bg_bounding_box, collision_points_bg);
 
   // no collision detected
   if (collision_points_bg.empty()) {

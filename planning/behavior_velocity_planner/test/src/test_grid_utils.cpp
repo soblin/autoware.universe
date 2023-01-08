@@ -15,6 +15,7 @@
 #include "utils.hpp"
 
 #include <scene_module/occlusion_spot/grid_utils.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <tier4_autoware_utils/system/stop_watch.hpp>
 #include <utilization/boost_geometry_helper.hpp>
 
@@ -59,7 +60,7 @@ Polygon2d pointsToPoly(const Point2d p0, const Point2d p1, const double radius)
   // std::cout << boost::geometry::wkt(line_poly) << std::endl;
   // std::cout << boost::geometry::wkt(line) << std::endl;
 
-  bg::correct(line_poly);
+  tier4_autoware_utils::bg::correct(line_poly);
   return line_poly;
 }
 

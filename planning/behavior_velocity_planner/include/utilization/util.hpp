@@ -31,12 +31,11 @@
 #include <tier4_planning_msgs/msg/stop_reason.hpp>
 #include <visualization_msgs/msg/marker.hpp>
 
+#include <lanelet2_core/Forward.h>
 #include <lanelet2_core/LaneletMap.h>
-#include <lanelet2_core/geometry/Lanelet.h>
-#include <lanelet2_core/geometry/Point.h>
+// #include <lanelet2_core/geometry/Lanelet.h>
+// #include <lanelet2_core/geometry/Point.h>
 
-#include <algorithm>
-#include <limits>
 #include <memory>
 #include <set>
 #include <string>

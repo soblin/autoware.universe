@@ -25,6 +25,7 @@ namespace tier4_autoware_utils::bg
 {
 // correct
 void correct(tier4_autoware_utils::Polygon2d &);
+void correct(tier4_autoware_utils::LineString2d &);
 
 // within
 bool within(const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::Polygon2d &);
@@ -52,6 +53,10 @@ void intersection(
 void intersection(
   const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::LineString2d &,
   std::vector<tier4_autoware_utils::Point2d> &);
+void intersection(
+  const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::Polygon2d &,
+  std::vector<tier4_autoware_utils::Point2d> &);
+
 // disjoint
 bool disjoint(const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::Polygon2d &);
 }  // namespace tier4_autoware_utils::bg

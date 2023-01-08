@@ -16,8 +16,6 @@
 #include <scene_module/occlusion_spot/scene_occlusion_spot.hpp>
 #include <utilization/util.hpp>
 
-#include <lanelet2_core/primitives/BasicRegulatoryElements.h>
-
 #include <memory>
 #include <string>
 #include <vector>

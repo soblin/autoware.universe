@@ -14,6 +14,7 @@
 
 #include <motion_utils/trajectory/trajectory.hpp>
 #include <scene_module/traffic_light/scene.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <utilization/util.hpp>
 
 #include <boost/optional.hpp>  // To be replaced by std::optional in C++17
@@ -52,7 +53,7 @@ boost::optional<Point2d> findNearestCollisionPoint(
   const LineString2d & line1, const LineString2d & line2, const Point2d & origin)
 {
   std::vector<Point2d> collision_points;
-  bg::intersection(line1, line2, collision_points);
+  tier4_autoware_utils::bg::intersection(line1, line2, collision_points);
 
   if (collision_points.empty()) {
     return boost::none;

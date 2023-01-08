@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <rclcpp/duration.hpp>
 #include <tier4_autoware_utils/ros/marker_helper.hpp>
 #include <utilization/debug.hpp>
+#include <utilization/util.hpp>
 
 namespace behavior_velocity_planner
 {

@@ -15,6 +15,7 @@
 #include <motion_utils/marker/marker_helper.hpp>
 #include <scene_module/intersection/scene_intersection.hpp>
 #include <scene_module/intersection/scene_merge_from_private_road.hpp>
+#include <tier4_autoware_utils/ros/marker_helper.hpp>
 #include <utilization/debug.hpp>
 #include <utilization/util.hpp>
 

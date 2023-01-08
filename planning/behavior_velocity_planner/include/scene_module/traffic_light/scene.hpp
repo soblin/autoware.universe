@@ -32,7 +32,6 @@
 #include <autoware_auto_perception_msgs/msg/looking_traffic_signal.hpp>
 
 #include <lanelet2_core/LaneletMap.h>
-#include <lanelet2_routing/RoutingGraph.h>
 
 namespace behavior_velocity_planner
 {

@@ -15,9 +15,12 @@
 #ifndef UTILIZATION__DEBUG_HPP_
 #define UTILIZATION__DEBUG_HPP_
 
-#include <tier4_autoware_utils/ros/marker_helper.hpp>
-#include <utilization/util.hpp>
+#include <rclcpp/time.hpp>
 
+#include <autoware_auto_perception_msgs/msg/predicted_objects.hpp>
+#include <autoware_auto_planning_msgs/msg/path_with_lane_id.hpp>
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/polygon.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 
 #include <string>

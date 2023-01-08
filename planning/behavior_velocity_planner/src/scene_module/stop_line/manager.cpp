@@ -15,7 +15,6 @@
 #include <scene_module/stop_line/manager.hpp>
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
