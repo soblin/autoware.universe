@@ -17,6 +17,7 @@
 #include <lanelet2_extension/utility/query.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
 #include <scene_module/intersection/util.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <utilization/path_utilization.hpp>
 #include <utilization/util.hpp>
 
@@ -124,7 +125,7 @@ std::optional<size_t> getFirstPointInsidePolygons(
     auto p = path.points.at(i).point.pose.position;
     for (const auto & polygon : polygons) {
       const auto polygon_2d = lanelet::utils::to2D(polygon);
-      is_in_lanelet = bg::within(to_bg2d(p), polygon_2d);
+      is_in_lanelet = tier4_autoware_utils::bg::within(to_bg2d(p), polygon_2d);
       if (is_in_lanelet) {
         first_idx_inside_lanelet = i;
         break;
@@ -352,7 +353,7 @@ bool getStopLineIndexFromMap(
 
     const LineString2d path_segment = {{p_front.x, p_front.y}, {p_back.x, p_back.y}};
     std::vector<Point2d> collision_points;
-    bg::intersection(extended_stop_line, path_segment, collision_points);
+    tier4_autoware_utils::bg::intersection(extended_stop_line, path_segment, collision_points);
 
     if (collision_points.empty()) {
       continue;

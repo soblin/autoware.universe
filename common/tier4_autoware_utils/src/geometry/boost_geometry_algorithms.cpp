@@ -22,6 +22,8 @@
 #include <boost/geometry/algorithms/within.hpp>
 #include <boost/geometry/strategies/strategies.hpp>
 
+#include <lanelet2_core/geometry/Polygon.h>
+
 namespace tier4_autoware_utils::bg
 {
 // correct
@@ -45,6 +47,14 @@ bool within(
 }
 bool within(
   const tier4_autoware_utils::Point2d & poly1, const tier4_autoware_utils::LinearRing2d & poly2)
+{
+  return boost::geometry::within(poly1, poly2);
+}
+bool within(const tier4_autoware_utils::Point2d & poly1, const lanelet::BasicPolygon2d & poly2)
+{
+  return boost::geometry::within(poly1, poly2);
+}
+bool within(const tier4_autoware_utils::Point2d & poly1, const lanelet::CompoundPolygon2d & poly2)
 {
   return boost::geometry::within(poly1, poly2);
 }
@@ -77,6 +87,21 @@ bool intersects(
   const tier4_autoware_utils::LineString2d & poly2)
 {
   return boost::geometry::intersects(poly1, poly2);
+}
+
+// intersection
+void intersection(
+  const tier4_autoware_utils::LineString2d & poly1,
+  const tier4_autoware_utils::LineString2d & poly2,
+  std::vector<tier4_autoware_utils::Point2d> & poly3)
+{
+  boost::geometry::intersection(poly1, poly2, poly3);
+}
+void intersection(
+  const tier4_autoware_utils::Polygon2d & poly1, const tier4_autoware_utils::LineString2d & poly2,
+  std::vector<tier4_autoware_utils::Point2d> & poly3)
+{
+  boost::geometry::intersection(poly1, poly2, poly3);
 }
 
 // disjoint

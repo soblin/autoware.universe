@@ -24,9 +24,6 @@
 #include <geometry_msgs/msg/polygon.hpp>
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 
-#include <boost/geometry/algorithms/correct.hpp>
-
-#include <algorithm>
 #include <vector>
 
 // cppcheck-suppress unknownMacro

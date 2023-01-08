@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <utilization/boost_geometry_helper.hpp>
+
+#include <boost/geometry/algorithms/correct.hpp>
 
 namespace behavior_velocity_planner
 {
@@ -38,7 +41,7 @@ Polygon2d lines2polygon(const LineString2d & left_line, const LineString2d & rig
     polygon.outer().push_back(*itr);
   }
 
-  bg::correct(polygon);
+  tier4_autoware_utils::bg::correct(polygon);
   return polygon;
 }
 

@@ -13,7 +13,10 @@
 // limitations under the License.
 
 #include <lanelet2_extension/utility/query.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <utilization/util.hpp>
+
+#include <boost/geometry/algorithms/correct.hpp>
 
 #include <algorithm>
 #include <limits>
@@ -327,7 +330,7 @@ Polygon2d generatePathPolygon(
     ego_area.outer().push_back(Point2d(x, y));
   }
 
-  bg::correct(ego_area);
+  tier4_autoware_utils::bg::correct(ego_area);
   return ego_area;
 }
 

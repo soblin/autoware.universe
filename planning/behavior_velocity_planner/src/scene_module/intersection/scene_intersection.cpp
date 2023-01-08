@@ -336,7 +336,8 @@ bool IntersectionModule::checkCollision(
     if (intersection_area) {
       const auto obj_poly = tier4_autoware_utils::toPolygon2d(object);
       const auto intersection_area_2d = intersection_area.value();
-      const auto is_in_intersection_area = bg::within(obj_poly, intersection_area_2d);
+      const auto is_in_intersection_area =
+        tier4_autoware_utils::bg::within(obj_poly, intersection_area_2d);
       const auto is_in_adjacent_lanelets = checkAngleForTargetLanelets(
         object_direction, adjacent_lanelets, planner_param_.detection_area_margin);
       if (is_in_adjacent_lanelets) continue;

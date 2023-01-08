@@ -17,6 +17,10 @@
 
 #include <tier4_autoware_utils/geometry/boost_geometry.hpp>
 
+#include <lanelet2_core/Forward.h>
+
+#include <vector>
+
 namespace tier4_autoware_utils::bg
 {
 // correct
@@ -27,6 +31,8 @@ bool within(const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils:
 bool within(const tier4_autoware_utils::Point2d &, const tier4_autoware_utils::Polygon2d &);
 bool within(const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::LinearRing2d &);
 bool within(const tier4_autoware_utils::Point2d &, const tier4_autoware_utils::LinearRing2d &);
+bool within(const tier4_autoware_utils::Point2d &, const lanelet::BasicPolygon2d &);
+bool within(const tier4_autoware_utils::Point2d &, const lanelet::CompoundPolygon2d &);
 
 // convex_hull
 void convex_hull(const tier4_autoware_utils::Polygon2d &, tier4_autoware_utils::Polygon2d &);
@@ -39,6 +45,13 @@ bool intersects(const tier4_autoware_utils::Polygon2d &, const tier4_autoware_ut
 bool intersects(
   const tier4_autoware_utils::LineString2d &, const tier4_autoware_utils::LineString2d &);
 
+// intersection
+void intersection(
+  const tier4_autoware_utils::LineString2d &, const tier4_autoware_utils::LineString2d &,
+  std::vector<tier4_autoware_utils::Point2d> &);
+void intersection(
+  const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::LineString2d &,
+  std::vector<tier4_autoware_utils::Point2d> &);
 // disjoint
 bool disjoint(const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::Polygon2d &);
 }  // namespace tier4_autoware_utils::bg

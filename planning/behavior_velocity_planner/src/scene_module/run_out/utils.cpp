@@ -14,6 +14,8 @@
 
 #include "scene_module/run_out/utils.hpp"
 
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
+
 namespace behavior_velocity_planner
 {
 namespace run_out_utils
@@ -195,7 +197,7 @@ Polygon2d createBoostPolyFromMsg(const std::vector<geometry_msgs::msg::Point> & 
   const auto & first_point = input_poly.front();
   bg_poly.outer().emplace_back(first_point.x, first_point.y);
 
-  bg::correct(bg_poly);
+  tier4_autoware_utils::bg::correct(bg_poly);
   return bg_poly;
 }
 
@@ -354,7 +356,7 @@ std::vector<DynamicObstacle> excludeObstaclesOutSideOfLine(
     const LineString2d partition_bg = createLineString2d(partition);
 
     // ignore obstacle outside of partition
-    if (bg::intersects(path_point_to_obstacle, partition_bg)) {
+    if (tier4_autoware_utils::bg::intersects(path_point_to_obstacle, partition_bg)) {
       continue;
     }
     extracted_dynamic_obstacle.emplace_back(obstacle);
