@@ -34,10 +34,10 @@ ament_auto_add_library(behavior_velocity_planner SHARED
   src/node.cpp
   src/planner_manager.cpp
   src/utilization/path_utilization.cpp
-  src/utilization/trajectory_utils.cpp
   src/utilization/arc_lane_util.cpp
-  src/utilization/util.cpp
   src/utilization/boost_geometry_helper.cpp
+  src/utilization/trajectory_utils.cpp
+  src/utilization/util.cpp
   src/utilization/debug.cpp
   ${scene_modules_src}
 )
@@ -46,6 +46,7 @@ target_include_directories(behavior_velocity_planner
   SYSTEM PUBLIC
     ${BOOST_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}
+    ${tf2_geometry_msgs_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIR}
 )
 
