@@ -15,19 +15,18 @@
 #include <autoware_auto_tf2/tf2_autoware_auto_msgs.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <scene_module/crosswalk/scene_crosswalk.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <tier4_autoware_utils/ros/uuid_helper.hpp>
 #include <utilization/path_utilization.hpp>
 #include <utilization/util.hpp>
+
+#include <boost/geometry/algorithms/union.hpp>
 
 #include <cmath>
 #include <vector>
 
 namespace behavior_velocity_planner
 {
-namespace bg = boost::geometry;
-using Point = bg::model::d2::point_xy<double>;
-using Polygon = bg::model::polygon<Point>;
-using Line = bg::model::linestring<Point>;
 using motion_utils::calcArcLength;
 using motion_utils::calcLateralOffset;
 using motion_utils::calcLongitudinalOffsetPoint;
@@ -51,7 +50,7 @@ geometry_msgs::msg::Point32 createPoint32(const double x, const double y, const 
   p.z = z;
   return p;
 }
-geometry_msgs::msg::Polygon toMsg(const Polygon & polygon, const double z)
+geometry_msgs::msg::Polygon toMsg(const Polygon2d & polygon, const double z)
 {
   geometry_msgs::msg::Polygon ret;
   for (const auto & p : polygon.outer()) {
@@ -59,11 +58,11 @@ geometry_msgs::msg::Polygon toMsg(const Polygon & polygon, const double z)
   }
   return ret;
 }
-Polygon createOneStepPolygon(
+Polygon2d createOneStepPolygon(
   const geometry_msgs::msg::Pose & p_front, const geometry_msgs::msg::Pose & p_back,
   const geometry_msgs::msg::Polygon & base_polygon)
 {
-  Polygon one_step_polygon{};
+  Polygon2d one_step_polygon{};
 
   {
     geometry_msgs::msg::Polygon out_polygon{};
@@ -72,7 +71,7 @@ Polygon createOneStepPolygon(
     tf2::doTransform(base_polygon, out_polygon, geometry_tf);
 
     for (const auto & p : out_polygon.points) {
-      one_step_polygon.outer().push_back(Point(p.x, p.y));
+      one_step_polygon.outer().push_back(Point2d(p.x, p.y));
     }
   }
 
@@ -83,13 +82,13 @@ Polygon createOneStepPolygon(
     tf2::doTransform(base_polygon, out_polygon, geometry_tf);
 
     for (const auto & p : out_polygon.points) {
-      one_step_polygon.outer().push_back(Point(p.x, p.y));
+      one_step_polygon.outer().push_back(Point2d(p.x, p.y));
     }
   }
 
-  Polygon hull_polygon{};
-  bg::convex_hull(one_step_polygon, hull_polygon);
-  bg::correct(hull_polygon);
+  Polygon2d hull_polygon{};
+  tier4_autoware_utils::bg::convex_hull(one_step_polygon, hull_polygon);
+  tier4_autoware_utils::bg::correct(hull_polygon);
 
   return hull_polygon;
 }
@@ -98,9 +97,9 @@ void sortCrosswalksByDistance(
   lanelet::ConstLanelets & crosswalks)
 {
   const auto compare = [&](const lanelet::ConstLanelet & l1, const lanelet::ConstLanelet & l2) {
-    const std::vector<Point> l1_intersects =
+    const std::vector<Point2d> l1_intersects =
       getPolygonIntersects(ego_path, l1.polygon2d().basicPolygon(), ego_pos, 2);
-    const std::vector<Point> l2_intersects =
+    const std::vector<Point2d> l2_intersects =
       getPolygonIntersects(ego_path, l2.polygon2d().basicPolygon(), ego_pos, 2);
 
     if (l1_intersects.empty() || l2_intersects.empty()) {
@@ -317,7 +316,7 @@ boost::optional<geometry_msgs::msg::Point> CrosswalkModule::findNearestStopPoint
 
   const auto ego_polygon = createVehiclePolygon(planner_data_->vehicle_info_);
 
-  Polygon attention_area;
+  Polygon2d attention_area;
   for (size_t j = 0; j < sparse_resample_path.points.size() - 1; ++j) {
     const auto & p_ego_front = sparse_resample_path.points.at(j).point.pose;
     const auto & p_ego_back = sparse_resample_path.points.at(j + 1).point.pose;
@@ -338,11 +337,11 @@ boost::optional<geometry_msgs::msg::Point> CrosswalkModule::findNearestStopPoint
 
     debug_data_.ego_polygons.push_back(toMsg(ego_one_step_polygon, ego_pos.z));
 
-    std::vector<Polygon> unions;
+    std::vector<Polygon2d> unions;
     bg::union_(attention_area, ego_one_step_polygon, unions);
     if (!unions.empty()) {
       attention_area = unions.front();
-      bg::correct(attention_area);
+      tier4_autoware_utils::bg::correct(attention_area);
     }
   }
 
@@ -593,7 +592,7 @@ void CrosswalkModule::clampAttentionRangeByNeighborCrosswalks(
     auto reverse_ego_path = ego_path;
     std::reverse(reverse_ego_path.points.begin(), reverse_ego_path.points.end());
 
-    const std::vector<Point> prev_crosswalk_intersects = getPolygonIntersects(
+    const std::vector<Point2d> prev_crosswalk_intersects = getPolygonIntersects(
       reverse_ego_path, prev_crosswalk.get().polygon2d().basicPolygon(), ego_pos, 2);
 
     if (!prev_crosswalk_intersects.empty()) {
@@ -607,7 +606,7 @@ void CrosswalkModule::clampAttentionRangeByNeighborCrosswalks(
   }
 
   if (next_crosswalk) {
-    const std::vector<Point> next_crosswalk_intersects =
+    const std::vector<Point2d> next_crosswalk_intersects =
       getPolygonIntersects(ego_path, next_crosswalk.get().polygon2d().basicPolygon(), ego_pos, 2);
 
     if (!next_crosswalk_intersects.empty()) {
@@ -636,7 +635,7 @@ void CrosswalkModule::clampAttentionRangeByNeighborCrosswalks(
 }
 
 std::vector<CollisionPoint> CrosswalkModule::getCollisionPoints(
-  const PathWithLaneId & ego_path, const PredictedObject & object, const Polygon & attention_area,
+  const PathWithLaneId & ego_path, const PredictedObject & object, const Polygon2d & attention_area,
   const std::pair<double, double> & crosswalk_attention_range)
 {
   stop_watch_.tic(__func__);
@@ -657,12 +656,12 @@ std::vector<CollisionPoint> CrosswalkModule::getCollisionPoints(
       const auto p_obj_back = obj_path.path.at(i + 1);
       const auto obj_one_step_polygon = createOneStepPolygon(p_obj_front, p_obj_back, obj_polygon);
 
-      std::vector<Point> tmp_intersects{};
-      bg::intersection(obj_one_step_polygon, attention_area, tmp_intersects);
+      std::vector<Point2d> tmp_intersects{};
+      tier4_autoware_utils::bg::intersection(obj_one_step_polygon, attention_area, tmp_intersects);
 
-      if (bg::within(obj_one_step_polygon, attention_area)) {
+      if (tier4_autoware_utils::bg::within(obj_one_step_polygon, attention_area)) {
         for (const auto & p : obj_one_step_polygon.outer()) {
-          const Point point{p.x(), p.y()};
+          const Point2d point{p.x(), p.y()};
           tmp_intersects.push_back(point);
         }
       }

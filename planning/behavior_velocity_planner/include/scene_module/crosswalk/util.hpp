@@ -16,6 +16,7 @@
 #define SCENE_MODULE__CROSSWALK__UTIL_HPP_
 
 #include "behavior_velocity_planner/planner_data.hpp"
+#include "utilization/boost_geometry_helper.hpp"
 
 #include <autoware_auto_planning_msgs/msg/path_with_lane_id.hpp>
 
@@ -63,11 +64,11 @@ struct DebugData
   std::vector<geometry_msgs::msg::Polygon> obj_polygons;
 };
 
-std::vector<bg::model::d2::point_xy<double>> getPolygonIntersects(
+std::vector<Point2d> getPolygonIntersects(
   const PathWithLaneId & ego_path, const lanelet::BasicPolygon2d & polygon,
   const geometry_msgs::msg::Point & ego_pos, const size_t max_num);
 
-std::vector<bg::model::d2::point_xy<double>> getLinestringIntersects(
+std::vector<Point2d> getLinestringIntersects(
   const PathWithLaneId & ego_path, const lanelet::BasicLineString2d & linestring,
   const geometry_msgs::msg::Point & ego_pos, const size_t max_num);
 
