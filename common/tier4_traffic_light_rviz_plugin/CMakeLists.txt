@@ -3,7 +3,7 @@ project(tier4_traffic_light_rviz_plugin)
 
 find_package(autoware_cmake REQUIRED)
 find_package(Qt5 REQUIRED Core Widgets)
-
+find_package(rviz_ogre_vendor REQUIRED)
 autoware_package()
 
 set(QT_LIBRARIES Qt5::Widgets)
@@ -19,7 +19,9 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
 )
 
-target_compile_options(${PROJECT_NAME} PUBLIC -Wno-error=deprecated-copy -Wno-error=pedantic)
+# NOTE(Mamoru Sobue): workaround to suprress compilation warning for rviz_ogre_vendor
+get_target_property(Ogre_INCLUDE_DIRS rviz_ogre_vendor::OgreMain INTERFACE_INCLUDE_DIRECTORIES)
+target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${Ogre_INCLUDE_DIRS})
 # Export the plugin to be imported by rviz2
 pluginlib_export_plugin_description_file(rviz_common plugins/plugin_description.xml)
 
