@@ -2,13 +2,21 @@ cmake_minimum_required(VERSION 3.14)
 project(dummy_perception_publisher)
 
 find_package(autoware_cmake REQUIRED)
-autoware_package()
+
+find_package(autoware_auto_perception_msgs REQUIRED)
+find_package(tier4_perception_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(unique_identifier_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/InitialState.msg"
   "msg/Object.msg"
   DEPENDENCIES autoware_auto_perception_msgs tier4_perception_msgs geometry_msgs std_msgs unique_identifier_msgs
 )
+
+autoware_package()
 
 # See ndt_omp package for documentation on why PCL is special
 find_package(PCL REQUIRED COMPONENTS common filters)
@@ -60,7 +68,7 @@ endif()
 # components/modules selected above and only links in `common` ,so we need
 # to do this manually.
 target_compile_definitions(dummy_perception_publisher_node PRIVATE ${PCL_DEFINITIONS})
-target_include_directories(dummy_perception_publisher_node PRIVATE ${PCL_INCLUDE_DIRS})
+target_include_directories(dummy_perception_publisher_node SYSTEM PRIVATE ${PCL_INCLUDE_DIRS})
 # Unfortunately, this one can't be PRIVATE because only the plain or only the
 # keyword (PRIVATE) signature of target_link_libraries can be used for one
 # target, not both. The plain signature is already used inside
