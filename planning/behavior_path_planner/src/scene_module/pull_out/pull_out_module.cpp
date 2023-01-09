@@ -21,6 +21,7 @@
 
 #include <lanelet2_extension/utility/utilities.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 
 #include <algorithm>
 #include <memory>
@@ -633,7 +634,7 @@ bool PullOutModule::isOverlappedWithLane(
   const tier4_autoware_utils::LinearRing2d & vehicle_footprint)
 {
   for (const auto & point : vehicle_footprint) {
-    if (boost::geometry::within(point, candidate_lanelet.polygon2d().basicPolygon())) {
+    if (tier4_autoware_utils::bg::within(point, candidate_lanelet.polygon2d().basicPolygon())) {
       return true;
     }
   }

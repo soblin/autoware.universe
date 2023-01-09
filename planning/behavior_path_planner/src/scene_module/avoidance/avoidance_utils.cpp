@@ -22,6 +22,7 @@
 #include <autoware_auto_tf2/tf2_autoware_auto_msgs.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
 #include <motion_utils/resample/resample.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 
 #include <boost/geometry/algorithms/buffer.hpp>
 
@@ -736,10 +737,10 @@ bool isCentroidWithinLanelets(
   }
 
   const auto & object_pos = object.kinematics.initial_pose_with_covariance.pose.position;
-  lanelet::BasicPoint2d object_centroid(object_pos.x, object_pos.y);
+  tier4_autoware_utils::Point2d object_centroid(object_pos.x, object_pos.y);
 
   for (const auto & llt : target_lanelets) {
-    if (boost::geometry::within(object_centroid, llt.polygon2d().basicPolygon())) {
+    if (tier4_autoware_utils::bg::within(object_centroid, llt.polygon2d().basicPolygon())) {
       return true;
     }
   }

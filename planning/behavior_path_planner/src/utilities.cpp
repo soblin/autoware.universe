@@ -17,11 +17,10 @@
 #include <lanelet2_extension/utility/message_conversion.hpp>
 #include <lanelet2_extension/utility/query.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 
 #include "autoware_auto_perception_msgs/msg/predicted_object.hpp"
 #include "autoware_auto_perception_msgs/msg/predicted_path.hpp"
-
-#include <boost/assign/list_of.hpp>
 
 #include <algorithm>
 #include <limits>
@@ -490,6 +489,48 @@ double calcLongitudinalDistanceFromEgoToObjects(
   return min_distance;
 }
 
+// only works with consecutive lanes
+std::vector<size_t> filterObjectIndicesByLanelets(
+  const PredictedObjects & objects, const lanelet::ConstLanelets & target_lanelets,
+  const double start_arc_length, const double end_arc_length)
+{
+  std::vector<size_t> indices;
+  if (target_lanelets.empty()) {
+    return {};
+  }
+  const auto polygon =
+    lanelet::utils::getPolygonFromArcLength(target_lanelets, start_arc_length, end_arc_length);
+  const auto polygon2d = lanelet::utils::to2D(polygon).basicPolygon();
+  if (polygon2d.empty()) {
+    // no lanelet polygon
+    return {};
+  }
+
+  for (size_t i = 0; i < objects.objects.size(); i++) {
+    const auto & obj = objects.objects.at(i);
+    // create object polygon
+    Polygon2d obj_polygon;
+    if (!calcObjectPolygon(obj, &obj_polygon)) {
+      continue;
+    }
+    // create lanelet polygon
+    Polygon2d lanelet_polygon;
+    lanelet_polygon.outer().reserve(polygon2d.size() + 1);
+    for (const auto & lanelet_point : polygon2d) {
+      lanelet_polygon.outer().emplace_back(lanelet_point.x(), lanelet_point.y());
+    }
+
+    lanelet_polygon.outer().push_back(lanelet_polygon.outer().front());
+
+    // check the object does not intersect the lanelet
+    if (!tier4_autoware_utils::bg::disjoint(lanelet_polygon, obj_polygon)) {
+      indices.push_back(i);
+      continue;
+    }
+  }
+  return indices;
+}
+
 std::pair<std::vector<size_t>, std::vector<size_t>> separateObjectIndicesByLanelets(
   const PredictedObjects & objects, const lanelet::ConstLanelets & target_lanelets)
 {
@@ -527,7 +568,7 @@ std::pair<std::vector<size_t>, std::vector<size_t>> separateObjectIndicesByLanel
       }
       lanelet_polygon.outer().push_back(lanelet_polygon.outer().front());
       // check the object does not intersect the lanelet
-      if (!boost::geometry::disjoint(lanelet_polygon, obj_polygon)) {
+      if (!tier4_autoware_utils::bg::disjoint(lanelet_polygon, obj_polygon)) {
         target_indices.push_back(i);
         is_filtered_object = true;
         break;
@@ -1312,7 +1353,7 @@ double getDistanceToCrosswalk(
           polygon.outer().push_back(polygon.outer().front());
 
           std::vector<Point2d> points_intersection;
-          boost::geometry::intersection(centerline, polygon, points_intersection);
+          tier4_autoware_utils::bg::intersection(polygon, centerline, points_intersection);
 
           for (const auto & point : points_intersection) {
             lanelet::ConstLanelets lanelets = {llt};
@@ -1606,7 +1647,7 @@ std::vector<Polygon2d> getTargetLaneletPolygons(
         map_polygon_bg.outer().emplace_back(pt.x(), pt.y());
       }
       map_polygon_bg.outer().push_back(map_polygon_bg.outer().front());
-      if (boost::geometry::intersects(llt_polygon_bg, map_polygon_bg)) {
+      if (tier4_autoware_utils::bg::intersects(llt_polygon_bg, map_polygon_bg)) {
         polygons.push_back(map_polygon_bg);
       }
     }
