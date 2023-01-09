@@ -10,7 +10,8 @@ find_package(PCL REQUIRED COMPONENTS common)
 
 include_directories(
   SYSTEM
-    ${EIGEN3_INCLUDE_DIR}
+  ${EIGEN3_INCLUDE_DIR}
+  ${PCL_INCLUDE_DIRS}
 )
 
 ament_auto_add_library(${PROJECT_NAME} SHARED

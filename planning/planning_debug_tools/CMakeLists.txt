@@ -2,17 +2,17 @@ cmake_minimum_required(VERSION 3.5)
 project(planning_debug_tools)
 
 find_package(autoware_cmake REQUIRED)
-autoware_package()
 
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
-find_package(std_msgs REQUIRED)
 
 rosidl_generate_interfaces(
   planning_debug_tools
   "msg/TrajectoryDebugInfo.msg"
   DEPENDENCIES builtin_interfaces
 )
+
+autoware_package()
 
 ament_auto_add_library(trajectory_analyzer_node SHARED
   src/trajectory_analyzer.cpp

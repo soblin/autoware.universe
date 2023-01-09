@@ -18,6 +18,7 @@ ament_auto_add_executable(map_height_fitter
   src/map_height_fitter/map_height_fitter_node.cpp
   src/map_height_fitter/map_height_fitter_core.cpp
 )
+target_include_directories(map_height_fitter SYSTEM PUBLIC ${PCL_INCLUDE_DIRS})
 target_link_libraries(map_height_fitter ${PCL_LIBRARIES})
 
 if(BUILD_TESTING)
@@ -26,6 +27,7 @@ if(BUILD_TESTING)
     string(REGEX REPLACE ".cpp" "" test_name ${filename})
     ament_add_gmock(${test_name} ${filepath})
     target_include_directories(${test_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    target_include_directories(${test_name} SYSTEM PUBLIC ${PCL_INCLUDE_DIRS})
     target_link_libraries(${test_name} fmt)
     ament_target_dependencies(${test_name} ${${PROJECT_NAME}_FOUND_BUILD_DEPENDS})
   endfunction()

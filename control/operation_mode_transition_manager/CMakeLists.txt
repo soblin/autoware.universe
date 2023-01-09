@@ -2,9 +2,17 @@ cmake_minimum_required(VERSION 3.14)
 project(operation_mode_transition_manager)
 
 find_package(autoware_cmake REQUIRED)
-autoware_package()
+find_package(builtin_interfaces REQUIRED)
 find_package(ament_cmake_auto REQUIRED)
-ament_auto_find_build_dependencies()
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(
+  ${PROJECT_NAME}
+  "msg/OperationModeTransitionManagerDebug.msg"
+  DEPENDENCIES builtin_interfaces
+)
+
+autoware_package()
 
 ament_auto_add_library(operation_mode_transition_manager_node SHARED
   src/compatibility.cpp
@@ -16,12 +24,6 @@ ament_auto_add_library(operation_mode_transition_manager_node SHARED
 rclcpp_components_register_node(operation_mode_transition_manager_node
   PLUGIN "operation_mode_transition_manager::OperationModeTransitionManager"
   EXECUTABLE operation_mode_transition_manager_exe
-)
-
-rosidl_generate_interfaces(
-  ${PROJECT_NAME}
-  "msg/OperationModeTransitionManagerDebug.msg"
-  DEPENDENCIES builtin_interfaces
 )
 
 # to use same package defined message

@@ -23,7 +23,6 @@ else()
 endif()
 
 find_package(PCL REQUIRED COMPONENTS common io registration)
-include_directories(${PCL_INCLUDE_DIRS})
 
 ament_auto_add_executable(ndt_scan_matcher
   src/debug.cpp
@@ -36,6 +35,7 @@ ament_auto_add_executable(ndt_scan_matcher
   src/pose_initialization_module.cpp
 )
 
+target_include_directories(ndt_scan_matcher SYSTEM PUBLIC ${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 target_link_libraries(ndt_scan_matcher ${PCL_LIBRARIES})
 

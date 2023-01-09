@@ -2,11 +2,8 @@ cmake_minimum_required(VERSION 3.14)
 project(control_performance_analysis)
 
 find_package(autoware_cmake REQUIRED)
-autoware_package()
-
 
 find_package(Boost REQUIRED)
-
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
 
@@ -26,6 +23,8 @@ rosidl_generate_interfaces(
         "msg/FloatStamped.msg"
         DEPENDENCIES builtin_interfaces std_msgs
 )
+
+autoware_package()
 
 ament_auto_add_library(
         control_performance_analysis_core SHARED

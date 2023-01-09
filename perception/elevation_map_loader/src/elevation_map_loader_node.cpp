@@ -20,7 +20,7 @@
 #include <grid_map_pcl/helpers.hpp>
 #include <grid_map_ros/GridMapRosConverter.hpp>
 #include <rclcpp/logger.hpp>
-#include <tier4_autoware_utils/geometry/boost_geometery_algorithms.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 
 #include <grid_map_msgs/msg/grid_map.hpp>
 

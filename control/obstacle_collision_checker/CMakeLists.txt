@@ -5,6 +5,7 @@ find_package(autoware_cmake REQUIRED)
 autoware_package()
 
 include_directories(
+  SYSTEM PUBLIC
   include
   ${PCL_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
