@@ -14,9 +14,8 @@
 
 #include "front_vehicle_velocity_estimator/front_vehicle_velocity_estimator.hpp"
 
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <tier4_autoware_utils/geometry/geometry.hpp>
-
-#include <boost/geometry/algorithms/within.hpp>
 
 #include <memory>
 #include <numeric>
@@ -205,7 +204,7 @@ bool FrontVehicleVelocityEstimator::isWithinVehicle(
     return false;
   } else if (point.y > front_size.y()) {
     return false;
-  } else if (!boost::geometry::within(point_, object_ring_2d)) {
+  } else if (!tier4_autoware_utils::bg::within(point_, object_ring_2d)) {
     return false;
   }
   return true;
@@ -238,7 +237,7 @@ bool FrontVehicleVelocityEstimator::isFrontVehicle(
   if (
     !(label == ObjectClassification::UNKNOWN) && !(label == ObjectClassification::PEDESTRIAN) &&
     !(label == ObjectClassification::BICYCLE) && !(label == ObjectClassification::MOTORCYCLE) &&
-    boost::geometry::within(object_point, front_area)) {
+    tier4_autoware_utils::bg::within(object_point, front_area)) {
     return true;
   } else {
     return false;

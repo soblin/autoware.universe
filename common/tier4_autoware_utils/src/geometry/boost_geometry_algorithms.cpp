@@ -89,6 +89,11 @@ bool intersects(
 {
   return boost::geometry::intersects(poly1, poly2);
 }
+bool intersects(
+  const tier4_autoware_utils::LinearRing2d & poly1, const lanelet::BasicPolygon2d & poly2)
+{
+  return boost::geometry::intersects(poly1, poly2);
+}
 
 // intersection
 void intersection(

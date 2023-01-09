@@ -20,12 +20,12 @@
 #include <grid_map_pcl/helpers.hpp>
 #include <grid_map_ros/GridMapRosConverter.hpp>
 #include <rclcpp/logger.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometery_algorithms.hpp>
 
 #include <grid_map_msgs/msg/grid_map.hpp>
 
 #include <boost/geometry/algorithms/convex_hull.hpp>
 #include <boost/geometry/algorithms/intersects.hpp>
-#include <boost/iostreams/device/mapped_file.hpp>
 
 #include <lanelet2_core/geometry/Polygon.h>
 #include <pcl/filters/voxel_grid.h>
@@ -256,7 +256,7 @@ tier4_autoware_utils::LinearRing2d ElevationMapLoaderNode::getConvexHull(
   }
 
   tier4_autoware_utils::LinearRing2d convex_hull;
-  boost::geometry::convex_hull(candidate_points, convex_hull);
+  tier4_autoware_utils::bg::convex_hull(candidate_points, convex_hull);
 
   return convex_hull;
 }
@@ -267,7 +267,8 @@ lanelet::ConstLanelets ElevationMapLoaderNode::getIntersectedLanelets(
 {
   lanelet::ConstLanelets intersected_lanelets;
   for (const auto & road_lanelet : road_lanelets) {
-    if (boost::geometry::intersects(convex_hull, road_lanelet.polygon2d().basicPolygon())) {
+    if (tier4_autoware_utils::bg::intersects(
+          convex_hull, road_lanelet.polygon2d().basicPolygon())) {
       intersected_lanelets.push_back(road_lanelet);
     }
   }
@@ -286,7 +287,7 @@ bool ElevationMapLoaderNode::checkPointWithinLanelets(
         continue;
       }
     } else {
-      if (!boost::geometry::within(point2d, lanelet.polygon2d().basicPolygon())) {
+      if (!tier4_autoware_utils::bg::within(point2d, lanelet.polygon2d().basicPolygon())) {
         continue;
       }
     }

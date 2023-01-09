@@ -45,6 +45,7 @@ bool intersects(
 bool intersects(const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::Polygon2d &);
 bool intersects(
   const tier4_autoware_utils::LineString2d &, const tier4_autoware_utils::LineString2d &);
+bool intersects(const tier4_autoware_utils::LinearRing2d &, const lanelet::BasicPolygon2d &);
 
 // intersection
 void intersection(

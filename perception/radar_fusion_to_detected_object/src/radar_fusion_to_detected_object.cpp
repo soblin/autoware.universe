@@ -15,11 +15,10 @@
 
 #include "radar_fusion_to_detected_object.hpp"
 
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <tier4_autoware_utils/geometry/geometry.hpp>
 #include <tier4_autoware_utils/math/normalization.hpp>
 #include <tier4_autoware_utils/ros/msg_covariance.hpp>
-
-#include <boost/geometry.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -183,7 +182,7 @@ RadarFusionToDetectedObject::filterRadarWithinObject(
   for (const auto & radar : (*radars)) {
     Point2d radar_point{
       radar.pose_with_covariance.pose.position.x, radar.pose_with_covariance.pose.position.y};
-    if (boost::geometry::within(radar_point, object_box)) {
+    if (tier4_autoware_utils::bg::within(radar_point, object_box)) {
       outputs.emplace_back(radar);
     }
   }

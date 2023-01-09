@@ -15,6 +15,7 @@
 #include "detected_object_filter/object_lanelet_filter.hpp"
 
 #include <perception_utils/perception_utils.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <tier4_autoware_utils/geometry/geometry.hpp>
 
 #include <boost/geometry/algorithms/convex_hull.hpp>
@@ -122,7 +123,7 @@ LinearRing2d ObjectLaneletFilterNode::getConvexHull(
   }
 
   LinearRing2d convex_hull;
-  boost::geometry::convex_hull(candidate_points, convex_hull);
+  tier4_autoware_utils::bg::convex_hull(candidate_points, convex_hull);
 
   return convex_hull;
 }
