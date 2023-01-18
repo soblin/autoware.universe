@@ -118,8 +118,8 @@ bool IntersectionModule::modifyPathVelocity(
     util::isTrafficLightArrowActivated(assigned_lanelet, planner_data_->traffic_light_id_map);
   if (!intersection_lanelets_.has_value() || intersection_lanelets_.value().tl_arrow_solid_on) {
     intersection_lanelets_ = util::getObjectiveLanelets(
-      lanelet_map_ptr, routing_graph_ptr, lane_id_, planner_param_.detection_area_length,
-      planner_data_->occupancy_grid->info.width * std::sqrt(2.0), tl_arrow_solid_on);
+      lanelet_map_ptr, routing_graph_ptr, lane_id_, planner_param_.detection_area_length, 30,
+      tl_arrow_solid_on);
   }
   const auto & detection_lanelets = intersection_lanelets_.value().attention;
   const auto & adjacent_lanelets = intersection_lanelets_.value().adjacent;
