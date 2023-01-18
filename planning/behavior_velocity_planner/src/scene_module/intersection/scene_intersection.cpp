@@ -81,6 +81,7 @@ IntersectionModule::IntersectionModule(
   state_machine_.setMarginTime(planner_param_.state_transit_margin_time);
 }
 
+IntersectionModule::~IntersectionModule() { cv::destroyAllWindows(); }
 bool IntersectionModule::modifyPathVelocity(
   autoware_auto_planning_msgs::msg::PathWithLaneId * path,
   tier4_planning_msgs::msg::StopReason * stop_reason)

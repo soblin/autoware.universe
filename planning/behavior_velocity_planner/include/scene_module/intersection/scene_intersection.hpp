@@ -151,7 +151,7 @@ public:
     const int64_t module_id, const int64_t lane_id, std::shared_ptr<const PlannerData> planner_data,
     const PlannerParam & planner_param, const rclcpp::Logger logger,
     const rclcpp::Clock::SharedPtr clock);
-
+  ~IntersectionModule();
   /**
    * @brief plan go-stop velocity at traffic crossing with collision check between reference path
    * and object predicted path
