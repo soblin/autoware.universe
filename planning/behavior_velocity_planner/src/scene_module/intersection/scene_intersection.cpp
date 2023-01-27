@@ -187,8 +187,6 @@ bool IntersectionModule::modifyPathVelocity(
   /* calculate final stop lines */
   int stop_line_idx_final =
     stop_lines_idx_opt.has_value() ? stop_lines_idx_opt.value().stop_line : -1;
-  int pass_judge_line_idx_final =
-    stop_lines_idx_opt.has_value() ? stop_lines_idx_opt.value().pass_judge_line : -1;
   if (external_go) {
     is_entry_prohibited = false;
   } else if (external_stop) {
@@ -204,11 +202,9 @@ bool IntersectionModule::modifyPathVelocity(
       dist_stuck_stopline > eps;
     if (is_stuck && !is_over_stuck_stopline) {
       stop_line_idx_final = stuck_line_idx;
-      pass_judge_line_idx_final = stuck_line_idx;
     } else if (
       ((is_stuck && is_over_stuck_stopline) || has_collision) && stop_lines_idx_opt.has_value()) {
       stop_line_idx_final = stop_lines_idx_opt.value().stop_line;
-      pass_judge_line_idx_final = stop_lines_idx_opt.value().pass_judge_line;
     }
   }
 
@@ -305,8 +301,6 @@ bool IntersectionModule::checkCollision(
   lanelet::utils::query::getClosestLanelet(
     ego_lane_with_next_lane, tier4_autoware_utils::getPose(path.points.at(closest_idx).point),
     &closest_lanelet);
-
-  debug_data_.ego_lane_polygon = toGeomMsg(ego_poly);
 
   /* extract target objects */
   autoware_auto_perception_msgs::msg::PredictedObjects target_objects;

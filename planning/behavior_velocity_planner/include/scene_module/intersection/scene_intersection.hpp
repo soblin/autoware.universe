@@ -76,8 +76,8 @@ public:
     double getDuration() { return duration_; }
 
   private:
-    State state_;                               //! current state
-    double margin_time_;                        //! margin time when transit to Go from Stop
+    State state_;         //! current state
+    double margin_time_;  //! margin time when transit to Go from Stop
     double duration_;
     std::shared_ptr<rclcpp::Time> start_time_;  //! first time received GO when STOP state
   };
@@ -89,9 +89,6 @@ public:
 
     geometry_msgs::msg::Pose slow_wall_pose;
     geometry_msgs::msg::Pose stop_wall_pose;
-    geometry_msgs::msg::Pose stop_point_pose;
-    geometry_msgs::msg::Pose judge_point_pose;
-    geometry_msgs::msg::Polygon ego_lane_polygon;
     geometry_msgs::msg::Polygon stuck_vehicle_detect_area;
     geometry_msgs::msg::Polygon candidate_collision_ego_lane_polygon;
     std::vector<geometry_msgs::msg::Polygon> candidate_collision_object_polygons;
