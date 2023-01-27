@@ -210,7 +210,6 @@ bool IntersectionModule::modifyPathVelocity(
     const double dist_stuck_stopline = motion_utils::calcSignedArcLength(
       path->points, path->points.at(stuck_line_idx_opt.value()).point.pose.position,
       path->points.at(closest_idx).point.pose.position);
-    const double eps = 1e-1;  // NOTE: check if sufficiently over the stuck stopline
     const bool is_over_stuck_stopline =
       util::isOverTargetIndex(*path, closest_idx, current_pose.pose, stuck_line_idx_opt.value()) &&
       dist_stuck_stopline > planner_param_.stop_overshoot_margin;
