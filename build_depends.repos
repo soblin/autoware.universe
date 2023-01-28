@@ -2,8 +2,8 @@ repositories:
   # core
   core/autoware_common:
     type: git
-    url: https://github.com/autowarefoundation/autoware_common.git
-    version: main
+    url: https://github.com/soblin/autoware_common.git
+    version: issue/2773
   core/autoware.core:
     type: git
     url: https://github.com/autowarefoundation/autoware.core.git
