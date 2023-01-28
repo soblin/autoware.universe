@@ -860,8 +860,8 @@ void BehaviorPathPlannerNode::publish_steering_factor(const TurnIndicatorsComman
 
     const auto [intersection_pose, intersection_distance] =
       turn_signal_decider_.getIntersectionPoseAndDistance();
-    const uint16_t steering_factor_state = std::invoke([&intersection_flag]() {
-      if (intersection_flag) {
+    const uint16_t steering_factor_state = std::invoke([intersection_flg = intersection_flag]() {
+      if (intersection_flg) {
         return SteeringFactor::TURNING;
       }
       return SteeringFactor::TRYING;

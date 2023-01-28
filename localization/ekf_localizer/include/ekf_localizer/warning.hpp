@@ -26,14 +26,20 @@ public:
 
   void warn(const std::string & message) const
   {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-security"
     RCLCPP_WARN(node_->get_logger(), message.c_str());
+#pragma clang diagnostic pop
   }
 
   void warnThrottle(const std::string & message, const int duration_milliseconds) const
   {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-security"
     RCLCPP_WARN_THROTTLE(
       node_->get_logger(), *(node_->get_clock()),
       std::chrono::milliseconds(duration_milliseconds).count(), message.c_str());
+#pragma clang diagnostic pop
   }
 
 private:
