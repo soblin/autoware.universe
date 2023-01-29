@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.14)
 project(planning_validator)
 
+find_package(builtin_interfaces REQUIRED)
+
+rosidl_generate_interfaces(
+  ${PROJECT_NAME}
+  "msg/PlanningValidatorStatus.msg"
+  DEPENDENCIES builtin_interfaces
+)
+
 find_package(autoware_cmake REQUIRED)
 autoware_package()
 
@@ -27,12 +35,6 @@ ament_auto_add_library(invalid_trajectory_publisher_node SHARED
 rclcpp_components_register_node(invalid_trajectory_publisher_node
   PLUGIN "planning_validator::InvalidTrajectoryPublisherNode"
   EXECUTABLE invalid_trajectory_publisher
-)
-
-rosidl_generate_interfaces(
-  ${PROJECT_NAME}
-  "msg/PlanningValidatorStatus.msg"
-  DEPENDENCIES builtin_interfaces
 )
 
 # to use a message defined in the same package

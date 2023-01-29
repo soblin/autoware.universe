@@ -14,6 +14,7 @@
 
 #include "motion_utils/marker/marker_helper.hpp"
 
+#include "motion_utils/resample/resample_utils.hpp"
 #include "tier4_autoware_utils/geometry/geometry.hpp"
 #include "tier4_autoware_utils/ros/marker_helper.hpp"
 

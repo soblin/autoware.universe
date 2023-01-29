@@ -16,12 +16,16 @@
 
 #include "scene_module/run_out/dynamic_obstacle.hpp"
 
+#include <motion_utils/marker/marker_helper.hpp>
+
 #include <tier4_debug_msgs/msg/float32_multi_array_stamped.hpp>
 #include <tier4_debug_msgs/msg/int32_stamped.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 
+#include <memory>
 #include <string>
 #include <vector>
+
 namespace behavior_velocity_planner
 {
 using autoware_auto_planning_msgs::msg::Trajectory;

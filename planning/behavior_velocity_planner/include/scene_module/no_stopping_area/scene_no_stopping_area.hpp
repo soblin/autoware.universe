@@ -23,6 +23,7 @@
 
 #include <Eigen/Core>
 #include <lanelet2_extension/regulatory_elements/no_stopping_area.hpp>
+#include <motion_utils/marker/marker_helper.hpp>
 #include <rclcpp/rclcpp.hpp>
 
 #include <autoware_auto_perception_msgs/msg/object_classification.hpp>

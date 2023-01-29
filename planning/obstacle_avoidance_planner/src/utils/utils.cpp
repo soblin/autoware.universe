@@ -24,6 +24,11 @@
 #include "geometry_msgs/msg/pose.hpp"
 #include "nav_msgs/msg/map_meta_data.hpp"
 
+#include "boost/geometry/algorithms/correct.hpp"
+#include "boost/geometry/algorithms/intersects.hpp"
+#include "boost/geometry/algorithms/within.hpp"
+#include "boost/geometry/geometries/point_xy.hpp"
+#include "boost/geometry/geometries/polygon.hpp"
 #include "boost/optional.hpp"
 
 #include <algorithm>

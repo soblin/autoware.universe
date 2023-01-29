@@ -15,6 +15,7 @@
 #ifndef SCENE_MODULE__BLIND_SPOT__SCENE_HPP_
 #define SCENE_MODULE__BLIND_SPOT__SCENE_HPP_
 
+#include <motion_utils/marker/marker_helper.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <scene_module/scene_module_interface.hpp>
 #include <utilization/state_machine.hpp>

@@ -16,6 +16,7 @@
 #define SCENE_MODULE__CROSSWALK__SCENE_WALKWAY_HPP_
 
 #include <lanelet2_extension/utility/query.hpp>
+#include <motion_utils/marker/marker_helper.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <scene_module/crosswalk/scene_crosswalk.hpp>
 #include <scene_module/crosswalk/util.hpp>

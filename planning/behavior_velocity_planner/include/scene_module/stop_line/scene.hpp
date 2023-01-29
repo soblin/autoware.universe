@@ -15,6 +15,8 @@
 #ifndef SCENE_MODULE__STOP_LINE__SCENE_HPP_
 #define SCENE_MODULE__STOP_LINE__SCENE_HPP_
 
+#include <motion_utils/marker/marker_helper.hpp>
+
 #include <memory>
 #include <string>
 #include <unordered_map>

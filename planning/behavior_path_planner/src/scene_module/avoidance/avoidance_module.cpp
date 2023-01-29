@@ -22,6 +22,8 @@
 
 #include <lanelet2_extension/utility/message_conversion.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
+#include <motion_utils/marker/marker_helper.hpp>
+#include <motion_utils/trajectory/trajectory.hpp>
 #include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 
 #include <tier4_planning_msgs/msg/avoidance_debug_factor.hpp>

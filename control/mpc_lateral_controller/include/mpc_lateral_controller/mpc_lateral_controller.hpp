@@ -43,6 +43,7 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "tf2_msgs/msg/tf_message.hpp"
 #include "tier4_debug_msgs/msg/float32_multi_array_stamped.hpp"
+#include "tier4_debug_msgs/msg/float32_stamped.hpp"
 
 #include <deque>
 #include <memory>

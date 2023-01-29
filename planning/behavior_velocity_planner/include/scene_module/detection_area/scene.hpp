@@ -15,6 +15,8 @@
 #ifndef SCENE_MODULE__DETECTION_AREA__SCENE_HPP_
 #define SCENE_MODULE__DETECTION_AREA__SCENE_HPP_
 
+#include <motion_utils/marker/marker_helper.hpp>
+
 #include <boost/optional.hpp>
 
 #include <memory>

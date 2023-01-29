@@ -19,7 +19,19 @@
 #ifndef MULTI_OBJECT_TRACKER__UTILS__UTILS_HPP_
 #define MULTI_OBJECT_TRACKER__UTILS__UTILS_HPP_
 
+#define EIGEN_MPL2_ONLY
+
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
+#include <autoware_auto_perception_msgs/msg/detected_object.hpp>
 #include <autoware_auto_perception_msgs/msg/object_classification.hpp>
+#include <autoware_auto_perception_msgs/msg/shape.hpp>
+#include <geometry_msgs/msg/transform.hpp>
+
+#include <tf2/utils.h>
+
+#include <algorithm>
 
 namespace utils
 {
