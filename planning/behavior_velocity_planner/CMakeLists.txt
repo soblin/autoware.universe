@@ -12,9 +12,12 @@ find_package(PCL REQUIRED COMPONENTS common filters)
 find_package(OpenCV REQUIRED)
 
 ament_auto_add_library(behavior_velocity_planner_utilization SHARED
-  src/utilization/path_utilization.cpp
-  src/utilization/util.cpp
+  src/utilization/arc_lane_util.cpp
+  src/utilization/boost_geometry_helper.cpp
   src/utilization/debug.cpp
+  src/utilization/path_utilization.cpp
+  src/utilization/trajectory_utils.cpp
+  src/utilization/util.cpp
 )
 target_include_directories(behavior_velocity_planner_utilization
   SYSTEM PUBLIC
@@ -88,7 +91,9 @@ if(BUILD_TESTING)
   )
   target_link_libraries(utilization-test
     gtest_main
+    behavior_velocity_planner
     behavior_velocity_planner_utilization
+    behavior_velocity_planner_scene_modules
   )
 
   # Gtest for occlusion spot

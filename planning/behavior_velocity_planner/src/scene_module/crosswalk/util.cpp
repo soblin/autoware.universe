@@ -25,7 +25,8 @@
 #include <boost/geometry/geometries/linestring.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 
-#include <lanelet2_core/primitives/BasicRegulatoryElements.h>
+#include <lanelet2_core/geometry/LineString.h>
+#include <lanelet2_core/geometry/Polygon.h>
 
 #include <algorithm>
 #include <memory>

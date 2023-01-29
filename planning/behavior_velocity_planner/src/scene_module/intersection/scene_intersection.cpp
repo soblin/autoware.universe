@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <lanelet2_extension/utility/message_conversion.hpp>
+#include <lanelet2_extension/utility/query.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
 #include <scene_module/intersection/scene_intersection.hpp>
 #include <scene_module/intersection/util.hpp>
@@ -21,6 +22,8 @@
 #include <utilization/path_utilization.hpp>
 #include <utilization/trajectory_utils.hpp>
 #include <utilization/util.hpp>
+
+#include <lanelet2_core/primitives/BasicRegulatoryElements.h>
 
 #include <algorithm>
 #include <memory>

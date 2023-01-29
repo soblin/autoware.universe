@@ -15,6 +15,7 @@
 #ifndef SCENE_MODULE__SPEED_BUMP__SCENE_HPP_
 #define SCENE_MODULE__SPEED_BUMP__SCENE_HPP_
 
+#include <lanelet2_extension/regulatory_elements/speed_bump.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <scene_module/scene_module_interface.hpp>
 #include <scene_module/speed_bump/util.hpp>

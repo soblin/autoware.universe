@@ -15,7 +15,6 @@
 #ifndef ROUTE_HANDLER__ROUTE_HANDLER_HPP_
 #define ROUTE_HANDLER__ROUTE_HANDLER_HPP_
 
-#include <lanelet2_extension/utility/query.hpp>
 #include <rclcpp/rclcpp.hpp>
 
 #include <autoware_auto_mapping_msgs/msg/had_map_bin.hpp>
@@ -28,10 +27,8 @@
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <unique_identifier_msgs/msg/uuid.hpp>
 
-#include <lanelet2_routing/Route.h>
-#include <lanelet2_routing/RoutingCost.h>
-#include <lanelet2_routing/RoutingGraph.h>
-#include <lanelet2_routing/RoutingGraphContainer.h>
+#include <lanelet2_core/Forward.h>
+#include <lanelet2_routing/Forward.h>
 #include <lanelet2_traffic_rules/TrafficRulesFactory.h>
 
 #include <limits>

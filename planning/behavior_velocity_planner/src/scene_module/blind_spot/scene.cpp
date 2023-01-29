@@ -21,6 +21,7 @@
 #include <utilization/util.hpp>
 
 #include <lanelet2_core/LaneletMap.h>
+#include <lanelet2_core/geometry/LineString.h>
 #include <lanelet2_routing/RoutingGraph.h>
 
 #include <algorithm>

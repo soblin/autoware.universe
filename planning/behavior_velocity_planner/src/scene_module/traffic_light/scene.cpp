@@ -17,6 +17,7 @@
 #include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <utilization/util.hpp>
 
+#include <boost/geometry/algorithms/distance.hpp>
 #include <boost/optional.hpp>  // To be replaced by std::optional in C++17
 
 #include <tf2/utils.h>

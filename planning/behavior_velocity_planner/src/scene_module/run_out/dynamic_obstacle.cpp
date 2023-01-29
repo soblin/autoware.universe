@@ -16,6 +16,9 @@
 
 #include <tier4_autoware_utils/math/unit_conversion.hpp>
 
+#include <boost/geometry/algorithms/covered_by.hpp>
+#include <boost/geometry/algorithms/envelope.hpp>
+
 #include <pcl/filters/voxel_grid.h>
 
 namespace behavior_velocity_planner
