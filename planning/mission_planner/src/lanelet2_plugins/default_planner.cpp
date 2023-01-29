@@ -21,6 +21,7 @@
 #include <lanelet2_extension/utility/utilities.hpp>
 #include <lanelet2_extension/visualization/visualization.hpp>
 #include <tier4_autoware_utils/geometry/boost_geometry.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <tier4_autoware_utils/geometry/geometry.hpp>
 #include <tier4_autoware_utils/math/normalization.hpp>
 #include <tier4_autoware_utils/math/unit_conversion.hpp>
@@ -240,7 +241,7 @@ bool DefaultPlanner::check_goal_footprint(
   std::vector<tier4_autoware_utils::Point2d> points_intersection;
 
   // check if goal footprint is in current lane
-  boost::geometry::intersection(
+  tier4_autoware_utils::bg::intersection(
     goal_footprint, combined_prev_lanelet.polygon2d().basicPolygon(), points_intersection);
   if (points_intersection.empty()) {
     return true;

@@ -18,6 +18,7 @@
 #include "obstacle_velocity_limiter/parameters.hpp"
 #include "obstacle_velocity_limiter/types.hpp"
 
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 #include <tier4_autoware_utils/ros/transform_listener.hpp>
 
 #include <autoware_auto_perception_msgs/msg/predicted_objects.hpp>
@@ -95,7 +96,7 @@ struct ObstacleTree<multilinestring_t>
       // need conversion to a linestring to use the 'intersection' and 'within' functions
       const auto ls = linestring_t{candidate.first, candidate.second};
       intersection_points.clear();
-      boost::geometry::intersection(ls, polygon, intersection_points);
+      tier4_autoware_utils::bg::intersection(polygon, ls, intersection_points);
       if (intersection_points.empty()) {
         // No intersection with the polygon: segment is outside or inside of the polygon
         if (boost::geometry::within(ls, polygon)) {

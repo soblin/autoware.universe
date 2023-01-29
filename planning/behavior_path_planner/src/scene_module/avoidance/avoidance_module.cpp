@@ -22,6 +22,7 @@
 
 #include <lanelet2_extension/utility/message_conversion.hpp>
 #include <lanelet2_extension/utility/utilities.hpp>
+#include <tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp>
 
 #include <tier4_planning_msgs/msg/avoidance_debug_factor.hpp>
 #include <tier4_planning_msgs/msg/avoidance_debug_msg.hpp>
@@ -399,7 +400,7 @@ void AvoidanceModule::fillAvoidanceTargetObjects(
       continue;
     }
 
-    lanelet::BasicPoint2d object_centroid(object_data.centroid.x(), object_data.centroid.y());
+    Point2d object_centroid(object_data.centroid.x(), object_data.centroid.y());
 
     /**
      * Is not object in adjacent lane?
@@ -408,8 +409,8 @@ void AvoidanceModule::fillAvoidanceTargetObjects(
      *     - No -> ignore this object.
      *   - No -> the object is avoidance target no matter whether it is parking object or not.
      */
-    const auto is_in_ego_lane =
-      within(object_centroid, overhang_lanelet.polygon2d().basicPolygon());
+    const auto is_in_ego_lane = tier4_autoware_utils::bg::within(
+      object_centroid, overhang_lanelet.polygon2d().basicPolygon());
     if (is_in_ego_lane) {
       /**
        * TODO(Satoshi Ota) use intersection area
@@ -512,7 +513,7 @@ void AvoidanceModule::fillObjectEnvelopePolygon(
   Polygon2d object_polygon{};
   util::calcObjectPolygon(object_data.object, &object_polygon);
 
-  if (!within(object_polygon, same_id_obj->envelope_poly)) {
+  if (!tier4_autoware_utils::bg::within(object_polygon, same_id_obj->envelope_poly)) {
     object_data.envelope_poly =
       createEnvelopePolygon(object_data, closest_pose, parameters_->object_envelope_buffer);
     return;

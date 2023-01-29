@@ -18,7 +18,7 @@
 
 #include <vector>
 
-constexpr double epsilon = 1e-6;
+[[maybe_unused]] constexpr double epsilon = 1e-6;
 
 TEST(interpolation_utils, isIncreasing)
 {

@@ -57,6 +57,9 @@ void intersection(
 void intersection(
   const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::Polygon2d &,
   std::vector<tier4_autoware_utils::Point2d> &);
+void intersection(
+  const tier4_autoware_utils::Polygon2d &, const lanelet::BasicPolygon2d &,
+  std::vector<tier4_autoware_utils::Point2d> &);
 
 // disjoint
 bool disjoint(const tier4_autoware_utils::Polygon2d &, const tier4_autoware_utils::Polygon2d &);

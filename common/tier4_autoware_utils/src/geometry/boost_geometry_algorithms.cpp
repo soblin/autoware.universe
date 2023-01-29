@@ -115,6 +115,12 @@ void intersection(
 {
   boost::geometry::intersection(poly1, poly2, poly3);
 }
+void intersection(
+  const tier4_autoware_utils::Polygon2d & poly1, const lanelet::BasicPolygon2d & poly2,
+  std::vector<tier4_autoware_utils::Point2d> & poly3)
+{
+  boost::geometry::intersection(poly1, poly2, poly3);
+}
 
 // disjoint
 bool disjoint(

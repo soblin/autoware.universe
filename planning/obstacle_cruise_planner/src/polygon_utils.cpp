@@ -15,6 +15,7 @@
 #include "obstacle_cruise_planner/polygon_utils.hpp"
 
 #include "motion_utils/trajectory/trajectory.hpp"
+#include "tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp"
 #include "tier4_autoware_utils/geometry/boost_polygon_utils.hpp"
 #include "tier4_autoware_utils/geometry/geometry.hpp"
 
@@ -85,7 +86,7 @@ Polygon2d createOneStepPolygon(
               : tier4_autoware_utils::inverseClockwise(polygon);
 
   Polygon2d hull_polygon;
-  bg::convex_hull(polygon, hull_polygon);
+  tier4_autoware_utils::bg::convex_hull(polygon, hull_polygon);
 
   return hull_polygon;
 }

@@ -78,7 +78,7 @@ polygon_t createEnvelopePolygon(
     envelope_polygon.outer()[reverse_index] = forward_simulated_vector.first;
   }
   envelope_polygon.outer().push_back(envelope_polygon.outer().front());
-  boost::geometry::correct(envelope_polygon);
+  tier4_autoware_utils::bg::correct(envelope_polygon);
   return envelope_polygon;
 }
 

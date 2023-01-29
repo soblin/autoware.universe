@@ -15,6 +15,7 @@
 #include "obstacle_velocity_limiter/distance.hpp"
 #include "obstacle_velocity_limiter/obstacles.hpp"
 #include "obstacle_velocity_limiter/types.hpp"
+#include "tier4_autoware_utils/geometry/boost_geometry_algorithms.hpp"
 #include "tier4_autoware_utils/geometry/geometry.hpp"
 
 #include <autoware_auto_perception_msgs/msg/predicted_object.hpp>
@@ -47,7 +48,7 @@ TEST(TestCollisionDistance, distanceToClosestCollision)
   linestring_t vector = {{0.0, 0.0}, {5.0, 0.0}};
   polygon_t footprint;
   footprint.outer() = {{0.0, 1.0}, {5.0, 1.0}, {5.0, -1.0}, {0.0, -1.0}};
-  boost::geometry::correct(footprint);  // avoid bugs with malformed polygon
+  tier4_autoware_utils::bg::correct(footprint);  // avoid bugs with malformed polygon
   obstacle_velocity_limiter::Obstacles obstacles;
 
   std::optional<double> result =
@@ -86,7 +87,7 @@ TEST(TestCollisionDistance, distanceToClosestCollision)
   vector = linestring_t{{0.0, 0.0}, {5.0, 5.0}};
   params.heading = M_PI_4;
   footprint.outer() = {{-1.0, 1.0}, {4.0, 6.0}, {6.0, 4.0}, {1.0, -1.0}};
-  boost::geometry::correct(footprint);  // avoid bugs with malformed polygon
+  tier4_autoware_utils::bg::correct(footprint);  // avoid bugs with malformed polygon
   obstacles.points.clear();
   obstacles.lines.clear();
 

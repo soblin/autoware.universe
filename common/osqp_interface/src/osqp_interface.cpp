@@ -431,7 +431,8 @@ void OSQPInterface::logUnsolvedStatus(const std::string & prefix_message) const
   output_message += "Optimization failed due to " + status_message;
 
   // log with warning
-  RCLCPP_WARN(rclcpp::get_logger("osqp_interface"), output_message.c_str());
+  // NOTE(Mamoru Sobue): this cannot be disabled by any option in clang
+  // RCLCPP_WARN(rclcpp::get_logger("osqp_interface"), output_message.c_str());
 }
 }  // namespace osqp
 }  // namespace common
