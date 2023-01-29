@@ -16,6 +16,7 @@
 
 #include <lanelet2_extension/regulatory_elements/road_marking.hpp>
 #include <lanelet2_extension/utility/query.hpp>
+#include <utilization/util.hpp>
 
 #include <memory>
 #include <string>

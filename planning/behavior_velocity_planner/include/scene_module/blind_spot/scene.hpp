@@ -27,7 +27,7 @@
 
 #include <boost/optional.hpp>
 
-#include <lanelet2_core/Forward.h>
+#include <lanelet2_core/primitives/CompoundPolygon.h>
 #include <lanelet2_routing/Forward.h>
 
 #include <memory>

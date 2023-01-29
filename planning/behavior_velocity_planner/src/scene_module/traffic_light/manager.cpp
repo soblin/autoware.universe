@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <scene_module/traffic_light/manager.hpp>
+#include <utilization/util.hpp>
 
 #include <memory>
 #include <string>

@@ -14,6 +14,7 @@
 
 #include <lanelet2_extension/utility/query.hpp>
 #include <scene_module/detection_area/manager.hpp>
+#include <utilization/util.hpp>
 
 #include <memory>
 #include <string>

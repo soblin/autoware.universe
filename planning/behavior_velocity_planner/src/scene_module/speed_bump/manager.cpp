@@ -15,6 +15,7 @@
 #include "scene_module/speed_bump/manager.hpp"
 
 #include <lanelet2_extension/utility/query.hpp>
+#include <utilization/util.hpp>
 
 #include <tf2/utils.h>
 

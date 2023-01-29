@@ -14,10 +14,11 @@
 #ifndef SCENE_MODULE__RUN_OUT__DEBUG_HPP_
 #define SCENE_MODULE__RUN_OUT__DEBUG_HPP_
 
-#include "scene_module/run_out/dynamic_obstacle.hpp"
-
 #include <motion_utils/marker/marker_helper.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <utilization/boost_geometry_helper.hpp>
 
+#include <autoware_auto_planning_msgs/msg/trajectory.hpp>
 #include <tier4_debug_msgs/msg/float32_multi_array_stamped.hpp>
 #include <tier4_debug_msgs/msg/int32_stamped.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>

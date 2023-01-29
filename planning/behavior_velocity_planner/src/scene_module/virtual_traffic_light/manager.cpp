@@ -14,6 +14,7 @@
 
 #include <scene_module/virtual_traffic_light/manager.hpp>
 #include <tier4_autoware_utils/math/unit_conversion.hpp>
+#include <utilization/util.hpp>
 
 #include <memory>
 #include <string>
