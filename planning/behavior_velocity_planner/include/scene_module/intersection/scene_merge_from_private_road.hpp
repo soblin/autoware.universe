@@ -132,6 +132,7 @@ private:
 
   // Parameter
   PlannerParam planner_param_;
+  std::optional<util::IntersectionLanelets> intersection_lanelets_;
 
   StateMachine state_machine_;  //! for state
 

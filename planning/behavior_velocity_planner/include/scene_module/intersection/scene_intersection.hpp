@@ -16,6 +16,7 @@
 #define SCENE_MODULE__INTERSECTION__SCENE_INTERSECTION_HPP_
 
 #include <rclcpp/rclcpp.hpp>
+#include <scene_module/intersection/util_type.hpp>
 #include <scene_module/scene_module_interface.hpp>
 #include <tier4_autoware_utils/tier4_autoware_utils.hpp>
 #include <utilization/boost_geometry_helper.hpp>
@@ -154,6 +155,7 @@ private:
   bool is_go_out_;
   // Parameter
   PlannerParam planner_param_;
+  std::optional<util::IntersectionLanelets> intersection_lanelets_;
 
   /**
    * @brief check collision for all lanelet area & predicted objects (call checkPathCollision() as
