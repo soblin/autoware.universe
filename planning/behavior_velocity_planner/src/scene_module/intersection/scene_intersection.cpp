@@ -243,6 +243,7 @@ bool IntersectionModule::modifyPathVelocity(
         std::make_pair(closest_idx, occlusion_stop_line_idx_opt.value());
       prev_occlusion_stop_line_pose_ =
         path_ip.points.at(occlusion_stop_line_idx_opt.value()).point.pose;
+      std::cout << "occlusion but collision line failed to generate" << std::endl;
     } else if (util::isBeforeTargetIndex(
                  *path, closest_idx, current_pose.pose, collision_stop_line_idx_opt.value())) {
       // do two phase stopping
@@ -254,6 +255,7 @@ bool IntersectionModule::modifyPathVelocity(
         std::make_pair(collision_stop_line_idx_opt.value(), occlusion_stop_line_idx_opt.value());
       prev_occlusion_stop_line_pose_ =
         path_ip.points.at(occlusion_stop_line_idx_opt.value()).point.pose;
+      std::cout << "do two phase stop" << std::endl;
     } else {
       is_entry_prohibited = true;
       stop_line_idx = occlusion_stop_line_idx_opt;
@@ -262,16 +264,19 @@ bool IntersectionModule::modifyPathVelocity(
         std::make_pair(closest_idx, occlusion_stop_line_idx_opt.value());
       prev_occlusion_stop_line_pose_ =
         path_ip.points.at(occlusion_stop_line_idx_opt.value()).point.pose;
+      std::cout << "creep to occlusion" << std::endl;
     }
   } else if (prev_occlusion_stop_line_pose_.has_value()) {
     // previously occlusion existed, but now it is clear
     const auto new_collision_stop_line_idx = motion_utils::findNearestIndex(
       path->points, prev_occlusion_stop_line_pose_.value(), 3.0, M_PI_4);
+    std::cout << "occlusion disappeared" << std::endl;
     if (new_collision_stop_line_idx && has_collision) {
       // do collision checking at previous occlusion stop line
       // NOTE: this works in case of suddel lane change
       is_entry_prohibited = true;
       stop_line_idx = new_collision_stop_line_idx.get();
+      std::cout << "occlusion disappeared, but collision detected" << std::endl;
     }
   } else if (is_stuck && stuck_line_idx_opt.has_value()) {
     is_entry_prohibited = true;
@@ -319,6 +324,7 @@ bool IntersectionModule::modifyPathVelocity(
 
     /* in case of two phase stop */
     if (extra_stop_line_idx.has_value()) {
+      debug_data_.extra_stop = true;
       debug_data_.extra_stop_wall_pose =
         util::getAheadPose(extra_stop_line_idx.value(), baselink2front, *path);
     }
@@ -1099,7 +1105,7 @@ std::optional<size_t> IntersectionModule::findNearestOcclusionProjectedPosition(
   // clean-up and find nearest risk
   const int min_cost_thr = dist2pixel(occlusion_dist_thr);
   int min_cost = 255;
-  int min_cost_projection_ind = -1;
+  std::optional<int> min_cost_projection_ind = std::nullopt;
   for (int i = 0; i < width; ++i) {
     for (int j = 0; j < height; ++j) {
       const int pixel = static_cast<int>(distance_grid_cropped.at<unsigned char>(j, i));
@@ -1118,12 +1124,12 @@ std::optional<size_t> IntersectionModule::findNearestOcclusionProjectedPosition(
   cv::waitKey(1);
   */
 
-  if (min_cost > min_cost_thr || min_cost_projection_ind == -1) {
+  if (min_cost > min_cost_thr || !min_cost_projection_ind.has_value()) {
     return std::nullopt;
   }
-  const size_t baselink_ind = static_cast<size_t>(std::min<int>(
-    lane_start, std::max<int>(
-                  lane_end, min_cost_projection_ind - std::ceil(baselink2front / interval) +
+  const size_t baselink_ind = static_cast<size_t>(std::max<int>(
+    lane_start, std::min<int>(
+                  lane_end, min_cost_projection_ind.value() - std::ceil(baselink2front / interval) +
                               std::ceil(extra_occlusion_margin / interval))));
   return std::make_optional<size_t>(baselink_ind);
 }
