@@ -89,7 +89,7 @@ IntersectionModule::IntersectionModule(
   state_machine_.setMarginTime(planner_param_.state_transit_margin_time);
 }
 
-IntersectionModule::~IntersectionModule() { cv::destroyAllWindows(); }
+IntersectionModule::~IntersectionModule() {}
 
 bool IntersectionModule::modifyPathVelocity(
   autoware_auto_planning_msgs::msg::PathWithLaneId * path,
@@ -1077,15 +1077,15 @@ std::optional<size_t> IntersectionModule::findNearestOcclusionProjectedPosition(
             cost_prev_checkpoint.value();
           const double dy = point.y() - prev_checkpoint_y, dx = point.x() - prev_checkpoint_x;
           double new_dist = prev_cost + std::hypot(dy, dx);
-          if (planner_param_.occlusion_do_dp && pixel != undef_pixel) {
-            const double cur_dist = pixel2dist(pixel);
-            if (cur_dist < new_dist) {
-              new_dist = cur_dist;
-            }
+          const double cur_dist = pixel2dist(pixel);
+          if (planner_param_.occlusion_do_dp && cur_dist < new_dist && pixel != undef_pixel) {
+            new_dist = cur_dist;
+            // in this case, no need to update projection_ind, instead reset the parent
+            projection_ind = projection_ind_grid.at<int>(height - 1 - idx_y, idx_x);
+          } else {
+            projection_ind_grid.at<int>(height - 1 - idx_y, idx_x) = projection_ind;
           }
           distance_grid.at<unsigned char>(height - 1 - idx_y, idx_x) = dist2pixel(new_dist);
-          projection_ind_grid.at<int>(height - 1 - idx_y, idx_x) =
-            projection_ind;  // if do_dp, this is not accurate
           cost_prev_checkpoint =
             std::make_optional<std::tuple<double, double, double>>(new_dist, point.x(), point.y());
         }
