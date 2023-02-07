@@ -212,7 +212,7 @@ bool IntersectionModule::modifyPathVelocity(
       path->points.at(closest_idx).point.pose.position);
     const double eps = 1e-1;  // NOTE: check if sufficiently over the stuck stopline
     const bool is_over_stuck_stopline =
-      util::isOverTargetIndex(*path, closest_idx, current_pose, stuck_line_idx_opt.value()) &&
+      util::isOverTargetIndex(*path, closest_idx, current_pose.pose, stuck_line_idx_opt.value()) &&
       dist_stuck_stopline > planner_param_.stop_overshoot_margin;
     if (!is_over_stuck_stopline) {
       stop_line_idx = stuck_line_idx_opt.value();
@@ -241,22 +241,21 @@ bool IntersectionModule::modifyPathVelocity(
   setSafe(state_machine_.getState() == IntersectionModule::State::GO);
   setDistance(motion_utils::calcSignedArcLength(
     path->points, planner_data_->current_pose.pose.position,
-    path->points.at(stop_line_idx_final).point.pose.position));
+    path->points.at(stop_line_idx.value()).point.pose.position));
 
   if (!isActivated()) {
     // if RTC says intersection entry is 'dangerous', insert stop_line(v == 0.0) in this block
     is_go_out_ = false;
 
     constexpr double v = 0.0;
-    planning_utils::setVelocityFromIndex(stop_line_idx.value(), v, path);
+    planning_utils::setVelocityFrom(stop_line_idx.value(), v, path);
     debug_data_.stop_required = true;
     const double base_link2front = planner_data_->vehicle_info_.max_longitudinal_offset_m;
-    debug_data_.stop_wall_pose =
-      planning_utils::getAheadPose(stop_line_idx.value(), base_link2front, *path);
+    debug_data_.stop_wall_pose = util::getAheadPose(stop_line_idx.value(), base_link2front, *path);
 
     /* get stop point and stop factor */
     tier4_planning_msgs::msg::StopFactor stop_factor;
-    stop_factor.stop_pose = debug_data_.stop_point_pose;
+    stop_factor.stop_pose = debug_data_.stop_wall_pose;
     const auto stop_factor_conflict = planning_utils::toRosPoints(debug_data_.conflicting_targets);
     const auto stop_factor_stuck = planning_utils::toRosPoints(debug_data_.stuck_targets);
     stop_factor.stop_factor_points =
