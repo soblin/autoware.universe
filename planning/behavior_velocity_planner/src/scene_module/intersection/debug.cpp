@@ -207,7 +207,6 @@ visualization_msgs::msg::MarkerArray MergeFromPrivateRoadModule::createVirtualWa
   visualization_msgs::msg::MarkerArray wall_marker;
 
   const auto state = state_machine_.getState();
-
   const auto now = this->clock_->now();
   if (state == StateMachine::State::STOP) {
     appendMarkerArray(
