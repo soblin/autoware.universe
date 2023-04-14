@@ -32,8 +32,6 @@ TrafficLightModuleManager::TrafficLightModuleManager(rclcpp::Node & node)
   const std::string ns(getModuleName());
   planner_param_.stop_margin = node.declare_parameter(ns + ".stop_margin", 0.0);
   planner_param_.tl_state_timeout = node.declare_parameter(ns + ".tl_state_timeout", 1.0);
-  planner_param_.external_tl_state_timeout =
-    node.declare_parameter(ns + ".external_tl_state_timeout", 1.0);
   planner_param_.enable_pass_judge = node.declare_parameter(ns + ".enable_pass_judge", true);
   planner_param_.yellow_lamp_period = node.declare_parameter(ns + ".yellow_lamp_period", 2.75);
   pub_tl_state_ = node.create_publisher<autoware_auto_perception_msgs::msg::LookingTrafficSignal>(

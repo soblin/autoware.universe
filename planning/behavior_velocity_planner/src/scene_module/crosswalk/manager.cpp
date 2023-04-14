@@ -114,7 +114,6 @@ CrosswalkModuleManager::CrosswalkModuleManager(rclcpp::Node & node)
     node.declare_parameter(ns + ".ego_yield_query_stop_duration", 0.1);
 
   // param for input data
-  cp.external_input_timeout = node.declare_parameter(ns + ".external_input_timeout", 1.0);
   cp.tl_state_timeout = node.declare_parameter(ns + ".tl_state_timeout", 1.0);
 
   // param for target area & object
@@ -164,7 +163,6 @@ WalkwayModuleManager::WalkwayModuleManager(rclcpp::Node & node)
   auto & wp = walkway_planner_param_;
   wp.stop_line_distance = node.declare_parameter(ns + ".stop_line_distance", 1.0);
   wp.stop_duration_sec = node.declare_parameter(ns + ".stop_duration_sec", 1.0);
-  wp.external_input_timeout = node.declare_parameter(ns + ".external_input_timeout", 1.0);
 }
 
 void WalkwayModuleManager::launchNewModules(
