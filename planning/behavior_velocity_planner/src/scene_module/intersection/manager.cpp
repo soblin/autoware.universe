@@ -150,7 +150,7 @@ IntersectionModuleManager::getModuleExpiredFunction(
   const autoware_auto_planning_msgs::msg::PathWithLaneId & path)
 {
   const auto lane_set = planning_utils::getLaneletsOnPath(
-    path, planner_data_->route_handler_->getLaneletMapPtr(), planner_data_->current_odometry->pose);
+    path, planner_data_->route_handler_->getLaneletMapPtr(), planner_data_->current_pose.pose);
 
   return [this, lane_set](const std::shared_ptr<SceneModuleInterface> & scene_module) {
     const auto intersection_module = std::dynamic_pointer_cast<IntersectionModule>(scene_module);
