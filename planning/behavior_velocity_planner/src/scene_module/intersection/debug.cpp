@@ -203,33 +203,30 @@ visualization_msgs::msg::MarkerArray IntersectionModule::createVirtualWallMarker
 
   const auto now = this->clock_->now();
 
+  int32_t uid = planning_utils::bitShift(module_id_);
   // TODO(Mamoru Sobue): collision stop pose depends on before/after occlusion clearance
   if (!activated_) {
     appendMarkerArray(
       motion_utils::createStopVirtualWallMarker(
-        debug_data_.collision_stop_wall_pose, "intersection", now, module_id_),
+        debug_data_.collision_stop_wall_pose, "intersection", now, uid),
       &wall_marker, now);
+    uid++;
   }
   if (!occlusion_first_stop_activated_) {
     appendMarkerArray(
       motion_utils::createStopVirtualWallMarker(
-        debug_data_.occlusion_first_stop_wall_pose, "intersection", now, module_id_),
+        debug_data_.occlusion_first_stop_wall_pose, "intersection", now, uid),
       &wall_marker, now);
+    uid++;
   }
   if (!occlusion_activated_) {
     appendMarkerArray(
       motion_utils::createStopVirtualWallMarker(
         debug_data_.occlusion_stop_wall_pose, "intersection_occlusion", now, module_id_),
       &wall_marker, now);
+    uid++;
   }
 
-  auto id = 0;
-  for (auto & marker : wall_marker.markers) {
-    if (marker.action == visualization_msgs::msg::Marker::ADD) {
-      marker.id = id;
-      id++;
-    }
-  }
   return wall_marker;
 }
 
