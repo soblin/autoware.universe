@@ -217,7 +217,7 @@ visualization_msgs::msg::MarkerArray IntersectionModule::createVirtualWallMarker
       &wall_marker, now);
     uid++;
   }
-  if (!occlusion_first_stop_activated_) {
+  if (!activated_ && occlusion_first_stop_required_) {
     appendMarkerArray(
       motion_utils::createStopVirtualWallMarker(
         debug_data_.occlusion_first_stop_wall_pose, "intersection", now, uid),
