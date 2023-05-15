@@ -139,8 +139,8 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
   if (
     !intersection_lanelets_ ||
     intersection_lanelets_.value().tl_arrow_solid_on != tl_arrow_solid_on) {
-    const auto lanelets_on_path = planning_utils::getLaneletsOnPath(
-      *path, lanelet_map_ptr, planner_data_->current_odometry->pose);
+    const auto lanelets_on_path =
+      planning_utils::getLaneletsOnPath(*path, lanelet_map_ptr, planner_data_->current_pose.pose);
     intersection_lanelets_ = util::getObjectiveLanelets(
       lanelet_map_ptr, routing_graph_ptr, lane_id_, lanelets_on_path, assoc_ids_, path_ip,
       lane_interval_ip, planner_param_.common.detection_area_length, tl_arrow_solid_on);
