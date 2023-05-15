@@ -134,28 +134,8 @@ std::optional<size_t> generateStaticPassJudgeLine(
   const std::pair<size_t, size_t> lane_interval,
   const std::shared_ptr<const PlannerData> & planner_data)
 {
-  const auto pass_judge_line_idx_ip =
-    util::getFirstPointInsidePolygon(path_ip, lane_interval, first_detection_area);
-  if (!pass_judge_line_idx_ip) {
-    return std::nullopt;
-  }
-  const int base2front_idx_dist =
-    std::ceil(planner_data->vehicle_info_.vehicle_length_m / ip_interval);
-  const int idx = static_cast<int>(pass_judge_line_idx_ip.value()) - base2front_idx_dist;
-  if (idx < 0) {
-    return std::nullopt;
-  }
-  const auto & insert_point = path_ip.points.at(static_cast<size_t>(idx)).point.pose;
-  const auto duplicate_idx_opt = util::getDuplicatedPointIdx(*original_path, insert_point.position);
-  if (duplicate_idx_opt) {
-    return duplicate_idx_opt;
-  } else {
-    const auto insert_idx_opt = util::insertPoint(insert_point, original_path);
-    if (!insert_idx_opt) {
-      return std::nullopt;
-    }
-    return insert_idx_opt;
-  }
+  return generatePeekingLimitLine(
+    first_detection_area, original_path, path_ip, ip_interval, lane_interval, planner_data, 0.0);
 }
 
 std::optional<size_t> generatePeekingLimitLine(
