@@ -201,10 +201,8 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
     const auto pass_judge_line_idx = static_pass_judge_line_opt.value();
     const bool is_over_pass_judge_line =
       util::isOverTargetIndex(*path, closest_idx, current_pose, pass_judge_line_idx);
-    const double vel = std::fabs(planner_data_->current_velocity->twist.linear.x);
-    const bool keep_detection = (vel < planner_param_.collision_detection.keep_detection_vel_thr);
     // if ego is over the pass judge line and not stopped
-    if (is_over_pass_judge_line && is_go_out_ && !keep_detection) {
+    if (is_over_pass_judge_line && is_go_out_ && !planner_data_->isVehicleStopped()) {
       RCLCPP_DEBUG(logger_, "over the pass judge line. no plan needed.");
       RCLCPP_DEBUG(logger_, "===== plan end =====");
       return true;
