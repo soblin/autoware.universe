@@ -112,6 +112,7 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
   occlusion_stop_distance_ = std::numeric_limits<double>::lowest();
   occlusion_first_stop_required_ = false;
 
+  const double baselink2front = planner_data_->vehicle_info_.max_longitudinal_offset_m;
   /* get current pose */
   const geometry_msgs::msg::Pose current_pose = planner_data_->current_odometry->pose;
 
@@ -199,11 +200,13 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
 
   if (static_pass_judge_line_opt) {
     const auto pass_judge_line_idx = static_pass_judge_line_opt.value();
+    debug_data_.pass_judge_wall_pose =
+      planning_utils::getAheadPose(pass_judge_line_idx, baselink2front, *path);
     const bool is_over_pass_judge_line =
       util::isOverTargetIndex(*path, closest_idx, current_pose, pass_judge_line_idx);
     // if ego is over the pass judge line and not stopped
     if (is_over_pass_judge_line && is_go_out_ && !planner_data_->isVehicleStopped()) {
-      RCLCPP_DEBUG(logger_, "over the pass judge line. no plan needed.");
+      RCLCPP_INFO(logger_, "over the pass judge line. no plan needed.");
       RCLCPP_DEBUG(logger_, "===== plan end =====");
       return true;
     }
@@ -405,7 +408,6 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
   }
 
   /* make decision */
-  const double baselink2front = planner_data_->vehicle_info_.max_longitudinal_offset_m;
   if (!occlusion_activated_) {
     is_go_out_ = false;
 
