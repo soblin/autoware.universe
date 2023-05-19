@@ -215,7 +215,7 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
     // if ego is over the pass judge line and not stopped
     if (is_over_default_stop_line && !is_over_pass_judge_line && keep_detection) {
       /* do nothing */
-    } else {
+    } else if (is_over_default_stop_line && is_over_pass_judge_line) {
       RCLCPP_DEBUG(logger_, "over the pass judge line. no plan needed.");
       RCLCPP_DEBUG(logger_, "===== plan end =====");
       return true;
