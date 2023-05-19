@@ -140,9 +140,9 @@ std::optional<size_t> generateStaticPassJudgeLine(
   const double acceleration = planner_data->current_acceleration->accel.accel.linear.x;
   const double max_stop_acceleration = planner_data->max_stop_acceleration_threshold;
   const double max_stop_jerk = planner_data->max_stop_jerk_threshold;
-  const double delay_response_time = planner_data->delay_response_time;
+  // const double delay_response_time = planner_data->delay_response_time;
   const double offset = -planning_utils::calcJudgeLineDistWithJerkLimit(
-    velocity, acceleration, max_stop_acceleration, max_stop_jerk, delay_response_time);
+    velocity, acceleration, max_stop_acceleration, max_stop_jerk, 0.0);
   const auto pass_judge_line_idx = generatePeekingLimitLine(
     first_detection_area, original_path, path_ip, ip_interval, lane_interval, planner_data, offset);
   if (pass_judge_line_idx) {
