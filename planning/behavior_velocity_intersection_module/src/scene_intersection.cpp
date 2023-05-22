@@ -199,7 +199,8 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
   const auto static_pass_judge_line_opt =
     first_detection_area
       ? util::generateStaticPassJudgeLine(
-          first_detection_area.value(), path, path_ip, interval, lane_interval_ip, planner_data_)
+          first_detection_area.value(), path, path_ip, interval, lane_interval_ip, planner_data_,
+          planner_param_.collision_detection.keep_detection_vel_thr)
       : std::nullopt;
 
   const auto occlusion_peeking_line_idx_opt =
@@ -267,9 +268,6 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
   const bool has_collision = checkCollision(
     lanelet_map_ptr, *path, detection_lanelets, adjacent_lanelets, intersection_area, ego_lane,
     ego_lane_with_next_lane, objects_ptr, closest_idx, time_delay);
-  RCLCPP_INFO(
-    logger_, "has_collision = %d, is_go_out_ = %d, time_delay = %f", has_collision, is_go_out_,
-    time_delay);
 
   /* check occlusion on detection lane */
   const double occlusion_dist_thr = std::fabs(
