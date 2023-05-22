@@ -211,7 +211,6 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
       : std::nullopt;
 
   // TODO(Mamoru Sobue): check the ordering of these stop lines and refactor
-
   /* calc closest index */
   const auto closest_idx_opt =
     motion_utils::findNearestIndex(path->points, current_pose, 3.0, M_PI_4);
@@ -319,7 +318,7 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
       RCLCPP_DEBUG(logger_, "===== plan end =====");
       return true;
     }
-    if (before_creep_state_machine_.getState() == StateMachine::State::GO) {
+    if (before_creep_state_machine_.getState() == StateMachine::State::GO && !has_collision) {
       occlusion_stop_required = true;
       occlusion_peeking_line_idx = occlusion_peeking_line_idx_opt;
 
