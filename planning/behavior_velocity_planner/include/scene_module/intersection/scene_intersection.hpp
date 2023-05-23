@@ -130,6 +130,7 @@ public:
     WAIT_FIRST_STOP_LINE,
     CREEP_SECOND_STOP_LINE,
     CLEARED,
+    COLLISION_DETECTED,
   };
 
   IntersectionModule(
