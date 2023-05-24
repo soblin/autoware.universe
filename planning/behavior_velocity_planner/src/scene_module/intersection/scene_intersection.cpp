@@ -214,6 +214,11 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
       occlusion_peeking_line_idx_opt = occlusion_peeking_line_idx_opt.value() + 1;
     }
   }
+  if (occlusion_peeking_line_idx_opt && default_stop_line_idx_opt) {
+    if (occlusion_peeking_line_idx_opt.value() < default_stop_line_idx_opt.value()) {
+      occlusion_peeking_line_idx_opt = default_stop_line_idx_opt.value();
+    }
+  }
 
   /* calc closest index */
   const auto closest_idx_opt =
