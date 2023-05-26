@@ -1,6 +1,7 @@
 <launch>
   <arg name="tier4_simulator_launch_param_path" default="$(find-pkg-share tier4_simulator_launch)/config" description="tier4_simulator_launch parameter path"/>
   <arg name="tier4_perception_launch_param_path" default="$(find-pkg-share tier4_perception_launch)/config" description="tier4_perception_launch parameter path"/>
+  <arg name="laserscan_based_occupancy_grid_map_param_path"/>
 
   <arg name="launch_dummy_perception"/>
   <arg name="launch_dummy_vehicle"/>
@@ -41,8 +42,7 @@
       <arg name="input_obstacle_and_raw_pointcloud" value="false"/>
       <arg name="input/obstacle_pointcloud" value="/perception/obstacle_segmentation/pointcloud"/>
       <arg name="output" value="/perception/occupancy_grid_map/map"/>
-      <arg name="occupancy_grid_map_method" value="laserscan_based_occupancy_grid_map"/>
-      <arg name="occupancy_grid_map_param_path" value="$(var laserscan_based_occupancy_grid_map_param_path)"/>
+      <arg name="param_file" value="$(var laserscan_based_occupancy_grid_map_param_path)"/>
     </include>
   </group>
 
