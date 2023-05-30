@@ -64,7 +64,6 @@
   <depend>lanelet2_extension</depend>
   <depend>libboost-dev</depend>
   <depend>libopencv-dev</depend>
-  <depend>magic_enum</depend>
   <depend>message_filters</depend>
   <depend>motion_utils</depend>
   <depend>motion_velocity_smoother</depend>
@@ -86,6 +85,7 @@
   <depend>tier4_v2x_msgs</depend>
   <depend>vehicle_info_util</depend>
   <depend>visualization_msgs</depend>
+  <!-- depend>magic_enum</depend -->
   <exec_depend>grid_map_rviz_plugin</exec_depend>
 
   <test_depend>ament_cmake_ros</test_depend>

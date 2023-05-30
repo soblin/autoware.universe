@@ -22,7 +22,7 @@
 #include <cv_bridge/cv_bridge.h>
 // #include <sensor_msgs/image_encodings.h>
 // #include <opencv2/highgui/highgui.hpp>
-#include <magic_enum.hpp>
+// #include <magic_enum.hpp>
 #include <opencv2/imgproc.hpp>
 #include <scene_module/intersection/scene_intersection.hpp>
 #include <scene_module/intersection/util.hpp>
@@ -417,8 +417,8 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
     return false;
   }
 
-  const std::string occlusion_state = std::string(magic_enum::enum_name(occlusion_state_));
-  RCLCPP_DEBUG(logger_, "occlusion state: OcclusionState::%s", occlusion_state.c_str());
+  // const std::string occlusion_state = std::string(magic_enum::enum_name(occlusion_state_));
+  // RCLCPP_DEBUG(logger_, "occlusion state: OcclusionState::%s", occlusion_state.c_str());
 
   /* for collision and stuck state */
   collision_state_machine_.setStateWithMarginTime(
@@ -1261,8 +1261,8 @@ bool IntersectionModule::isOcclusionCleared(
     grid_map::GridMap occlusion_grid({"elevation"});
     occlusion_grid.setFrameId("map");
     occlusion_grid.setGeometry(
-      grid_map::Length(width * resolution, height * resolution), resolution,
-      grid_map::Position(origin.x + width * resolution / 2, origin.y + height * resolution / 2));
+      grid_map::Length(width * reso, height * reso), reso,
+      grid_map::Position(origin.x + width * reso / 2, origin.y + height * reso / 2));
     cv::rotate(distance_grid, distance_grid, cv::ROTATE_90_COUNTERCLOCKWISE);
     cv::rotate(distance_grid_heatmap, distance_grid_heatmap, cv::ROTATE_90_COUNTERCLOCKWISE);
     grid_map::GridMapCvConverter::addLayerFromImage<unsigned char, 1>(
