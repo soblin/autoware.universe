@@ -4,6 +4,9 @@ project(mission_planner)
 find_package(autoware_cmake REQUIRED)
 autoware_package()
 
+get_target_property(lanelet2_core_INCLUDE_DIRECTORIES lanelet2_core::lanelet2_core INTERFACE_INCLUDE_DIRECTORIES)
+include_directories(SYSTEM PUBLIC ${lanelet2_core_INCLUDE_DIRECTORIES})
+
 ament_auto_add_library(goal_pose_visualizer_component SHARED
   src/goal_pose_visualizer/goal_pose_visualizer.cpp
 )

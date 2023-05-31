@@ -8,7 +8,8 @@ autoware_package()
 ## Build ##
 ###########
 
-include_directories()
+get_target_property(lanelet2_core_INCLUDE_DIRECTORIES lanelet2_core::lanelet2_core INTERFACE_INCLUDE_DIRECTORIES)
+include_directories(SYSTEM PUBLIC ${lanelet2_core_INCLUDE_DIRECTORIES})
 
 ament_auto_add_library(crosswalk_traffic_light_estimator SHARED
   src/node.cpp

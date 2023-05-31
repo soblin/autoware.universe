@@ -10,6 +10,8 @@ include_directories(
   SYSTEM
     ${EIGEN3_INCLUDE_DIR}
 )
+get_target_property(lanelet2_core_INCLUDE_DIRECTORIES lanelet2_core::lanelet2_core INTERFACE_INCLUDE_DIRECTORIES)
+include_directories(SYSTEM PUBLIC ${lanelet2_core_INCLUDE_DIRECTORIES})
 
 ament_auto_add_library(traffic_light_map_based_detector SHARED
   src/node.cpp
