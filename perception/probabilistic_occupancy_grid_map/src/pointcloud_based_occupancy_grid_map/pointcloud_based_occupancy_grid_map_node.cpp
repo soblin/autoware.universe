@@ -77,6 +77,7 @@ PointcloudBasedOccupancyGridMapNode::PointcloudBasedOccupancyGridMapNode(
   /* Occupancy grid */
   occupancy_grid_map_updater_ptr_ = std::make_shared<OccupancyGridMapBBFUpdater>(
     map_length / map_resolution, map_length / map_resolution, map_resolution);
+  occupancy_grid_map_updater_ptr_->initRosParam(*this);
 
   // initialize debug tool
   {

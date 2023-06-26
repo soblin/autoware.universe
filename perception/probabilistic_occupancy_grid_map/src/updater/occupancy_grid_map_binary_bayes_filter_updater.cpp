@@ -37,7 +37,7 @@ inline unsigned char OccupancyGridMapBBFUpdater::applyBBF(
     not_pz = 1.f - probability_matrix_(Index::OCCUPIED, Index::FREE);
     po_hat = ((po * pz) / ((po * pz) + ((1.f - po) * not_pz)));
   } else if (z == occupancy_cost_value::NO_INFORMATION) {
-    constexpr float inv_v_ratio = 1.f / 10.f;
+    const float inv_v_ratio = 1.f / v_ratio_;
     po_hat = ((po + (0.5f * inv_v_ratio)) / ((1.f * inv_v_ratio) + 1.f));
   }
   return std::min(
@@ -56,5 +56,18 @@ bool OccupancyGridMapBBFUpdater::update(const Costmap2D & single_frame_occupancy
     }
   }
   return true;
+}
+
+void OccupancyGridMapBBFUpdater::initRosParam(rclcpp::Node & node)
+{
+  probability_matrix_(Index::OCCUPIED, Index::OCCUPIED) =
+    node.declare_parameter<double>("probability_matrix.occupied_to_occupied");
+  probability_matrix_(Index::FREE, Index::OCCUPIED) =
+    node.declare_parameter<double>("probability_matrix.occupied_to_free");
+  probability_matrix_(Index::FREE, Index::FREE) =
+    node.declare_parameter<double>("probability_matrix.free_to_free");
+  probability_matrix_(Index::OCCUPIED, Index::FREE) =
+    node.declare_parameter<double>("probability_matrix.free_to_occupied");
+  v_ratio_ = node.declare_parameter<double>("v_ratio");
 }
 }  // namespace costmap_2d
