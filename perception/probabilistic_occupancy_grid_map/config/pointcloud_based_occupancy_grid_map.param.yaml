@@ -3,11 +3,7 @@
     map_length: 100.0     # [m]
     map_resolution: 0.5 # [m]
 
-    height_filter:
-      use_height_filter: true
-      min_height: -1.0
-      max_height: 2.0
-
+    use_height_filter: true
     enable_single_frame_mode: false
     # use sensor pointcloud to filter obstacle pointcloud
     filter_obstacle_pointcloud_by_raw_pointcloud: false
