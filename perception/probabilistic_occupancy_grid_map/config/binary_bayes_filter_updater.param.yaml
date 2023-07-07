@@ -5,4 +5,8 @@
       occupied_to_free: 0.05
       free_to_occupied: 0.2
       free_to_free: 0.8
+<<<<<<< HEAD
     v_ratio: 10.0
+=======
+    v_ratio: 0.1
+>>>>>>> 8dd867c7bb (feat(probabilistic_occupancy_grid_map): add projective raytracing option from scan_origin (#4170))
