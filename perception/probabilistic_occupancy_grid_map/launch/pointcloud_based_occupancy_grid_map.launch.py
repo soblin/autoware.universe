@@ -33,15 +33,6 @@ def launch_setup(context, *args, **kwargs):
         pointcloud_based_occupancy_grid_map_node_params = yaml.safe_load(f)["/**"][
             "ros__parameters"
         ]
-    overwrite_config(
-        pointcloud_based_occupancy_grid_map_node_params,
-        "map_origin",
-        "gridmap_origin_frame",
-        context,
-    )
-    overwrite_config(
-        pointcloud_based_occupancy_grid_map_node_params, "scan_origin", "scan_origin_frame", context
-    )
 
     updater_param_file = LaunchConfiguration("updater_param_file").perform(context)
     with open(updater_param_file, "r") as f:
