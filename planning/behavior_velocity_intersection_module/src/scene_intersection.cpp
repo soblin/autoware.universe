@@ -656,7 +656,9 @@ bool IntersectionModule::modifyPathVelocity(PathWithLaneId * path, StopReason * 
   // calculate the
   const auto decision_result = modifyPathVelocityDetail(path, stop_reason);
 
-  std::string decision_type = "intersection" + std::to_string(module_id_) + " : ";
+  std::string decision_type = "intersection(" + std::to_string(module_id_) + "): ";
+  decision_type += "(default, occlusion) rtc is (" + std::to_string(activated_) + ", " +
+                   std::to_string(occlusion_activated_) + ")";
   if (std::get_if<IntersectionModule::Indecisive>(&decision_result)) {
     decision_type += "Indecisive";
   }
