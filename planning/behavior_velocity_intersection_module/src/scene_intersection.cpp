@@ -829,7 +829,7 @@ IntersectionModule::DecisionResult IntersectionModule::modifyPathVelocityDetail(
       path->points.at(default_stop_line_idx).point.pose.position);
     const bool approached_stop_line =
       (std::fabs(dist_stopline) < planner_param_.common.stop_overshoot_margin);
-    const bool over_stop_line = (dist_stopline < 0.0);
+    const bool over_stop_line = (dist_stopline <= 0.0);
     const bool is_stopped = planner_data_->isVehicleStopped();
     if (over_stop_line) {
       before_creep_state_machine_.setState(StateMachine::State::GO);
