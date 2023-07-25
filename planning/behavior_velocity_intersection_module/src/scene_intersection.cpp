@@ -1167,7 +1167,7 @@ bool IntersectionModule::isOcclusionCleared(
       std::vector<cv::Point> adjacent_lane_cv_polygon;
       for (const auto & p : common_area.outer()) {
         const int idx_x = std::floor<int>((p.x() - origin.x) / reso);
-        const int idx_y = std::floor<int>((p.y() - origin.y) / resol);
+        const int idx_y = std::floor<int>((p.y() - origin.y) / reso);
         adjacent_lane_cv_polygon.emplace_back(idx_x, height - 1 - idx_y);
       }
       adjacent_lane_cv_polygons.push_back(adjacent_lane_cv_polygon);
@@ -1209,8 +1209,8 @@ bool IntersectionModule::isOcclusionCleared(
       Polygon2d polygon;
       // [[maybe_unused]] const double poly_area = cv::contourArea(contour);
       for (const auto & p : contour) {
-        const double glob_x = (p.x + 0.5) * resolution + origin.x;
-        const double glob_y = (height - 0.5 - p.y) * resolution + origin.y;
+        const double glob_x = (p.x + 0.5) * reso + origin.x;
+        const double glob_y = (height - 0.5 - p.y) * reso + origin.y;
         polygon.outer().emplace_back(glob_x, glob_y);
       }
       debug_data_.occlusion_polygons.push_back(toGeomPoly(polygon));
