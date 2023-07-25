@@ -782,12 +782,8 @@ IntersectionModule::DecisionResult IntersectionModule::modifyPathVelocityDetail(
   const double baselink2front = planner_data_->vehicle_info_.max_longitudinal_offset_m;
   debug_data_.pass_judge_wall_pose =
     planning_utils::getAheadPose(pass_judge_line_idx, baselink2front, *path);
-  // const bool is_over_pass_judge_line =
-  //  util::isOverTargetIndex(*path, closest_idx, current_pose, pass_judge_line_idx);
   const bool is_over_pass_judge_line =
-    motion_utils::calcSignedArcLength(
-      path->points, path->points.at(closest_idx).point.pose.position,
-      path->points.at(pass_judge_line_idx).point.pose.position) < -0.5;
+    util::isOverTargetIndex(*path, closest_idx, current_pose, pass_judge_line_idx);
   const bool is_over_default_stop_line =
     util::isOverTargetIndex(*path, closest_idx, current_pose, default_stop_line_idx);
   const double vel = std::fabs(planner_data_->current_velocity->twist.linear.x);
