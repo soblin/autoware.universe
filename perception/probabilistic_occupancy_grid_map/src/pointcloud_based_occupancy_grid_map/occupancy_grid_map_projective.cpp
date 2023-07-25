@@ -148,16 +148,6 @@ void OccupancyGridMapProjectiveBlindSpot::updateWithPointCloud(
     });
   }
 
-  grid_map::Costmap2DConverter<grid_map::GridMap> converter;
-  if (pub_debug_grid_) {
-    debug_grid_.clearAll();
-    debug_grid_.setFrameId("map");
-    debug_grid_.setGeometry(
-      grid_map::Length(size_x_ * resolution_, size_y_ * resolution_), resolution_,
-      grid_map::Position(
-        origin_x_ + size_x_ * resolution_ / 2.0, origin_y_ + size_y_ * resolution_ / 2.0));
-  }
-
   auto is_visible_beyond_obstacle = [&](const BinInfo3D & obstacle, const BinInfo3D & raw) -> bool {
     if (raw.range < obstacle.range) {
       return false;
@@ -197,9 +187,6 @@ void OccupancyGridMapProjectiveBlindSpot::updateWithPointCloud(
       scan_origin.position.x, scan_origin.position.y, ray_end.wx, ray_end.wy,
       occupancy_cost_value::FREE_SPACE);
   }
-
-  if (pub_debug_grid_)
-    converter.addLayerFromCostmap2D(*this, "filled_free_to_farthest", debug_grid_);
 
   // Second step: Add uknown cell
   for (size_t bin_index = 0; bin_index < obstacle_pointcloud_angle_bins.size(); ++bin_index) {
@@ -265,8 +252,6 @@ void OccupancyGridMapProjectiveBlindSpot::updateWithPointCloud(
     }
   }
 
-  if (pub_debug_grid_) converter.addLayerFromCostmap2D(*this, "added_unknown", debug_grid_);
-
   // Third step: Overwrite occupied cell
   for (size_t bin_index = 0; bin_index < obstacle_pointcloud_angle_bins.size(); ++bin_index) {
     auto & obstacle_pointcloud_angle_bin = obstacle_pointcloud_angle_bins.at(bin_index);
@@ -288,11 +273,6 @@ void OccupancyGridMapProjectiveBlindSpot::updateWithPointCloud(
         continue;
       }
     }
-  }
-
-  if (pub_debug_grid_) converter.addLayerFromCostmap2D(*this, "added_obstacle", debug_grid_);
-  if (pub_debug_grid_) {
-    debug_grid_map_publisher_ptr_->publish(grid_map::GridMapRosConverter::toMessage(debug_grid_));
   }
 }
 
