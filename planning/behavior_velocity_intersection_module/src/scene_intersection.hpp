@@ -27,6 +27,7 @@
 
 #include <autoware_auto_planning_msgs/msg/path_with_lane_id.hpp>
 #include <grid_map_msgs/msg/grid_map.hpp>
+#include <std_msgs/msg/string.hpp>
 
 #include <lanelet2_core/LaneletMap.h>
 #include <lanelet2_routing/RoutingGraph.h>
@@ -270,6 +271,7 @@ private:
 
   util::DebugData debug_data_;
   rclcpp::Publisher<grid_map_msgs::msg::GridMap>::SharedPtr occlusion_grid_pub_;
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr decision_state_pub_;
 };
 
 }  // namespace behavior_velocity_planner
