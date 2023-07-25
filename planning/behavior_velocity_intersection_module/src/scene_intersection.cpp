@@ -787,7 +787,7 @@ IntersectionModule::DecisionResult IntersectionModule::modifyPathVelocityDetail(
   const bool is_over_pass_judge_line =
     motion_utils::calcSignedArcLength(
       path->points, path->points.at(closest_idx).point.pose.position,
-      path->points.at(default_stop_line_idx).point.pose.position) < -0.5;
+      path->points.at(pass_judge_line_idx).point.pose.position) < -0.5;
   const bool is_over_default_stop_line =
     util::isOverTargetIndex(*path, closest_idx, current_pose, default_stop_line_idx);
   const double vel = std::fabs(planner_data_->current_velocity->twist.linear.x);
