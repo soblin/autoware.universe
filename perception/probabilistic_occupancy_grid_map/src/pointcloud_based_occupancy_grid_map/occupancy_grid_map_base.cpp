@@ -54,7 +54,6 @@
 #include "cost_value.hpp"
 #include "utils/utils.hpp"
 
-#include <grid_map_costmap_2d/grid_map_costmap_2d.hpp>
 #include <pcl_ros/transforms.hpp>
 #include <tier4_autoware_utils/tier4_autoware_utils.hpp>
 
