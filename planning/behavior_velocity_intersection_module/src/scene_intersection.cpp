@@ -1299,8 +1299,8 @@ bool IntersectionModule::isOcclusionCleared(
     for (const auto & common_area : common_areas) {
       std::vector<cv::Point> parked_attention_object_area_cv_polygon;
       for (const auto & p : common_area.outer()) {
-        const int idx_x = static_cast<int>((p.x() - origin.x) / resolution);
-        const int idx_y = static_cast<int>((p.y() - origin.y) / resolution);
+        const int idx_x = static_cast<int>((p.x() - origin.x) / reso);
+        const int idx_y = static_cast<int>((p.y() - origin.y) / reso);
         parked_attention_object_area_cv_polygon.emplace_back(idx_x, height - 1 - idx_y);
       }
       parked_attention_object_area_cv_polygons.push_back(parked_attention_object_area_cv_polygon);
@@ -1387,7 +1387,7 @@ bool IntersectionModule::isOcclusionCleared(
   const double possible_object_bbox_y = possible_object_bbox.at(1) / reso;
   const double possible_object_area = possible_object_bbox_x * possible_object_bbox_y;
   std::vector<std::vector<cv::Point>> contours;
-  cv::findContours(occlusion_mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+  cv::findContours(occlusion_mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
   std::vector<std::vector<cv::Point>> valid_contours;
   for (const auto & contour : contours) {
     std::vector<cv::Point> valid_contour;
