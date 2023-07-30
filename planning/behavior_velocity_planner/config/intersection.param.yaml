@@ -45,6 +45,7 @@
         max_vehicle_velocity_for_rss: 16.66 # [m/s] == 60kmph
         denoise_kernel: 1.0 # [m]
         possible_object_bbox: [1.0, 2.0] # [m x m]
+        first_stop_vel_thr: 0.416 # [m/s]
 
     merge_from_private:
       stop_duration_sec: 1.0

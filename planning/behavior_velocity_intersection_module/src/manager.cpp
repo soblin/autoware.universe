@@ -106,6 +106,8 @@ IntersectionModuleManager::IntersectionModuleManager(rclcpp::Node & node)
   ip.occlusion.denoise_kernel = node.declare_parameter<double>(ns + ".occlusion.denoise_kernel");
   ip.occlusion.possible_object_bbox =
     node.declare_parameter<std::vector<double>>(ns + ".occlusion.possible_object_bbox");
+  ip.occlusion.first_stop_vel_thr =
+    node.declare_parameter<double>(ns + ".occlusion.first_stop_vel_thr");
 }
 
 void IntersectionModuleManager::launchNewModules(

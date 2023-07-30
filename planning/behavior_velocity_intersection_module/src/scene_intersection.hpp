@@ -106,6 +106,7 @@ public:
       double max_vehicle_velocity_for_rss;
       double denoise_kernel;
       std::vector<double> possible_object_bbox;
+      double first_stop_vel_thr;
     } occlusion;
   };
 
