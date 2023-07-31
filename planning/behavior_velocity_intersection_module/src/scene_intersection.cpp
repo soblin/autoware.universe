@@ -83,10 +83,7 @@ IntersectionModule::IntersectionModule(
     planner_param_.collision_detection.state_transit_margin_time);
   before_creep_state_machine_.setMarginTime(planner_param_.occlusion.before_creep_stop_time);
   before_creep_state_machine_.setState(StateMachine::State::STOP);
-  stuck_private_area_timeout_.setMarginTime(planner_param_.stuck_vehicle.timeout_private_area);
-  stuck_private_area_timeout_.setState(StateMachine::State::STOP);
-  decision_state_pub_ =
-    node_.create_publisher<std_msgs::msg::String>("~/debug/intersection/decision_state", 1);
+  node_.create_publisher<std_msgs::msg::String>("~/debug/intersection/decision_state", 1);
 }
 
 void IntersectionModule::initializeRTCStatus()
@@ -1328,8 +1325,8 @@ bool IntersectionModule::isOcclusionCleared(
   }
 
   const auto & possible_object_bbox = planner_param_.occlusion.possible_object_bbox;
-  const double possible_object_bbox_x = possible_object_bbox.at(0) / resolution;
-  const double possible_object_bbox_y = possible_object_bbox.at(1) / resolution;
+  const double possible_object_bbox_x = possible_object_bbox.at(0) / reso;
+  const double possible_object_bbox_y = possible_object_bbox.at(1) / reso;
   const double possible_object_area = possible_object_bbox_x * possible_object_bbox_y;
   std::vector<std::vector<cv::Point>> contours;
   cv::findContours(occlusion_mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
@@ -1358,8 +1355,8 @@ bool IntersectionModule::isOcclusionCleared(
     geometry_msgs::msg::Polygon polygon_msg;
     geometry_msgs::msg::Point32 point_msg;
     for (const auto & p : approx_contour) {
-      const double glob_x = (p.x + 0.5) * resolution + origin.x;
-      const double glob_y = (height - 0.5 - p.y) * resolution + origin.y;
+      const double glob_x = (p.x + 0.5) * reso + origin.x;
+      const double glob_y = (height - 0.5 - p.y) * reso + origin.y;
       point_msg.x = glob_x;
       point_msg.y = glob_y;
       point_msg.z = origin.z;
@@ -1380,8 +1377,8 @@ bool IntersectionModule::isOcclusionCleared(
       }
       if (pixel < min_cost) {
         min_cost = pixel;
-        nearest_occlusion_point.x = origin.x + p.x * resolution;
-        nearest_occlusion_point.y = origin.y + (height - 1 - p.y) * resolution;
+        nearest_occlusion_point.x = origin.x + p.x * reso;
+        nearest_occlusion_point.y = origin.y + (height - 1 - p.y) * reso;
         nearest_occlusion_point.z = origin.z;
       }
     }

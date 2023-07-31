@@ -6,6 +6,11 @@ autoware_package()
 pluginlib_export_plugin_description_file(behavior_velocity_planner plugins.xml)
 
 find_package(OpenCV REQUIRED)
+find_package(PCL REQUIRED)
+include_directories(
+  SYSTEM
+  ${PCL_INCLUDE_DIRS}
+)
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
   src/debug.cpp
@@ -19,4 +24,4 @@ target_link_libraries(${PROJECT_NAME}
   ${OpenCV_LIBRARIES}
 )
 
-ament_auto_package(INSTALL_TO_SHARE config)
+ament_auto_package()
