@@ -83,7 +83,8 @@ IntersectionModule::IntersectionModule(
     planner_param_.collision_detection.state_transit_margin_time);
   before_creep_state_machine_.setMarginTime(planner_param_.occlusion.before_creep_stop_time);
   before_creep_state_machine_.setState(StateMachine::State::STOP);
-  node_.create_publisher<std_msgs::msg::String>("~/debug/intersection/decision_state", 1);
+  decision_state_pub_ =
+    node_.create_publisher<std_msgs::msg::String>("~/debug/intersection/decision_state", 1);
 }
 
 void IntersectionModule::initializeRTCStatus()
