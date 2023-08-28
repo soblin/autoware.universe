@@ -62,7 +62,7 @@ Objects that satisfy all of the following conditions are considered as target ob
 
 #### Stuck Vehicle Detection
 
-If there is any object on the path in inside the intersection and at the exit of the intersection (up to `stuck_vehicle.detect_dist`) lane and its velocity is less than a threshold (`stuck_vehicle.stuck_vehicle_vel_thr`), the object is regarded as a stuck vehicle. If stuck vehicles exist, this module inserts a stopline a certain distance (=`stop_line_margin`) before the overlapped region with other lanes. The stuck vehicle detection area is generated based on the vehicle path, so the stuck vehicle stopline is not inserted if the upstream module generated avoidance path
+If there is any object on the path in inside the intersection and at the exit of the intersection (up to `stuck_vehicle_detect_dist`) lane and its velocity is less than a threshold (`stuck_vehicle.stuck_vehicle_vel_thr`), the object is regarded as a stuck vehicle. If stuck vehicles exist, this module inserts a stopline a certain distance (=`stop_line_margin`) before the overlapped region with other lanes. The stuck vehicle detection area is generated based on the vehicle path, so the stuck vehicle stopline is not inserted if the upstream module generated avoidance path
 
 ![stuck_vehicle_detection](./docs/stuck-vehicle.drawio.svg)
 
