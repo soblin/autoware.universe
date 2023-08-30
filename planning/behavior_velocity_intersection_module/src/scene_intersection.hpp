@@ -106,6 +106,7 @@ public:
       std::vector<double> possible_object_bbox;
       double first_stop_vel_thr;
       double ignore_parked_vehicle_speed_threshold;
+      double stop_release_margin_time;
     } occlusion;
   };
 
@@ -220,6 +221,7 @@ private:
   // OcclusionState prev_occlusion_state_ = OcclusionState::NONE;
   StateMachine collision_state_machine_;     //! for stable collision checking
   StateMachine before_creep_state_machine_;  //! for two phase stop
+  StateMachine occlusion_stop_state_machine_;
   // NOTE: uuid_ is base member
   // for occlusion clearance decision
 
