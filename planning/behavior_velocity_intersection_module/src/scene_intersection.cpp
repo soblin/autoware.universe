@@ -804,7 +804,7 @@ IntersectionModule::DecisionResult IntersectionModule::modifyPathVelocityDetail(
 
   if (stuck_detected && stuck_stop_line_idx_opt) {
     return IntersectionModule::StuckStop{
-      closest_idx, stuck_stop_line_idx, occlusion_peeking_stop_line_idx_opt};
+      closest_idx, stuck_stop_line_idx_opt.value(), occlusion_peeking_stop_line_idx_opt};
   }
 
   if (!first_attention_area_opt) {
@@ -1191,7 +1191,7 @@ bool IntersectionModule::isOcclusionCleared(
   const lanelet::ConstLanelets & adjacent_lanelets,
   const lanelet::CompoundPolygon3d & first_attention_area,
   const util::InterpolatedPathInfo & interpolated_path_info,
-  const std::vector<util::DiscretizedLane> & lane_divisions,
+  const std::vector<util::DescritizedLane> & lane_divisions,
   const std::vector<autoware_auto_perception_msgs::msg::PredictedObject> &
     blocking_attention_objects,
   const double occlusion_dist_thr)
@@ -1215,7 +1215,7 @@ bool IntersectionModule::isOcclusionCleared(
 
   const int width = occ_grid.info.width;
   const int height = occ_grid.info.height;
-  const double reso = occ_grid.info.resolution;
+  const double resolution = occ_grid.info.resolution;
   const auto & origin = occ_grid.info.origin.position;
   auto coord2index = [&](const double x, const double y) {
     const int idx_x = (x - origin.x) / resolution;
@@ -1227,9 +1227,10 @@ bool IntersectionModule::isOcclusionCleared(
 
   Polygon2d grid_poly;
   grid_poly.outer().emplace_back(origin.x, origin.y);
-  grid_poly.outer().emplace_back(origin.x + (width - 1) * reso, origin.y);
-  grid_poly.outer().emplace_back(origin.x + (width - 1) * reso, origin.y + (height - 1) * reso);
-  grid_poly.outer().emplace_back(origin.x, origin.y + (height - 1) * reso);
+  grid_poly.outer().emplace_back(origin.x + (width - 1) * resolution, origin.y);
+  grid_poly.outer().emplace_back(
+    origin.x + (width - 1) * resolution, origin.y + (height - 1) * resolution);
+  grid_poly.outer().emplace_back(origin.x, origin.y + (height - 1) * resolution);
   grid_poly.outer().emplace_back(origin.x, origin.y);
   bg::correct(grid_poly);
 
@@ -1345,8 +1346,8 @@ bool IntersectionModule::isOcclusionCleared(
 
   // (4) extract occlusion polygons
   const auto & possible_object_bbox = planner_param_.occlusion.possible_object_bbox;
-  const double possible_object_bbox_x = possible_object_bbox.at(0) / reso;
-  const double possible_object_bbox_y = possible_object_bbox.at(1) / reso;
+  const double possible_object_bbox_x = possible_object_bbox.at(0) / resolution;
+  const double possible_object_bbox_y = possible_object_bbox.at(1) / resolution;
   const double possible_object_area = possible_object_bbox_x * possible_object_bbox_y;
   std::vector<std::vector<cv::Point>> contours;
   cv::findContours(occlusion_mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
@@ -1375,8 +1376,8 @@ bool IntersectionModule::isOcclusionCleared(
     geometry_msgs::msg::Polygon polygon_msg;
     geometry_msgs::msg::Point32 point_msg;
     for (const auto & p : approx_contour) {
-      const double glob_x = (p.x + 0.5) * reso + origin.x;
-      const double glob_y = (height - 0.5 - p.y) * reso + origin.y;
+      const double glob_x = (p.x + 0.5) * resolution + origin.x;
+      const double glob_y = (height - 0.5 - p.y) * resolution + origin.y;
       point_msg.x = glob_x;
       point_msg.y = glob_y;
       point_msg.z = origin.z;
