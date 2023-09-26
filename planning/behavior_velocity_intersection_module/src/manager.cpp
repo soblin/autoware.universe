@@ -110,6 +110,8 @@ IntersectionModuleManager::IntersectionModuleManager(rclcpp::Node & node)
     node.declare_parameter<double>(ns + ".occlusion.stop_release_margin_time");
   ip.occlusion.temporal_stop_before_attention_area =
     node.declare_parameter<bool>(ns + ".occlusion.temporal_stop_before_attention_area");
+  ip.occlusion.peeking_offset_absence_tl =
+    node.declare_parameter<double>(ns + ".occlusion.peeking_offset_absence_tl");
 }
 
 void IntersectionModuleManager::launchNewModules(
@@ -141,9 +143,17 @@ void IntersectionModuleManager::launchNewModules(
 
     const auto associative_ids =
       planning_utils::getAssociativeIntersectionLanelets(ll, lanelet_map, routing_graph);
+    bool has_traffic_light = false;
+    if (const auto tl_reg_elems = ll.regulatoryElementsAs<lanelet::TrafficLight>();
+        tl_reg_elems.size() != 0) {
+      const auto tl_reg_elem = tl_reg_elems.front();
+      const auto stop_line_opt = tl_reg_elem->stopLine();
+      if (!!stop_line_opt) has_traffic_light = true;
+    }
     const auto new_module = std::make_shared<IntersectionModule>(
-      module_id, lane_id, planner_data_, intersection_param_, associative_ids,
-      enable_occlusion_detection, node_, logger_.get_child("intersection_module"), clock_);
+      module_id, lane_id, planner_data_, intersection_param_, associative_ids, turn_direction,
+      has_traffic_light, enable_occlusion_detection, node_,
+      logger_.get_child("intersection_module"), clock_);
     generateUUID(module_id);
     /* set RTC status as non_occluded status initially */
     const UUID uuid = getUUID(new_module->getModuleId());

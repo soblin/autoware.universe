@@ -108,6 +108,7 @@ public:
       double ignore_parked_vehicle_speed_threshold;
       double stop_release_margin_time;
       bool temporal_stop_before_attention_area;
+      double peeking_offset_absence_tl;
     } occlusion;
   };
 
@@ -179,6 +180,7 @@ public:
   IntersectionModule(
     const int64_t module_id, const int64_t lane_id, std::shared_ptr<const PlannerData> planner_data,
     const PlannerParam & planner_param, const std::set<int> & associative_ids,
+    const std::string & turn_direction, const bool has_traffic_light,
     const bool enable_occlusion_detection, rclcpp::Node & node, const rclcpp::Logger logger,
     const rclcpp::Clock::SharedPtr clock);
 
@@ -203,7 +205,8 @@ private:
   rclcpp::Node & node_;
   const int64_t lane_id_;
   const std::set<int> associative_ids_;
-  std::string turn_direction_;
+  const std::string turn_direction_;
+  const bool has_traffic_light_;
 
   bool is_go_out_ = false;
   bool is_permanent_go_ = false;
