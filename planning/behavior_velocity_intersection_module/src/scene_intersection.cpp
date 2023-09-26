@@ -779,8 +779,8 @@ IntersectionModule::DecisionResult IntersectionModule::modifyPathVelocityDetail(
   const auto & dummy_first_attention_area =
     first_attention_area_opt ? first_attention_area_opt.value() : first_conflicting_area;
   const double peeking_offset = has_traffic_light_
-                                  ? planner_param_.occlusion.peeking_offset_absence_tl
-                                  : planner_param_.occlusion.peeking_offset;
+                                  ? planner_param_.occlusion.peeking_offset
+                                  : planner_param_.occlusion.peeking_offset_absence_tl;
   const auto intersection_stop_lines_opt = util::generateIntersectionStopLines(
     first_conflicting_area, dummy_first_attention_area, planner_data_, interpolated_path_info,
     planner_param_.stuck_vehicle.use_stuck_stopline, planner_param_.common.stop_line_margin,
