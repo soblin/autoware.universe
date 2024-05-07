@@ -1,16 +1,13 @@
 site_name: Autoware Universe Documentation
 site_url: https://autowarefoundation.github.io/autoware.universe
-repo_url: https://github.com/autowarefoundation/autoware.universe
-edit_uri: https://github.com/autowarefoundation/autoware.universe/edit/main/
-docs_dir: .
-copyright: Copyright &copy; 2023 The Autoware Foundation
+repo_url: https://github.com/soblin/autoware.universe
+docs_dir: ./docs/docs
 
 theme:
   name: material
   features:
     - navigation.expand
     - navigation.indexes
-    - navigation.instant
     - navigation.sections
     - navigation.tabs
     - navigation.tabs.sticky
@@ -20,7 +17,6 @@ theme:
   icon:
     logo: fontawesome/solid/car
     repo: fontawesome/brands/github
-  language: en
   palette:
     - scheme: default
       primary: white
@@ -60,6 +56,20 @@ plugins:
   - mkdocs-video
   - same-dir
   - search
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      default_language: ja
+      languages:
+        ja: 日本語
+        en: English
+      nav_translations:
+        ja:
+          site_name: Autoware Universe Code Reading (en)
+        en:
+          site_name: Autoware Universe Code Reading (en)
 
 markdown_extensions:
   - abbr
@@ -94,3 +104,19 @@ markdown_extensions:
   - toc:
       permalink: "#"
       toc_depth: 3
+  - pymdownx.blocks.admonition:
+      types:
+        - new
+        - settings
+        - note
+        - abstract
+        - info
+        - tip
+        - success
+        - question
+        - warning
+        - failure
+        - danger
+        - bug
+        - example
+        - quote
