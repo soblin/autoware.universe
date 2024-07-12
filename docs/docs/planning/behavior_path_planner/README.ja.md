@@ -2,8 +2,6 @@
 
 ## 概要
 
-## 詳細
-
 登録されたそれぞれのモジュールの元は`manager_ptrs_`であり，その中から
 
 1. `request_modules`
@@ -11,6 +9,8 @@
 3. `approved_module_ptrs_`
 
 へと昇格していく．`candidate_module_ptrs_`の中で一番優先度が高く`isWaitingApproval`でないものがcandidate moduleをすっ飛ばして`approved_module_ptrs_`に入る．それ以外のものは一旦`candidate_module_ptrs_`に残り，次のサイクルで`approved_module_ptrs_`に追加できるかどうか判断される．
+
+## 詳細
 
 ## manager_ptrs\_の初期化
 
@@ -116,7 +116,7 @@ approvedなkeep last moduleをbootstrap実行する．逆に**runApprovedModules
 
 `approved_module_ptr_`のうち**isKeepLast()**であるものを実行する．
 
-```cpp title="planning/behavior_path_planner/src/planner_manager.cpp:405:412"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:405:412"
 --8<--
 planning/behavior_path_planner/src/planner_manager.cpp:405:412
 --8<--
@@ -258,7 +258,7 @@ planning/behavior_path_planner/src/planner_manager.cpp:170:178
 
 出力の初期値は以下である．
 
-```cpp title="planning/behavior_path_planner/src/planner_manager.cpp:641:641"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:641:641"
 --8<--
 planning/behavior_path_planner/src/planner_manager.cpp:641:641
 --8<--
@@ -268,7 +268,7 @@ planning/behavior_path_planner/src/planner_manager.cpp:641:641
 
 そうでない場合，まず`approved_module_ptrs_`のうち`is_keep_last`のものを昇順で最後尾に移し(low -> high)，`is_keep_last`でないものをbootstrapで実行して結果を保持する．
 
-```cpp title="planning/behavior_path_planner/src/planner_manager.cpp:701:706"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:701:706"
 --8<--
 planning/behavior_path_planner/src/planner_manager.cpp:701:706
 --8<--
@@ -276,7 +276,7 @@ planning/behavior_path_planner/src/planner_manager.cpp:701:706
 
 次に，`is_keep_last`でないもののうち**isWaitingApproval()**に戻ったものがいた場合，**clearCandidateModules()**してから再度そのモジュールだけを`candidate_module_ptrs_`に戻して`approve_module_ptrs_`からは削除し，`results`からはそのモジュール以降の全てのモジュールの結果を削除する．
 
-```cpp title="planning/behavior_path_planner/src/planner_manager.cpp:730:740"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:730:740"
 --8<--
 planning/behavior_path_planner/src/planner_manager.cpp:730:740
 --8<--
@@ -288,7 +288,7 @@ planning/behavior_path_planner/src/planner_manager.cpp:730:740
 
 `SUCCESS`のものを`approved_module_ptrs_`の後尾に移す．
 
-```cpp title="planning/behavior_path_planner/src/planner_manager.cpp:793:815"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:793:815"
 --8<--
 planning/behavior_path_planner/src/planner_manager.cpp:793:815
 --8<--
@@ -296,7 +296,7 @@ planning/behavior_path_planner/src/planner_manager.cpp:793:815
 
 successしたモジュールは末尾に揃えられているので，それらを`approved_module_ptrs_`から削除する.
 
-```cpp title="planning/behavior_path_planner/src/planner_manager.cpp:817:834"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:817:834"
 --8<--
 planning/behavior_path_planner/src/planner_manager.cpp:817:834
 --8<--
@@ -323,7 +323,7 @@ succcessしたモジュールを削除しているだけなので，ここであ
 
 candidateがapproveされるとapproved modulesの一番最後に入る
 
-```cpp title="planning/behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:344:351"
+```cpp title="behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:344:351"
 --8<--
 planning/behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:344:351
 --8<--
