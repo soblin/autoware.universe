@@ -748,7 +748,7 @@
 <div><h1 id="map_loader">map_loader<a class="headerlink" href="#map_loader" title="Permanent link">#</a></h1>
 <h2 id="lanelet2_map_loader">lanelet2_map_loader<a class="headerlink" href="#lanelet2_map_loader" title="Permanent link">#</a></h2>
 <p><em>map_projector_loader</em> ノードが生成時に一度だけ<code>/map/map_projector_info</code>をpublishするので，それをsubしたこのノードが<code>/map/vector_map</code>をpublishsする．</p>
-<div class="highlight"><span class="filename">map/map_loader/lanelet2_map_loader_node.cpp:68:90</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">Lanelet2MapLoaderNode::on_map_projector_info</span><span class="p">(</span>
+<div class="highlight"><span class="filename">src/map_loader/lanelet2_map_loader_node.cpp:68:90</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">Lanelet2MapLoaderNode::on_map_projector_info</span><span class="p">(</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">MapProjectorInfo</span><span class="o">::</span><span class="n">Message</span><span class="o">::</span><span class="n">ConstSharedPtr</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">lanelet2_filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_parameter</span><span class="p">(</span><span class="s">"lanelet2_map_path"</span><span class="p">).</span><span class="n">as_string</span><span class="p">();</span>
