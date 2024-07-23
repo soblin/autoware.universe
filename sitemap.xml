@@ -65,6 +65,14 @@
          
     </url>
     <url>
+         <loc>https://autowarefoundation.github.io/autoware.universe/planning/behavior_velocity_stop_line_module/</loc>
+         <lastmod>2024-07-23</lastmod>
+         <changefreq>daily</changefreq>
+         <xhtml:link rel="alternate" hreflang="ja" href="https://autowarefoundation.github.io/autoware.universe/ja/planning/behavior_velocity_stop_line_module/"/>
+         <xhtml:link rel="alternate" hreflang="en" href="https://autowarefoundation.github.io/autoware.universe/en/planning/behavior_velocity_stop_line_module/"/>
+         
+    </url>
+    <url>
          <loc>https://autowarefoundation.github.io/autoware.universe/planning/behavior_velocity_traffic_light_module/</loc>
          <lastmod>2024-07-23</lastmod>
          <changefreq>daily</changefreq>

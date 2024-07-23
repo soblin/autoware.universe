@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="ja" class="no-js">
   <head>
     
       <meta charset="utf-8">
@@ -8,27 +8,27 @@
       
       
       
-        <link rel="canonical" href="https://autowarefoundation.github.io/autoware.universe/en/planning/behavior_path_goal_planner_module/">
+        <link rel="canonical" href="https://autowarefoundation.github.io/autoware.universe/planning/behavior_velocity_stop_line_module/">
       
       
-        <link rel="prev" href="../">
+        <link rel="prev" href="../behavior_path_planner_common/">
       
       
-        <link rel="next" href="../behavior_path_planner/">
+        <link rel="next" href="../behavior_velocity_traffic_light_module/">
       
-      <link rel="icon" href="../../../docs/assets/images/autoware-foundation.png">
+      <link rel="icon" href="../../docs/assets/images/autoware-foundation.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.20">
     
     
       
-        <title>behavior_path_goal_planner_module - Autoware Universe Documentation</title>
+        <title>behavior_velcoity_stop_line_module - Autoware Universe Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.eebd395e.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.eebd395e.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ecc896b0.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -44,11 +44,11 @@
       
     
     
-      <link rel="stylesheet" href="../../../docs/assets/css/extra.css">
+      <link rel="stylesheet" href="../../docs/assets/css/extra.css">
     
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -77,8 +77,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#behavior_path_goal_planner_module" class="md-skip">
-          Skip to content
+        <a href="#behavior_velcoity_stop_line_module" class="md-skip">
+          コンテンツにスキップ
         </a>
       
     </div>
@@ -96,8 +96,8 @@
   
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../" title="Autoware Universe Documentation" class="md-header__button md-logo" aria-label="Autoware Universe Documentation" data-md-component="logo">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../.." title="Autoware Universe Documentation" class="md-header__button md-logo" aria-label="Autoware Universe Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M135.2 117.4 109.1 192h293.8l-26.1-74.6c-4.5-12.8-16.6-21.4-30.2-21.4H165.4c-13.6 0-25.7 8.6-30.2 21.4zm-95.6 79.4L74.8 96.3C88.3 57.8 124.6 32 165.4 32h181.2c40.8 0 77.1 25.8 90.6 64.3l35.2 100.5c23.2 9.6 39.6 32.5 39.6 59.2v192c0 17.7-14.3 32-32 32h-32c-17.7 0-32-14.3-32-32v-48H96v48c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V256c0-26.7 16.4-49.6 39.6-59.2zM128 288a32 32 0 1 0-64 0 32 32 0 1 0 64 0zm288 32a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"/></svg>
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              behavior_path_goal_planner_module
+              behavior_velcoity_stop_line_module
             
           </span>
         </div>
@@ -153,20 +153,20 @@
       <div class="md-header__option">
         <div class="md-select">
           
-          <button class="md-header__button md-icon" aria-label="Select language">
+          <button class="md-header__button md-icon" aria-label="言語切り替え">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
           </button>
           <div class="md-select__inner">
             <ul class="md-select__list">
               
                 <li class="md-select__item">
-                  <a href="../../../planning/behavior_path_goal_planner_module/" hreflang="ja" class="md-select__link">
+                  <a href="./" hreflang="ja" class="md-select__link">
                     日本語
                   </a>
                 </li>
               
                 <li class="md-select__item">
-                  <a href="./" hreflang="en" class="md-select__link">
+                  <a href="../../en/planning/behavior_velocity_stop_line_module/" hreflang="en" class="md-select__link">
                     English
                   </a>
                 </li>
@@ -184,14 +184,14 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
       </label>
-      <nav class="md-search__options" aria-label="Search">
+      <nav class="md-search__options" aria-label="検索">
         
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
@@ -201,7 +201,7 @@
       <div class="md-search__scrollwrap" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            Initializing search
+            検索を初期化
           </div>
           <ol class="md-search-result__list" role="presentation"></ol>
         </div>
@@ -212,7 +212,7 @@
     
     
       <div class="md-header__source">
-        <a href="https://github.com/soblin/autoware.universe" title="Go to repository" class="md-source" data-md-component="source">
+        <a href="https://github.com/soblin/autoware.universe" title="リポジトリへ" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
@@ -227,7 +227,7 @@
   
     
       
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+<nav class="md-tabs" aria-label="タブ" data-md-component="tabs">
   <div class="md-grid">
     <ul class="md-tabs__list">
       
@@ -237,7 +237,7 @@
 
 
   <li class="md-tabs__item">
-    <a href="../../" class="md-tabs__link">
+    <a href="../.." class="md-tabs__link">
       Autoware Universe Code Reading
     </a>
   </li>
@@ -302,9 +302,9 @@
   
 
 
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="ナビゲーション" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../" title="Autoware Universe Documentation" class="md-nav__button md-logo" aria-label="Autoware Universe Documentation" data-md-component="logo">
+    <a href="../.." title="Autoware Universe Documentation" class="md-nav__button md-logo" aria-label="Autoware Universe Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M135.2 117.4 109.1 192h293.8l-26.1-74.6c-4.5-12.8-16.6-21.4-30.2-21.4H165.4c-13.6 0-25.7 8.6-30.2 21.4zm-95.6 79.4L74.8 96.3C88.3 57.8 124.6 32 165.4 32h181.2c40.8 0 77.1 25.8 90.6 64.3l35.2 100.5c23.2 9.6 39.6 32.5 39.6 59.2v192c0 17.7-14.3 32-32 32h-32c-17.7 0-32-14.3-32-32v-48H96v48c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V256c0-26.7 16.4-49.6 39.6-59.2zM128 288a32 32 0 1 0-64 0 32 32 0 1 0 64 0zm288 32a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"/></svg>
@@ -314,7 +314,7 @@
   </label>
   
     <div class="md-nav__source">
-      <a href="https://github.com/soblin/autoware.universe" title="Go to repository" class="md-source" data-md-component="source">
+      <a href="https://github.com/soblin/autoware.universe" title="リポジトリへ" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
@@ -335,7 +335,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../" class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         Autoware Universe Code Reading
       </a>
     </li>
@@ -552,18 +552,18 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" checked>
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2" >
       
       
         
@@ -575,12 +575,12 @@
       
         
         
-        <div class="md-nav__link md-nav__link--index md-nav__link--active">
-          <a href="./">Behavior path goal planner module</a>
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../behavior_path_goal_planner_module/">Behavior path goal planner module</a>
           
         </div>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="true">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_3_2">
           <span class="md-nav__icon md-icon"></span>
           Behavior path goal planner module
@@ -696,18 +696,18 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
       
       
-        
-      
-      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" checked>
       
       
         
@@ -719,12 +719,12 @@
       
         
         
-        <div class="md-nav__link md-nav__link--index ">
-          <a href="../behavior_velocity_stop_line_module/">Behavior velocity stop line module</a>
+        <div class="md-nav__link md-nav__link--index md-nav__link--active">
+          <a href="./">Behavior velocity stop line module</a>
           
         </div>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_3_5">
           <span class="md-nav__icon md-icon"></span>
           Behavior velocity stop line module
@@ -807,7 +807,7 @@
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+<nav class="md-nav md-nav--secondary" aria-label="目次">
   
   
   
@@ -816,13 +816,20 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      目次
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
-    経路を確定させるタイミング
+    起動条件
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    停止するまで
   </a>
   
 </li>
@@ -845,33 +852,76 @@
   
 
 
-<div><h1 id="behavior_path_goal_planner_module">behavior_path_goal_planner_module<a class="headerlink" href="#behavior_path_goal_planner_module" title="Permanent link">#</a></h1>
-<p>rvizで普通にゴールを置いた時に，ゴールが通常の道路の上だと指定した位置にきっちりと向かうようになっている．もしゴールを路肩レーンの上に置くと前後の路駐禁止エリアや路駐車両を考慮してゴール位置が修正されるようになっている．またrvizのmodified goal pluginを使うと，通常レーンの上に置いたゴールも路肩に自動的に寄せられるようになる．</p>
-<p>まだ幅寄せの経路が生成されていない段階で経路が黄色くなっておりおそらく減速(deceleratePath)指示が出されている．すぐには反映されないが経路が見つかったら</p>
-<div class="highlight"><span class="filename">planning/behavior_path_goal_planner_module/src/goal_planner_module.cpp:1191:1198</span><pre><span></span><code>
+<div><h1 id="behavior_velcoity_stop_line_module">behavior_velcoity_stop_line_module<a class="headerlink" href="#behavior_velcoity_stop_line_module" title="Permanent link">#</a></h1>
+<p>経路上に道路標識の一時停止線があればそこで<code>$stopline_duration_sec</code>だけ一時停止を行う．</p>
+<h2 id="_1">起動条件<a class="headerlink" href="#_1" title="Permanent link">#</a></h2>
+<p><em>behavior_path_planner</em>からの出力の経路上に<strong><em>TrafficSign</em></strong>が紐付けられたレーンが存在したらそのレーンの数だけtraffic_lightモジュールが立ち上がるようになっている．</p>
+<div class="highlight"><span class="filename">autoware_behavior_velocity_stop_line_module/src/manager.cpp:79:88@launchNewModules</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">StopLineModuleManager::launchNewModules</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">tier4_planning_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">PathWithLaneId</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">stop_line_with_lane_id</span><span class="w"> </span><span class="o">:</span>
+<span class="w">       </span><span class="n">getStopLinesWithLaneIdOnPath</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">planner_data_</span><span class="o">-&gt;</span><span class="n">route_handler_</span><span class="o">-&gt;</span><span class="n">getLaneletMapPtr</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">module_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stop_line_with_lane_id</span><span class="p">.</span><span class="n">first</span><span class="p">.</span><span class="n">id</span><span class="p">();</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">lane_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stop_line_with_lane_id</span><span class="p">.</span><span class="n">second</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">isModuleRegistered</span><span class="p">(</span><span class="n">module_id</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">registerModule</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">StopLineModule</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">        </span><span class="n">module_id</span><span class="p">,</span><span class="w"> </span><span class="n">lane_id</span><span class="p">,</span><span class="w"> </span><span class="n">stop_line_with_lane_id</span><span class="p">.</span><span class="n">first</span><span class="p">,</span><span class="w"> </span><span class="n">planner_param_</span><span class="p">,</span>
+<span class="w">        </span><span class="n">logger_</span><span class="p">.</span><span class="n">get_child</span><span class="p">(</span><span class="s">"stop_line_module"</span><span class="p">),</span><span class="w"> </span><span class="n">clock_</span><span class="p">));</span>
 </code></pre></div>
-<p>の処理がされている．</p>
-<p>またそのときすでにfoundPullOverであれば</p>
-<div class="highlight"><span class="filename">planning/behavior_path_goal_planner_module/src/goal_planner_module.cpp:919:926</span><pre><span></span><code>
+<p>（firstがregulatory element，secondがlaneletのID）</p>
+<h2 id="_2">停止するまで<a class="headerlink" href="#_2" title="Permanent link">#</a></h2>
+<p>初期状態は<code>APPROACH</code>である．</p>
+<div class="highlight"><span class="filename">autoware_behavior_velocity_stop_line_module/src/scene.cpp:29:36@launchNewModules</span><pre><span></span><code><span class="n">StopLineModule</span><span class="o">::</span><span class="n">StopLineModule</span><span class="p">(</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">module_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">lane_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">lanelet</span><span class="o">::</span><span class="n">ConstLineString3d</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">stop_line</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">PlannerParam</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">planner_param</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Logger</span><span class="w"> </span><span class="n">logger</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Clock</span><span class="o">::</span><span class="n">SharedPtr</span><span class="w"> </span><span class="n">clock</span><span class="p">)</span>
+<span class="o">:</span><span class="w"> </span><span class="n">SceneModuleInterface</span><span class="p">(</span><span class="n">module_id</span><span class="p">,</span><span class="w"> </span><span class="n">logger</span><span class="p">,</span><span class="w"> </span><span class="n">clock</span><span class="p">),</span>
+<span class="w">  </span><span class="n">lane_id_</span><span class="p">(</span><span class="n">lane_id</span><span class="p">),</span>
+<span class="w">  </span><span class="n">stop_line_</span><span class="p">(</span><span class="n">stop_line</span><span class="p">),</span>
+<span class="w">  </span><span class="n">state_</span><span class="p">(</span><span class="n">State</span><span class="o">::</span><span class="n">APPROACH</span><span class="p">)</span>
 </code></pre></div>
-<p>が実行される．これは障害物などがない場合である．またapprovedでなくかつhasDecidedPathでない場合でも幅寄せの経路は出る．hasNotDecidedPathの場合はneedPathUpdateで定期的に経路の更新を試みている
-っぽい．</p>
-<h2 id="_1">経路を確定させるタイミング<a class="headerlink" href="#_1" title="Permanent link">#</a></h2>
-<p>始めに路肩にゴールを置いたとして，初めからシフトする幅寄せの経路が出る訳ではない(todo: 初めのあの状態がどこでそうなってるか書く)．基本的に</p>
-<ul>
-<li><strong><em>NOT_DECIDED</em></strong>：まだゴールのずっと手前にいるので<ul>
-<li>本当に何もしない(todo: idle)．ただしバックグランドで候補経路の生成は開始されている</li>
-<li>幅寄せ経路の候補の生成が終わっているが，暫定候補経路の幅寄せ開始地点からまだ遠いので何もしない(todo: candidateで出力するタイミング)</li>
-</ul>
-</li>
-<li><strong><em>DECIDING</em></strong>：<strong>GoalPlanneModule::isSafePath</strong> == <code>true</code>または <strong>isActivated</strong> == <code>true</code>で，暫定候補経路の幅寄せ開始地点の手前<code>$pull_over.decide_path_distance</code>にまで近づいたら実際にplann
-  ingnの出力として幅寄せ経路への追従を開始する（がしばらく直線区間が続くのでまだ出力経路は変わりうる）<ul>
-<li><strong>GoalSearcher::isSafeGoalWithMarginScaleFactor</strong>でゴール地点が危険と判断されたり<strong>GoalPlannerModule::checkObjectsCollision</strong>で危険と判定されたら<strong><em>NOT_DECIDED</em></strong>に戻る</li>
-</ul>
-</li>
-<li><strong><em>DECIDED</em></strong>：<strong><em>DECIDING</em></strong>が1.0秒以上続いたらこの状態になり，以降はずっとこの状態になる．</li>
-</ul>
-<p><strong>GoalPlannerModule::checkDecidingPathStatus</strong>で</p></div>
+<p>pathと停止線の交差する位置を求める．</p>
+<div class="highlight"><span class="filename">autoware_behavior_velocity_stop_line_module/src/scene.cpp:56:69@launchNewModules</span><pre><span></span><code><span class="w">  </span><span class="n">time_keeper_</span><span class="o">-&gt;</span><span class="n">start_track</span><span class="p">(</span><span class="s">"createTargetPoint"</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// Calculate stop pose and insert index</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">stop_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arc_lane_utils</span><span class="o">::</span><span class="n">createTargetPoint</span><span class="p">(</span>
+<span class="w">    </span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">stop_line</span><span class="p">,</span><span class="w"> </span><span class="n">planner_param_</span><span class="p">.</span><span class="n">stop_margin</span><span class="p">,</span>
+<span class="w">    </span><span class="n">planner_data_</span><span class="o">-&gt;</span><span class="n">vehicle_info_</span><span class="p">.</span><span class="n">max_longitudinal_offset_m</span><span class="p">);</span>
+<span class="w">  </span><span class="n">time_keeper_</span><span class="o">-&gt;</span><span class="n">end_track</span><span class="p">(</span><span class="s">"createTargetPoint"</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// If no collision found, do nothing</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">stop_point</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">RCLCPP_DEBUG_THROTTLE</span><span class="p">(</span><span class="n">logger_</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">clock_</span><span class="p">,</span><span class="w"> </span><span class="mi">5000</span><span class="w"> </span><span class="cm">/* ms */</span><span class="p">,</span><span class="w"> </span><span class="s">"is no collision"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">stop_point_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stop_point</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">;</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">stop_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stop_point</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+</code></pre></div>
+<p><code>APPROACH</code>状態で停止線に経路が被った段階で停止線を挿入するので</p>
+<div class="highlight"><span class="filename">autoware_behavior_velocity_stop_line_module/src/scene.cpp:90:90@launchNewModules</span><pre><span></span><code><span class="w">      </span><span class="n">planning_utils</span><span class="o">::</span><span class="n">insertStopPoint</span><span class="p">(</span><span class="n">stop_pose</span><span class="p">.</span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="n">stop_line_seg_idx</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">path</span><span class="p">);</span>
+</code></pre></div>
+<p>そのうち車両は停止状態になることが期待される．一時停止線まで<code>$hold_stop_margin_distasnce</code>以内の所まで近づいて停止したら<code>STOPPED</code>に遷移する．またその時刻を<code>stopped_time_</code>に記録する．</p>
+<div class="highlight"><span class="filename">autoware_behavior_velocity_stop_line_module/src/scene.cpp:108:114@launchNewModules</span><pre><span></span><code><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="n">signed_arc_dist_to_stop_point</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">planner_param_</span><span class="p">.</span><span class="n">hold_stop_margin_distance</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">        </span><span class="n">planner_data_</span><span class="o">-&gt;</span><span class="n">isVehicleStopped</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">RCLCPP_INFO</span><span class="p">(</span><span class="n">logger_</span><span class="p">,</span><span class="w"> </span><span class="s">"APPROACH -&gt; STOPPED"</span><span class="p">);</span>
+
+<span class="w">        </span><span class="n">state_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">State</span><span class="o">::</span><span class="n">STOPPED</span><span class="p">;</span>
+<span class="w">        </span><span class="n">stopped_time_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Time</span><span class="o">&gt;</span><span class="p">(</span><span class="n">clock_</span><span class="o">-&gt;</span><span class="n">now</span><span class="p">());</span>
+</code></pre></div>
+<p><code>STOPPED</code>の場合は停止線を入れた上で<code>STOPPED</code>に遷移した時刻から現在までの経過時間を求める．もし<code>$stop_duration_sec</code>以上経過していたら<code>START</code>に状態遷移する．</p>
+<div class="highlight"><span class="filename">autoware_behavior_velocity_stop_line_module/src/scene.cpp:155:157@launchNewModules</span><pre><span></span><code><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">planner_param_</span><span class="p">.</span><span class="n">stop_duration_sec</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">elapsed_time</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">RCLCPP_INFO</span><span class="p">(</span><span class="n">logger_</span><span class="p">,</span><span class="w"> </span><span class="s">"STOPPED -&gt; START"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">state_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">State</span><span class="o">::</span><span class="n">START</span><span class="p">;</span>
+</code></pre></div>
+<p><code>START</code>に遷移する場合必ず<code>STOPPED</code>を経由しているはずで，そのためには<code>signed_arc_dist_to_stop_point &lt; planner_param_.hold_stop_margin_distance</code>であることが必要条件であるので，以下の部分はデッドコードである可能性が高い（制御やバック走行などの外乱がある場合はその限りではない）．</p>
+<div class="highlight"><span class="filename">autoware_behavior_velocity_stop_line_module/src/scene.cpp:163:170@launchNewModules</span><pre><span></span><code><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">State</span><span class="o">::</span><span class="no">START</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// Initialize if vehicle is far from stop_line</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">planner_param_</span><span class="p">.</span><span class="n">use_initialization_stop_line_state</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">signed_arc_dist_to_stop_point</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">planner_param_</span><span class="p">.</span><span class="n">hold_stop_margin_distance</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">RCLCPP_INFO</span><span class="p">(</span><span class="n">logger_</span><span class="p">,</span><span class="w"> </span><span class="s">"START -&gt; APPROACH"</span><span class="p">);</span>
+<span class="w">          </span><span class="n">state_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">State</span><span class="o">::</span><span class="n">APPROACH</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+</code></pre></div></div>
 
 
 
@@ -886,7 +936,7 @@
         
           <button type="button" class="md-top md-icon" data-md-component="top" hidden>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
-            Back to top
+            ページトップへ戻る
           </button>
         
       </main>
@@ -895,32 +945,32 @@
   
     
       
-      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      <nav class="md-footer__inner md-grid" aria-label="フッター" >
         
           
-          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Index" rel="prev">
+          <a href="../behavior_path_planner_common/" class="md-footer__link md-footer__link--prev" aria-label="前: behavior_path_planner_common" rel="prev">
             <div class="md-footer__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
             </div>
             <div class="md-footer__title">
               <span class="md-footer__direction">
-                Previous
+                前
               </span>
               <div class="md-ellipsis">
-                Index
+                behavior_path_planner_common
               </div>
             </div>
           </a>
         
         
           
-          <a href="../behavior_path_planner/" class="md-footer__link md-footer__link--next" aria-label="Next: behavior_path_planner(PlannerManager)" rel="next">
+          <a href="../behavior_velocity_traffic_light_module/" class="md-footer__link md-footer__link--next" aria-label="次: behavior_velocity_traffic_light_module" rel="next">
             <div class="md-footer__title">
               <span class="md-footer__direction">
-                Next
+                次
               </span>
               <div class="md-ellipsis">
-                behavior_path_planner(PlannerManager)
+                behavior_velocity_traffic_light_module
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -952,13 +1002,13 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.expand", "navigation.indexes", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer"], "search": "../../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.expand", "navigation.indexes", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.220ee61c.min.js"></script>
+      <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>
       
         
-          <script src="../../../docs/assets/js/mathjax.js"></script>
+          <script src="../../docs/assets/js/mathjax.js"></script>
         
       
         
