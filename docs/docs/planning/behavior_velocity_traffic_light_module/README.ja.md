@@ -4,17 +4,17 @@
 
 *behavior_path_planner*からの出力の経路上に**_TrafficLight_**が紐付けられたレーンが存在したらそのレーンの数だけtraffic_lightモジュールが立ち上がるようになっている．
 
-```cpp title="behavior_velocity_traffic_light_module/src/manager.cpp:115:118@launchNewModules"
+```cpp title="autoware_behavior_velocity_traffic_light_module/src/manager.cpp:114:117@launchNewModules"
 --8<--
-planning/behavior_velocity_traffic_light_module/src/manager.cpp:115:118
+planning/behavior_velocity_planner/autoware_behavior_velocity_traffic_light_module/src/manager.cpp:114:117
 --8<--
 ```
 
 laneletに**_TrafficLight_**のRegulatoryElementが紐付けられているものがあればそれらを取得して，そのlaneletのIDをキーとして（`const auto lane_id = module_id = traffic_light_reg_elem.second.id()`）信号RegulatoryElementのインスタンスと当該laneletのインスタンスを渡してtraffic_lightモジュールを立ち上げる．
 
-```cpp title="behavior_velocity_traffic_light_module/src/manager.cpp:128:137@launchNewModules"
+```cpp title="autoware_behavior_velocity_traffic_light_module/src/manager.cpp:127:136@launchNewModules"
 --8<--
-planning/behavior_velocity_traffic_light_module/src/manager.cpp:128:137
+planning/behavior_velocity_planner/autoware_behavior_velocity_traffic_light_module/src/manager.cpp:128:137
 --8<--
 ```
 
@@ -24,9 +24,9 @@ planning/behavior_velocity_traffic_light_module/src/manager.cpp:128:137
 
 毎サイクルの更新においてモジュールを立ち上げる必要があるかどうかは以下の関数で確認される．
 
-```cpp title="behavior_velocity_traffic_light_module/src/manager.cpp:175:191@isModuleRegisteredFromExistingAssociatedModule"
+```cpp title="autoware_behavior_velocity_traffic_light_module/src/manager.cpp:158:175@isModuleRegisteredFromExistingAssociatedModule"
 --8<--
-planning/behavior_velocity_traffic_light_module/src/manager.cpp:175:191
+planning/behavior_velocity_planner/autoware_behavior_velocity_traffic_light_module/src/manager.cpp:158:175
 --8<--
 ```
 
@@ -36,15 +36,15 @@ Path上のlanelet IDsと現在登録されているモジュールIDを比較し
 
 `isStopSignal()`で信号色の更新と進行してよいかどうかがハンドリングされている．
 
-```cpp title="behavior_velocity_traffic_light_module/src/scene.cpp:280:282"
+```cpp title="autoware_behavior_velocity_traffic_light_module/src/scene.cpp:279:281"
 --8<--
-planning/behavior_velocity_traffic_light_module/src/scene.cpp:280:282
+planning/behavior_velocity_planner/autoware_behavior_velocity_traffic_light_module/src/scene.cpp:279:281
 --8<--
 ```
 
-```cpp title="behavior_velocity_traffic_light_module/src/scene.cpp:305:318"
+```cpp title="autoware_behavior_velocity_traffic_light_module/src/scene.cpp:304:317"
 --8<--
-planning/behavior_velocity_traffic_light_module/src/scene.cpp:305:318
+planning/behavior_velocity_planner/autoware_behavior_velocity_traffic_light_module/src/scene.cpp:304:317
 --8<--
 ```
 
@@ -52,17 +52,17 @@ planning/behavior_velocity_traffic_light_module/src/scene.cpp:305:318
 
 対応する信号の情報がそもそも得られていない場合はsim/realで挙動が異なっており，Psimではユーザーはいちいち信号の色を設定せずともegoに走ってほしいのでその場合はGOし，実車ではfail-safeにするためにSTOPするようになっている．
 
-```cpp title="behavior_velocity_traffic_light_module/src/scene.cpp:289:293@isStopSignal"
+```cpp title="autoware_behavior_velocity_traffic_light_module/src/scene.cpp:288:292@isStopSignal"
 --8<--
-planning/behavior_velocity_traffic_light_module/src/scene.cpp:289:293
+planning/behavior_velocity_planner/autoware_behavior_velocity_traffic_light_module/src/scene.cpp:288:292
 --8<--
 ```
 
 もし情報が古くなったらタイムアウト処理により停止する．
 
-```cpp title="behavior_velocity_traffic_light_module/src/scene.cpp:297:299@isStopSignal"
+```cpp title="autoware_behavior_velocity_traffic_light_module/src/scene.cpp:296:298@isStopSignal"
 --8<--
-planning/behavior_velocity_traffic_light_module/src/scene.cpp:297:299
+planning/behavior_velocity_planner/autoware_behavior_velocity_traffic_light_module/src/scene.cpp:296:298
 --8<--
 ```
 
@@ -80,9 +80,9 @@ common/traffic_light_utils/src/traffic_light_utils.cpp:80:108
 
 状態は`APPROACH`と`GO_OUT`の2種類ある．初期状態は`APPROACH`である．
 
-```cpp title="behavior_velocity_traffic_light_module/src/scene.cpp:173:173"
+```cpp title="autoware_behavior_velocity_traffic_light_module/src/scene.cpp:172:172"
 --8<--
-planning/behavior_velocity_traffic_light_module/src/scene.cpp:173:173
+planning/behavior_velocity_planner/autoware_behavior_velocity_traffic_light_module/src/scene.cpp:172:172
 --8<--
 ```
 
@@ -116,9 +116,9 @@ RTCを使っているのでモジュール側の停止判断と実際の停止�
 
 であれば`setSafe(false)`を送るようになっている．
 
-```cpp title="behavior_velocity_traffic_light_module/src/scene.cpp:244:255@modifyPathVelocity"
+```cpp title="autoware_behavior_velocity_traffic_light_module/src/scene.cpp:243:254@modifyPathVelocity"
 --8<--
-planning/behavior_velocity_traffic_light_module/src/scene.cpp:244:255
+planning/behavior_velocity_planner/autoware_behavior_velocity_traffic_light_module/src/scene.cpp:243:254
 --8<--
 ```
 
@@ -128,9 +128,9 @@ planning/behavior_velocity_traffic_light_module/src/scene.cpp:244:255
 
 `stoppable`は制動距離的に停止可能(または十分速度が低い)かどうかを表す変数である．
 
-```cpp title="behavior_velocity_traffic_light_module/src/scene.cpp:331:341@isPassthrough"
+```cpp title="autoware_behavior_velocity_traffic_light_module/src/scene.cpp:330:340@isPassthrough"
 --8<--
-planning/behavior_velocity_traffic_light_module/src/scene.cpp:331:341
+planning/behavior_velocity_planner/autoware_behavior_velocity_traffic_light_module/src/scene.cpp:330:340
 --8<--
 ```
 
@@ -144,14 +144,14 @@ planning/behavior_velocity_traffic_light_module/src/scene.cpp:331:341
 
 上記のいずれかが成り立たない場合，停止線までの距離が以下の`reachable_distance`以上であれば停止する．
 
-```cpp title="behavior_velocity_traffic_light_module/src/scene.cpp:326:327@isPassthrough"
+```cpp title="autoware_behavior_velocity_traffic_light_module/src/scene.cpp:325:326@isPassthrough"
 --8<--
-planning/behavior_velocity_traffic_light_module/src/scene.cpp:326:327
+planning/behavior_velocity_planner/autoware_behavior_velocity_traffic_light_module/src/scene.cpp:325:326
 --8<--
 ```
 
-```cpp title="behavior_velocity_traffic_light_module/src/scene.cpp:347:352@isPassthrough"
+```cpp title="autoware_behavior_velocity_traffic_light_module/src/scene.cpp:346:351@isPassthrough"
 --8<--
-planning/behavior_velocity_traffic_light_module/src/scene.cpp:347:352
+planning/behavior_velocity_planner/autoware_behavior_velocity_traffic_light_module/src/scene.cpp:346:351
 --8<--
 ```
