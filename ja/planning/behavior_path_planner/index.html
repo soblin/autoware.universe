@@ -977,12 +977,12 @@
 <h2 id="_2">詳細<a class="headerlink" href="#_2" title="Permanent link">#</a></h2>
 <h2 id="manager_ptrs_">manager_ptrs_の初期化<a class="headerlink" href="#manager_ptrs_" title="Permanent link">#</a></h2>
 <p>BehaviorPathPlannerが初期化の際にプラグインのリストを読み込むので，そこで<code>manager_ptrs_</code>が初期化されて以降は<code>manager_ptrs_</code>は不変</p>
-<div class="highlight"><span class="filename">behavior_path_planner/src/behavior_path_planner_node.cpp:138:143@BehaviorPathPlannerNode</span><pre><span></span><code><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="s">"launch_modules"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="c1">// workaround: Since ROS 2 can't get empty list, launcher set [''] on the parameter.</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">""</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">break</span><span class="p">;</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">      </span><span class="n">planner_manager_</span><span class="o">-&gt;</span><span class="n">launchScenePlugin</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+<div class="highlight"><span class="filename">behavior_path_planner/src/behavior_path_planner_node.cpp:138:143@BehaviorPathPlannerNode</span><pre><span></span><code><span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">all_scene_module_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">planner_manager_</span><span class="o">-&gt;</span><span class="n">getSceneModuleStatus</span><span class="p">();</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">running_modules</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="k">module</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">all_scene_module_ptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">module</span><span class="o">-&gt;</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">RUNNING</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">running_modules</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="k">module</span><span class="o">-&gt;</span><span class="n">module_name</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 </code></pre></div>
 <div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:44:59</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">PlannerManager::launchScenePlugin</span><span class="p">(</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
 <span class="p">{</span>
@@ -999,29 +999,10 @@
 <span class="w">    </span><span class="p">}</span>
 
 <span class="w">    </span><span class="c1">// register</span>
-<span class="w">    </span><span class="n">manager_ptrs_</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">plugin</span><span class="p">);</span>
 </code></pre></div>
 <h2 id="_3">各フラグの実際の値<a class="headerlink" href="#_3" title="Permanent link">#</a></h2>
 <p>defaultの値はそれぞれ以下のようになっている．</p>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">isAlwaysExecutableModule</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">isSimultaneousExecutableAsApprovedModule</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isAlwaysExecutableModule</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">config_</span><span class="p">.</span><span class="n">enable_simultaneous_execution_as_approved_module</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">isSimultaneousExecutableAsCandidateModule</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isAlwaysExecutableModule</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">config_</span><span class="p">.</span><span class="n">enable_simultaneous_execution_as_candidate_module</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
+<div class="highlight"><pre><span></span><code>
 </code></pre></div>
 <table>
 <thead>
@@ -1080,62 +1061,9 @@
 </tbody>
 </table>
 <p><em>start_planner</em>の設定は以下のようになっている．</p>
-<div class="highlight"><span class="filename">planning/behavior_path_start_planner_module/src/manager.cpp:736:763</span><pre><span></span><code><span class="kt">bool</span><span class="w"> </span><span class="nf">StartPlannerModuleManager::isSimultaneousExecutableAsApprovedModule</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
-<span class="p">{</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">observers_</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">config_</span><span class="p">.</span><span class="n">enable_simultaneous_execution_as_approved_module</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">checker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">SceneModuleObserver</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">observer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">observer</span><span class="p">.</span><span class="n">expired</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">config_</span><span class="p">.</span><span class="n">enable_simultaneous_execution_as_approved_module</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">start_planner_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">dynamic_pointer_cast</span><span class="o">&lt;</span><span class="n">StartPlannerModule</span><span class="o">&gt;</span><span class="p">(</span><span class="n">observer</span><span class="p">.</span><span class="n">lock</span><span class="p">());</span>
-
-<span class="w">    </span><span class="c1">// Currently simultaneous execution with other modules is not supported while backward driving</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">start_planner_ptr</span><span class="o">-&gt;</span><span class="n">isDrivingForward</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="c1">// Other modules are not needed when freespace planning</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start_planner_ptr</span><span class="o">-&gt;</span><span class="n">isFreespacePlanning</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">config_</span><span class="p">.</span><span class="n">enable_simultaneous_execution_as_approved_module</span><span class="p">;</span>
-<span class="w">  </span><span class="p">};</span>
-
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">all_of</span><span class="p">(</span><span class="n">observers_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">observers_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">checker</span><span class="p">);</span>
-<span class="p">}</span>
+<div class="highlight"><span class="filename">planning/behavior_path_start_planner_module/src/manager.cpp:736:763</span><pre><span></span><code>
 </code></pre></div>
-<div class="highlight"><span class="filename">planning/behavior_path_start_planner_module/src/manager.cpp:765:791</span><pre><span></span><code><span class="kt">bool</span><span class="w"> </span><span class="nf">StartPlannerModuleManager::isSimultaneousExecutableAsCandidateModule</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
-<span class="p">{</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">observers_</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">config_</span><span class="p">.</span><span class="n">enable_simultaneous_execution_as_candidate_module</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">checker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">SceneModuleObserver</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">observer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">observer</span><span class="p">.</span><span class="n">expired</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">config_</span><span class="p">.</span><span class="n">enable_simultaneous_execution_as_candidate_module</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">start_planner_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">dynamic_pointer_cast</span><span class="o">&lt;</span><span class="n">StartPlannerModule</span><span class="o">&gt;</span><span class="p">(</span><span class="n">observer</span><span class="p">.</span><span class="n">lock</span><span class="p">());</span>
-
-<span class="w">    </span><span class="c1">// Currently simultaneous execution with other modules is not supported while backward driving</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start_planner_ptr</span><span class="o">-&gt;</span><span class="n">isDrivingForward</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="c1">// Other modules are not needed when freespace planning</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start_planner_ptr</span><span class="o">-&gt;</span><span class="n">isFreespacePlanning</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">config_</span><span class="p">.</span><span class="n">enable_simultaneous_execution_as_candidate_module</span><span class="p">;</span>
-<span class="w">  </span><span class="p">};</span>
-
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">all_of</span><span class="p">(</span><span class="n">observers_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">observers_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">checker</span><span class="p">);</span>
+<div class="highlight"><span class="filename">planning/behavior_path_start_planner_module/src/manager.cpp:765:791</span><pre><span></span><code>
 </code></pre></div>
 <h2 id="getrequestmodules">getRequestModules()<a class="headerlink" href="#getrequestmodules" title="Permanent link">#</a></h2>
 <p>基本的に今<code>candidate_module_ptrs_</code>にいないモジュールのうち，現在の<code>approved_module_ptrs_</code>と同時実行可能なモジュールを求めている．またほとんどのモジュールは<code>$max_size == 1</code>になっているので，結局<code>approved_module_ptrs_</code>と<code>candidate_module_ptrs_</code>にいないモジュールからrequest modulesが求められる．</p>
@@ -1148,7 +1076,7 @@
 <p>なし</p>
 <h3 id="_5">処理<a class="headerlink" href="#_5" title="Permanent link">#</a></h3>
 <p>conditionsの両方に<code>not getManager(m)-&gt;isAlwaysExecutable() &amp;&amp;</code>が記述されているので，それよりsuppが大きい<strong>hasNonAlwaysExecutableApproveModules()</strong>（「どれかのapproved modulesが<strong>not isAlwaysExecutable</strong>である」）は不要ではある．</p>
-<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:271:271@getRequestModules</span><pre><span></span><code><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">manager_ptr</span><span class="o">-&gt;</span><span class="n">isAlwaysExecutableModule</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">hasNonAlwaysExecutableApprovedModules</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:271:271@getRequestModules</span><pre><span></span><code>
 </code></pre></div>
 <p><code>manager_ptrs_</code>の中の各<code>manager_ptr</code>について</p>
 <ul>
@@ -1182,14 +1110,13 @@
 <p>なし</p>
 <h3 id="_7">処理<a class="headerlink" href="#_7" title="Permanent link">#</a></h3>
 <p><code>approved_module_ptr_</code>のうち<strong>isKeepLast()</strong>であるものを実行する．</p>
-<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:405:412</span><pre><span></span><code><span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">previous_output</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">for_each</span><span class="p">(</span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">getManager</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">isKeepLast</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">run</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">});</span>
-
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">output</span><span class="p">;</span>
+<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:405:412</span><pre><span></span><code><span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">module</span><span class="w"> </span><span class="n">doesn</span><span class="err">'</span><span class="n">t</span><span class="w"> </span><span class="n">exist</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">candidate</span><span class="w"> </span><span class="n">modules</span><span class="p">.</span><span class="w"> </span><span class="n">launch</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="k">module</span><span class="p">.</span>
+<span class="w">     </span><span class="o">*/</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">manager_ptr</span><span class="o">-&gt;</span><span class="n">canLaunchNewModule</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">toc</span><span class="p">(</span><span class="n">manager_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">());</span>
+<span class="w">        </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
 </code></pre></div>
 <h2 id="runrequestmodules">runRequestModules()<a class="headerlink" href="#runrequestmodules" title="Permanent link">#</a></h2>
 <div class="admonition tip">
@@ -1229,61 +1156,30 @@
 </ul>
 <p>の組み合わせが<code>executable_modules</code>になる．<em>start_planner</em> のように<strong>not isSimultaneousExecutableAsCandidateModule()</strong>であるモジュールは<code>sorted_request_modules</code>の先頭に入ることが重要であるため，<code>$priority = 0</code>のように優先度を高めて<strong>sortByPriority()</strong>させることでそれを達成している．</p>
 <p>次に<code>executable_modules</code>の出力を得る（ここではbootstrapはせず独立に出力を格納する）．<strong>executbale_modulesと</strong><code>candidate_module_ptrs_</code><strong>は重複しているので，ここで</strong><code>candidate_module</code><strong>を間接的に実行していることになる</strong>．</p>
-<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:559:567@runRequetsModules</span><pre><span></span><code><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">module_ptr</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">executable_modules</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">manager_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getManager</span><span class="p">(</span><span class="n">module_ptr</span><span class="p">);</span>
+<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:559:567@runRequetsModules</span><pre><span></span><code><span class="w">      </span><span class="n">conditions</span><span class="p">;</span>
 
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">manager_ptr</span><span class="o">-&gt;</span><span class="n">exist</span><span class="p">(</span><span class="n">module_ptr</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">manager_ptr</span><span class="o">-&gt;</span><span class="n">registerNewModule</span><span class="p">(</span>
-<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">SceneModuleInterface</span><span class="o">&gt;</span><span class="p">(</span><span class="n">module_ptr</span><span class="p">),</span><span class="w"> </span><span class="n">previous_module_output</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="n">results</span><span class="p">.</span><span class="n">emplace</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">(),</span><span class="w"> </span><span class="n">run</span><span class="p">(</span><span class="n">module_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">previous_module_output</span><span class="p">));</span>
+<span class="w">    </span><span class="c1">// Condition 3: Only modules that are always executable can be added</span>
+<span class="w">    </span><span class="c1">// if there exists at least one executable module that is neither always nor simultaneous</span>
+<span class="w">    </span><span class="c1">// executable.</span>
+<span class="w">    </span><span class="n">conditions</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span>
+<span class="w">      </span><span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">SceneModulePtr</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">!</span><span class="n">getManager</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">isAlwaysExecutableModule</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">               </span><span class="o">!</span><span class="n">getManager</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">isSimultaneousExecutableAsCandidateModule</span><span class="p">();</span>
 </code></pre></div>
-<div class="highlight"><span class="filename">behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:276:301</span><pre><span></span><code><span class="w">  </span><span class="n">BehaviorModuleOutput</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">SceneModulePtr</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">module_ptr</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PlannerData</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">planner_data</span><span class="p">,</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BehaviorModuleOutput</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">previous_module_output</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="n">stop_watch_</span><span class="p">.</span><span class="n">tic</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">());</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">setData</span><span class="p">(</span><span class="n">planner_data</span><span class="p">);</span>
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">setPreviousModuleOutput</span><span class="p">(</span><span class="n">previous_module_output</span><span class="p">);</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">lockRTCCommand</span><span class="p">();</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">run</span><span class="p">();</span>
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">unlockRTCCommand</span><span class="p">();</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">postProcess</span><span class="p">();</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">updateCurrentState</span><span class="p">();</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">publishRTCStatus</span><span class="p">();</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">publishSteeringFactor</span><span class="p">();</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">publishObjectsOfInterestMarker</span><span class="p">();</span>
-
-<span class="w">    </span><span class="n">processing_time_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">())</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">stop_watch_</span><span class="p">.</span><span class="n">toc</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">(),</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<div class="highlight"><span class="filename">behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:276:301</span><pre><span></span><code>
 </code></pre></div>
 <p>run()すると各モジュールの結果が分かるので，<code>getCurrentStauts() == ModuleStatus::FAILURE</code>または<code>getCurrentStauts() == ModuleStatus::SUCCESS</code>のモジュールは<strong>deleteExpiredModules()</strong>したうえで<code>executable_modules</code>からも削除する．</p>
 <p>もし<code>executable_modules</code>が空であれば<strong>clearCandidateModule()</strong>をしてreturn．この時点で<code>executable_modules</code>は<code>IDLE</code>か<code>RUNNING</code>か<code>WAITING_APPROVAL</code>のどれかである（todo: <code>IDLE</code>状態で<strong>updateCurrentStatus()</strong>を呼ぶと必ず<code>RUNNING</code>になるので，<code>RUNNING</code>のはず）．</p>
-<div class="highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ModuleStatus</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">IDLE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-<span class="w">  </span><span class="n">RUNNING</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-<span class="w">  </span><span class="n">WAITING_APPROVAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
-<span class="w">  </span><span class="n">SUCCESS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
-<span class="w">  </span><span class="n">FAILURE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
-<span class="p">};</span>
+<div class="highlight"><pre><span></span><code>
 </code></pre></div>
 <p><code>waiting_approved_modules</code>と<code>already_approved_modules</code>に分類する．</p>
-<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:607:613@runRequestModules</span><pre><span></span><code><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">for_each</span><span class="p">(</span><span class="n">executable_modules</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">executable_modules</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">isWaitingApproval</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">waiting_approved_modules</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">already_approved_modules</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">});</span>
+<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:607:613@runRequestModules</span><pre><span></span><code><span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * remove expired modules.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">remove_expired_modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 </code></pre></div>
 <p><code>already_approved_modules</code>の中での<strong>selectHighestPriorityModule()</strong>，その次に<code>waiting_approved_modules</code>の中での<strong>selectHighestPriorityModule()</strong>の順で返す．</p>
 <p><strong>updateCandidateModules()</strong>してから上で<strong>selectHighestPriorityModule()</strong>の結果とそれに対応する出力をペアで返す．</p>
@@ -1314,49 +1210,48 @@
 </li>
 </ul>
 <p><code>highest_priority_module</code>かつ<strong>not isWaitingApproval()</strong>であるモジュールはcandidateを経ずに直接<code>approved_module_ptrs_</code>に入るようになっている．そのため既存の<code>candidate_module_ptrs_</code>から削除し，追加もされないようにしている．</p>
-<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:855:870@runRequestModules</span><pre><span></span><code><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">candidate_to_remove</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">itr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">exist</span><span class="p">(</span><span class="n">itr</span><span class="p">,</span><span class="w"> </span><span class="n">request_modules</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">deleteExpiredModules</span><span class="p">(</span><span class="n">itr</span><span class="p">);</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">itr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">highest_priority_module</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span>
-<span class="w">             </span><span class="o">!</span><span class="n">highest_priority_module</span><span class="o">-&gt;</span><span class="n">isWaitingApproval</span><span class="p">();</span>
+<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:855:870@runRequestModules</span><pre><span></span><code><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">success_module_cond</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">m</span><span class="o">-&gt;</span><span class="n">getCurrentStatus</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">;</span>
 <span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="n">move_to_end</span><span class="p">(</span><span class="n">approved_module_ptrs_</span><span class="p">,</span><span class="w"> </span><span class="n">success_module_cond</span><span class="p">);</span>
 
-<span class="w">    </span><span class="n">candidate_module_ptrs_</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span>
-<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">remove_if</span><span class="p">(</span>
-<span class="w">        </span><span class="n">candidate_module_ptrs_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">candidate_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">candidate_to_remove</span><span class="p">),</span>
-<span class="w">      </span><span class="n">candidate_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">itr</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">success_module_cond</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">any_of</span><span class="p">(</span><span class="n">itr</span><span class="p">,</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="n">m</span><span class="o">-&gt;</span><span class="n">isCurrentRouteLaneletToBeReset</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}))</span>
+<span class="w">      </span><span class="n">resetCurrentRouteLanelet</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">copy_if</span><span class="p">(</span>
+<span class="w">      </span><span class="n">itr</span><span class="p">,</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">back_inserter</span><span class="p">(</span><span class="n">deleted_modules</span><span class="p">),</span><span class="w"> </span><span class="n">success_module_cond</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:876:891@runRequestModules</span><pre><span></span><code><span class="w">    </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">itr</span><span class="p">,</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
 
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">for_each</span><span class="p">(</span>
 <span class="w">      </span><span class="n">manager_ptrs_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">manager_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">m</span><span class="o">-&gt;</span><span class="n">updateObserver</span><span class="p">();</span><span class="w"> </span><span class="p">});</span>
-</code></pre></div>
-<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:876:891@runRequestModules</span><pre><span></span><code><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">request_modules</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span>
-<span class="w">      </span><span class="n">m</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">highest_priority_module</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span>
-<span class="w">      </span><span class="o">!</span><span class="n">highest_priority_module</span><span class="o">-&gt;</span><span class="n">isWaitingApproval</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">continue</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">exist</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">candidate_module_ptrs_</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">candidate_module_ptrs_</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * sort by priority. sorted_request_modules.front() is the highest priority module.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="n">sortByPriority</span><span class="p">(</span><span class="n">candidate_module_ptrs_</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">approved_modules_output</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">PlannerManager</span><span class="o">::</span><span class="n">updateCandidateModules</span><span class="p">(</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SceneModulePtr</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">request_modules</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">SceneModulePtr</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">highest_priority_module</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">exist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">module_ptr</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">module_ptrs</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">itr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span>
+<span class="w">      </span><span class="n">module_ptrs</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">module_ptrs</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
 </code></pre></div>
-<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:170:178@runRequestModules</span><pre><span></span><code><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">highest_priority_module</span><span class="o">-&gt;</span><span class="n">isWaitingApproval</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:170:178@runRequestModules</span><pre><span></span><code><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">highest_priority_module</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="n">processing_time_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="s">"total_time"</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stop_watch_</span><span class="p">.</span><span class="n">toc</span><span class="p">(</span><span class="s">"total_time"</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">output</span><span class="p">;</span>
 <span class="w">      </span><span class="p">}</span>
 
 <span class="w">      </span><span class="cm">/**</span>
-<span class="cm">       * STEP7: if the candidate module is approved, push the module into approved_module_ptrs_</span>
-<span class="cm">       */</span>
-<span class="w">      </span><span class="n">addApprovedModule</span><span class="p">(</span><span class="n">highest_priority_module</span><span class="p">);</span>
+<span class="cm">       * STEP6: if the candidate module's modification is NOT approved yet, return the result.</span>
+<span class="cm">       * NOTE: the result is output of the candidate module, but the output path don't contains path</span>
+<span class="cm">       * shape modification that needs approval. On the other hand, it could include velocity</span>
 </code></pre></div>
 <h2 id="runapprovedmodules">runApprovedModules<a class="headerlink" href="#runapprovedmodules" title="Permanent link">#</a></h2>
 <div class="admonition tip">
@@ -1371,76 +1266,76 @@
 </ul>
 <h3 id="_14">処理<a class="headerlink" href="#_14" title="Permanent link">#</a></h3>
 <p>出力の初期値は以下である．</p>
-<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:641:641</span><pre><span></span><code><span class="w">  </span><span class="n">BehaviorModuleOutput</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getReferencePath</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:641:641</span><pre><span></span><code><span class="w">  </span><span class="p">}</span>
 </code></pre></div>
 <p><code>approved_module_ptrs_</code>が空であればこの初期値をそのまま返す．</p>
 <p>そうでない場合，まず<code>approved_module_ptrs_</code>のうち<code>is_keep_last</code>のものを昇順で最後尾に移し(low -&gt; high)，<code>is_keep_last</code>でないものをbootstrapで実行して結果を保持する．</p>
-<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:701:706</span><pre><span></span><code><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">for_each</span><span class="p">(</span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">getManager</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">isKeepLast</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">run</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
-<span class="w">      </span><span class="n">results</span><span class="p">.</span><span class="n">emplace</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">(),</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">});</span>
+<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:701:706</span><pre><span></span><code><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">get_sorted_keep_last_modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">modules</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SceneModulePtr</span><span class="o">&gt;</span><span class="w"> </span><span class="n">keep_last_modules</span><span class="p">;</span>
+
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">copy_if</span><span class="p">(</span>
+<span class="w">        </span><span class="n">modules</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">modules</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">back_inserter</span><span class="p">(</span><span class="n">keep_last_modules</span><span class="p">),</span>
+<span class="w">        </span><span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">getManager</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">isKeepLast</span><span class="p">();</span><span class="w"> </span><span class="p">});</span>
 </code></pre></div>
 <p>次に，<code>is_keep_last</code>でないもののうち<strong>isWaitingApproval()</strong>に戻ったものがいた場合，<strong>clearCandidateModules()</strong>してから再度そのモジュールだけを<code>candidate_module_ptrs_</code>に戻して<code>approve_module_ptrs_</code>からは削除し，<code>results</code>からはそのモジュール以降の全てのモジュールの結果を削除する．</p>
-<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:730:740</span><pre><span></span><code><span class="w">      </span><span class="n">clearCandidateModules</span><span class="p">();</span>
-<span class="w">      </span><span class="n">candidate_module_ptrs_</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="o">*</span><span class="n">waiting_approval_modules_itr</span><span class="p">);</span>
+<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:730:740</span><pre><span></span><code><span class="w">      </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">rbegin</span><span class="p">(),</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">rend</span><span class="p">(),</span>
+<span class="w">      </span><span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="o">!</span><span class="n">getManager</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">isKeepLast</span><span class="p">();</span><span class="w"> </span><span class="p">});</span>
 
-<span class="w">      </span><span class="n">debug_info_</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span>
-<span class="w">        </span><span class="o">*</span><span class="n">waiting_approval_modules_itr</span><span class="p">,</span><span class="w"> </span><span class="n">Action</span><span class="o">::</span><span class="n">MOVE</span><span class="p">,</span><span class="w"> </span><span class="s">"Back To Waiting Approval"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">not_keep_last_modules</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">rend</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="p">(</span><span class="o">*</span><span class="n">not_keep_last_modules</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">unlockOutputPath</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
 
-<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">for_each</span><span class="p">(</span>
-<span class="w">        </span><span class="n">waiting_approval_modules_itr</span><span class="p">,</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
-<span class="w">        </span><span class="p">[</span><span class="o">&amp;</span><span class="n">results</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">());</span><span class="w"> </span><span class="p">});</span>
-
-<span class="w">      </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">waiting_approval_modules_itr</span><span class="p">);</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * execute approved modules except keep last modules.</span>
+<span class="cm">   */</span>
 </code></pre></div>
 <p>次に<code>FAILURE</code>だったものがいた場合，それとそれ以降を全て<strong>deleteExpiredModules()</strong>し，<strong>clearCandidateModules()</strong>し，そのモジュール以降を<code>approve_module_ptrs_</code>から削除する．</p>
 <p><code>result</code>に結果が残っているものがapprovedかつvalidなモジュールであるので，<code>approved_module_ptrs_</code>を逆向きにiterateして<code>result</code>に結果が残っているものを見つけたらそれを求める．</p>
 <p><code>SUCCESS</code>のものを<code>approved_module_ptrs_</code>の後尾に移す．</p>
-<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:793:815</span><pre><span></span><code><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">move_to_end</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">modules</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">cond</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">itr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">modules</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
-<span class="w">      </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">itr</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">modules</span><span class="p">.</span><span class="n">end</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">satisfied_exit_cond</span><span class="w"> </span><span class="o">=</span>
-<span class="w">          </span><span class="n">std</span><span class="o">::</span><span class="n">all_of</span><span class="p">(</span><span class="n">itr</span><span class="p">,</span><span class="w"> </span><span class="n">modules</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">cond</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">cond</span><span class="p">(</span><span class="n">m</span><span class="p">);</span><span class="w"> </span><span class="p">});</span>
+<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:793:815</span><pre><span></span><code><span class="w">      </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">m</span><span class="o">-&gt;</span><span class="n">getCurrentStatus</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">FAILURE</span><span class="p">;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">itr</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">deleted_modules</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="o">*</span><span class="n">itr</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">satisfied_exit_cond</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="k">return</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cond</span><span class="p">(</span><span class="o">*</span><span class="n">itr</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="k">auto</span><span class="w"> </span><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="o">*</span><span class="n">itr</span><span class="p">);</span>
-<span class="w">          </span><span class="n">itr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">modules</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">itr</span><span class="p">);</span>
-<span class="w">          </span><span class="n">modules</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">modules</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">tmp</span><span class="p">));</span>
-<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="n">itr</span><span class="o">++</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">};</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">success_module_cond</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">m</span><span class="o">-&gt;</span><span class="n">getCurrentStatus</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">;</span>
-<span class="w">    </span><span class="p">};</span>
-<span class="w">    </span><span class="n">move_to_end</span><span class="p">(</span><span class="n">approved_module_ptrs_</span><span class="p">,</span><span class="w"> </span><span class="n">success_module_cond</span><span class="p">);</span>
-</code></pre></div>
-<p>successしたモジュールは末尾に揃えられているので，それらを<code>approved_module_ptrs_</code>から削除する.</p>
-<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:817:834</span><pre><span></span><code><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">itr</span><span class="w"> </span><span class="o">=</span>
-<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">success_module_cond</span><span class="p">);</span>
-
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">any_of</span><span class="p">(</span><span class="n">itr</span><span class="p">,</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="n">m</span><span class="o">-&gt;</span><span class="n">isCurrentRouteLaneletToBeReset</span><span class="p">();</span>
-<span class="w">        </span><span class="p">}))</span>
-<span class="w">      </span><span class="n">resetCurrentRouteLanelet</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
-
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">for_each</span><span class="p">(</span><span class="n">itr</span><span class="p">,</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">for_each</span><span class="p">(</span><span class="n">itr</span><span class="p">,</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="n">debug_info_</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">Action</span><span class="o">::</span><span class="n">DELETE</span><span class="p">,</span><span class="w"> </span><span class="s">"From Approved"</span><span class="p">);</span>
 <span class="w">      </span><span class="n">deleteExpiredModules</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
 <span class="w">    </span><span class="p">});</span>
 
-<span class="w">    </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">itr</span><span class="p">,</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
-
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">for_each</span><span class="p">(</span>
 <span class="w">      </span><span class="n">manager_ptrs_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">manager_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">m</span><span class="o">-&gt;</span><span class="n">updateObserver</span><span class="p">();</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">itr</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">clearCandidateModules</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">itr</span><span class="p">,</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
 <span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="s">"root"</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<p>successしたモジュールは末尾に揃えられているので，それらを<code>approved_module_ptrs_</code>から削除する.</p>
+<div class="highlight"><span class="filename">behavior_path_planner/src/planner_manager.cpp:817:834</span><pre><span></span><code><span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * use the last module's output as approved modules planning result.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">approved_modules_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">results</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">itr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span>
+<span class="w">      </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">rbegin</span><span class="p">(),</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">rend</span><span class="p">(),</span>
+<span class="w">      </span><span class="p">[</span><span class="o">&amp;</span><span class="n">results</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">count</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">())</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">itr</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">rend</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">at</span><span class="p">((</span><span class="o">*</span><span class="n">itr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="s">"root"</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}();</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * remove success module immediately. if lane change module has succeeded, update current route</span>
+<span class="cm">   * lanelet.</span>
+<span class="cm">   */</span>
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">注意</p>
@@ -1463,14 +1358,7 @@
 <li>一番上に戻る</li>
 </ul>
 <p>candidateがapproveされるとapproved modulesの一番最後に入る</p>
-<div class="highlight"><span class="filename">behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:344:351</span><pre><span></span><code><span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * @brief push back to approved_module_ptrs_.</span>
-<span class="cm">   * @param approved module pointer.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">addApprovedModule</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SceneModulePtr</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">module_ptr</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">module_ptr</span><span class="p">);</span>
-<span class="w">  </span><span class="p">}</span>
+<div class="highlight"><span class="filename">behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:344:351</span><pre><span></span><code>
 </code></pre></div></div>
 
 

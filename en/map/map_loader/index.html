@@ -798,11 +798,19 @@
 <div><h1 id="map_loader">map_loader<a class="headerlink" href="#map_loader" title="Permanent link">#</a></h1>
 <h2 id="lanelet2_map_loader">lanelet2_map_loader<a class="headerlink" href="#lanelet2_map_loader" title="Permanent link">#</a></h2>
 <p><em>map_projector_loader</em> ノードが生成時に一度だけ<code>/map/map_projector_info</code>をpublishするので，それをsubしたこのノードが<code>/map/vector_map</code>をpublishsする．</p>
-<div class="highlight"><span class="filename">src/map_loader/lanelet2_map_loader_node.cpp:68:90</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">Lanelet2MapLoaderNode::on_map_projector_info</span><span class="p">(</span>
+<div class="highlight"><span class="filename">src/map_loader/lanelet2_map_loader_node.cpp:68:90</span><pre><span></span><code><span class="w">  </span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"allow_unsupported_version"</span><span class="p">);</span>
+<span class="w">  </span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"lanelet2_map_path"</span><span class="p">);</span>
+<span class="w">  </span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"center_line_resolution"</span><span class="p">);</span>
+<span class="w">  </span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"use_waypoints"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">Lanelet2MapLoaderNode</span><span class="o">::</span><span class="n">on_map_projector_info</span><span class="p">(</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">MapProjectorInfo</span><span class="o">::</span><span class="n">Message</span><span class="o">::</span><span class="n">ConstSharedPtr</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span>
 <span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">allow_unsupported_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_parameter</span><span class="p">(</span><span class="s">"allow_unsupported_version"</span><span class="p">).</span><span class="n">as_bool</span><span class="p">();</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">lanelet2_filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_parameter</span><span class="p">(</span><span class="s">"lanelet2_map_path"</span><span class="p">).</span><span class="n">as_string</span><span class="p">();</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">center_line_resolution</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_parameter</span><span class="p">(</span><span class="s">"center_line_resolution"</span><span class="p">).</span><span class="n">as_double</span><span class="p">();</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">use_waypoints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_parameter</span><span class="p">(</span><span class="s">"use_waypoints"</span><span class="p">).</span><span class="n">as_bool</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">// load map from file</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load_map</span><span class="p">(</span><span class="n">lanelet2_filename</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">msg</span><span class="p">);</span>
@@ -811,16 +819,8 @@
 <span class="w">    </span><span class="k">return</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">// overwrite centerline</span>
-<span class="w">  </span><span class="n">lanelet</span><span class="o">::</span><span class="n">utils</span><span class="o">::</span><span class="n">overwriteLaneletsCenterline</span><span class="p">(</span><span class="n">map</span><span class="p">,</span><span class="w"> </span><span class="n">center_line_resolution</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
-
-<span class="w">  </span><span class="c1">// create map bin msg</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">map_bin_msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_map_bin_msg</span><span class="p">(</span><span class="n">map</span><span class="p">,</span><span class="w"> </span><span class="n">lanelet2_filename</span><span class="p">,</span><span class="w"> </span><span class="n">now</span><span class="p">());</span>
-
-<span class="w">  </span><span class="c1">// create publisher and publish</span>
-<span class="w">  </span><span class="n">pub_map_bin_</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">create_publisher</span><span class="o">&lt;</span><span class="n">HADMapBin</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"output/lanelet2_map"</span><span class="p">,</span><span class="w"> </span><span class="n">rclcpp</span><span class="o">::</span><span class="n">QoS</span><span class="p">{</span><span class="mi">1</span><span class="p">}.</span><span class="n">transient_local</span><span class="p">());</span>
-<span class="w">  </span><span class="n">pub_map_bin_</span><span class="o">-&gt;</span><span class="n">publish</span><span class="p">(</span><span class="n">map_bin_msg</span><span class="p">);</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">format_version</span><span class="p">{</span><span class="s">"null"</span><span class="p">},</span><span class="w"> </span><span class="n">map_version</span><span class="p">{</span><span class="s">""</span><span class="p">};</span>
+<span class="w">  </span><span class="n">lanelet</span><span class="o">::</span><span class="n">io_handlers</span><span class="o">::</span><span class="n">AutowareOsmParser</span><span class="o">::</span><span class="n">parseVersions</span><span class="p">(</span>
 </code></pre></div>
 <p>QoSは<code>transient_local</code>なので，vector mapを利用するノードでvector mapに対するcallbackが何度も実行されるということはない．</p></div>
 

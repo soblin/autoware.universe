@@ -798,25 +798,11 @@
 <div><h1 id="behavior_path_goal_planner_module">behavior_path_goal_planner_module<a class="headerlink" href="#behavior_path_goal_planner_module" title="Permanent link">#</a></h1>
 <p>rvizで普通にゴールを置いた時に，ゴールが通常の道路の上だと指定した位置にきっちりと向かうようになっている．もしゴールを路肩レーンの上に置くと前後の路駐禁止エリアや路駐車両を考慮してゴール位置が修正されるようになっている．またrvizのmodified goal pluginを使うと，通常レーンの上に置いたゴールも路肩に自動的に寄せられるようになる．</p>
 <p>まだ幅寄せの経路が生成されていない段階で経路が黄色くなっておりおそらく減速(deceleratePath)指示が出されている．すぐには反映されないが経路が見つかったら</p>
-<div class="highlight"><span class="filename">planning/behavior_path_goal_planner_module/src/goal_planner_module.cpp:1191:1198</span><pre><span></span><code><span class="w">      </span><span class="n">parameters_</span><span class="o">-&gt;</span><span class="n">object_recognition_collision_check_hard_margins</span><span class="p">.</span><span class="n">back</span><span class="p">());</span>
-
-<span class="w">    </span><span class="c1">// update thread_safe_data_</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">path_and_goal_opt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">pull_over_path</span><span class="p">,</span><span class="w"> </span><span class="n">modified_goal</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">path_and_goal_opt</span><span class="p">;</span>
-<span class="w">      </span><span class="n">deceleratePath</span><span class="p">(</span><span class="n">pull_over_path</span><span class="p">);</span>
-<span class="w">      </span><span class="n">thread_safe_data_</span><span class="p">.</span><span class="n">set</span><span class="p">(</span>
-<span class="w">        </span><span class="n">goal_candidates</span><span class="p">,</span><span class="w"> </span><span class="n">pull_over_path_candidates</span><span class="p">,</span><span class="w"> </span><span class="n">pull_over_path</span><span class="p">,</span><span class="w"> </span><span class="n">modified_goal</span><span class="p">);</span>
+<div class="highlight"><span class="filename">planning/behavior_path_goal_planner_module/src/goal_planner_module.cpp:1191:1198</span><pre><span></span><code>
 </code></pre></div>
 <p>の処理がされている．</p>
 <p>またそのときすでにfoundPullOverであれば</p>
-<div class="highlight"><span class="filename">planning/behavior_path_goal_planner_module/src/goal_planner_module.cpp:919:926</span><pre><span></span><code><span class="w">    </span><span class="n">RCLCPP_WARN_THROTTLE</span><span class="p">(</span>
-<span class="w">      </span><span class="n">getLogger</span><span class="p">(),</span><span class="w"> </span><span class="o">*</span><span class="n">clock_</span><span class="p">,</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span><span class="w"> </span><span class="s">"Not safe against dynamic objects, generate stop path"</span><span class="p">);</span>
-<span class="w">    </span><span class="n">debug_stop_pose_with_info_</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"feasible stop after approval"</span><span class="p">));</span>
-<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="c1">// situation : (safe against static and dynamic objects) or (safe against static objects and</span>
-<span class="w">    </span><span class="c1">// before approval) don't stop</span>
-<span class="w">    </span><span class="c1">// keep stop if not enough time passed,</span>
-<span class="w">    </span><span class="c1">// because it takes time for the trajectory to be reflected</span>
+<div class="highlight"><span class="filename">planning/behavior_path_goal_planner_module/src/goal_planner_module.cpp:919:926</span><pre><span></span><code>
 </code></pre></div>
 <p>が実行される．これは障害物などがない場合である．またapprovedでなくかつhasDecidedPathでない場合でも幅寄せの経路は出る．hasNotDecidedPathの場合はneedPathUpdateで定期的に経路の更新を試みている
 っぽい．</p>

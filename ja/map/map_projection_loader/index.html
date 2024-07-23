@@ -782,10 +782,7 @@
 
 <div><h1 id="map_projection_loader">map_projection_loader<a class="headerlink" href="#map_projection_loader" title="Permanent link">#</a></h1>
 <p><code>MapProjectorLoader</code>の生成時に一度だけ<code>/map/map_projector_info</code>がpubされる．</p>
-<div class="highlight"><span class="filename">src/map_projection_loader.cpp:85:97</span><pre><span></span><code><span class="n">MapProjectionLoader</span><span class="o">::</span><span class="n">MapProjectionLoader</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Node</span><span class="p">(</span><span class="s">"map_projection_loader"</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">yaml_filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"map_projector_info_path"</span><span class="p">);</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">lanelet2_map_filename</span><span class="w"> </span><span class="o">=</span>
+<div class="highlight"><span class="filename">src/map_projection_loader.cpp:85:97</span><pre><span></span><code><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">lanelet2_map_filename</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">declare_parameter</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"lanelet2_map_path"</span><span class="p">);</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">tier4_map_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">MapProjectorInfo</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span>
@@ -795,6 +792,9 @@
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">adaptor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">component_interface_utils</span><span class="o">::</span><span class="n">NodeAdaptor</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
 <span class="w">  </span><span class="n">adaptor</span><span class="p">.</span><span class="n">init_pub</span><span class="p">(</span><span class="n">publisher_</span><span class="p">);</span>
 <span class="w">  </span><span class="n">publisher_</span><span class="o">-&gt;</span><span class="n">publish</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;rclcpp_components/register_node_macro.hpp&gt;</span>
 </code></pre></div></div>
 
 
