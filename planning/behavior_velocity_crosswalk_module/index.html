@@ -1,0 +1,1726 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://autowarefoundation.github.io/autoware.universe/planning/behavior_velocity_crosswalk_module/">
+      
+      
+        <link rel="prev" href="../behavior_path_planner_common/">
+      
+      
+        <link rel="next" href="../behavior_velocity_stop_line_module/">
+      
+      <link rel="icon" href="../../docs/assets/images/autoware-foundation.png">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.20">
+    
+    
+      
+        <title>behavior_velocity_crosswalk_module - Autoware Universe Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.eebd395e.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ecc896b0.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../docs/assets/css/extra.css">
+    
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#behavior_velocity_crosswalk_module" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../.." title="Autoware Universe Documentation" class="md-header__button md-logo" aria-label="Autoware Universe Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M135.2 117.4 109.1 192h293.8l-26.1-74.6c-4.5-12.8-16.6-21.4-30.2-21.4H165.4c-13.6 0-25.7 8.6-30.2 21.4zm-95.6 79.4L74.8 96.3C88.3 57.8 124.6 32 165.4 32h181.2c40.8 0 77.1 25.8 90.6 64.3l35.2 100.5c23.2 9.6 39.6 32.5 39.6 59.2v192c0 17.7-14.3 32-32 32h-32c-17.7 0-32-14.3-32-32v-48H96v48c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V256c0-26.7 16.4-49.6 39.6-59.2zM128 288a32 32 0 1 0-64 0 32 32 0 1 0 64 0zm288 32a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Autoware Universe Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              behavior_velocity_crosswalk_module
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+          
+            
+            
+            
+            <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+            
+              <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+              </label>
+            
+          
+            
+            
+            
+            <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+            
+              <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+              </label>
+            
+          
+        </form>
+      
+    
+    
+      <div class="md-header__option">
+        <div class="md-select">
+          
+          <button class="md-header__button md-icon" aria-label="言語切り替え">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+          </button>
+          <div class="md-select__inner">
+            <ul class="md-select__list">
+              
+                <li class="md-select__item">
+                  <a href="./" hreflang="ja" class="md-select__link">
+                    日本語
+                  </a>
+                </li>
+              
+                <li class="md-select__item">
+                  <a href="../../en/planning/behavior_velocity_crosswalk_module/" hreflang="en" class="md-select__link">
+                    English
+                  </a>
+                </li>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/soblin/autoware.universe" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="タブ" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      Autoware Universe Code Reading
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../map/" class="md-tabs__link">
+        Map
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link md-tabs__link--active">
+        Planning
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Autoware Universe Documentation" class="md-nav__button md-logo" aria-label="Autoware Universe Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M135.2 117.4 109.1 192h293.8l-26.1-74.6c-4.5-12.8-16.6-21.4-30.2-21.4H165.4c-13.6 0-25.7 8.6-30.2 21.4zm-95.6 79.4L74.8 96.3C88.3 57.8 124.6 32 165.4 32h181.2c40.8 0 77.1 25.8 90.6 64.3l35.2 100.5c23.2 9.6 39.6 32.5 39.6 59.2v192c0 17.7-14.3 32-32 32h-32c-17.7 0-32-14.3-32-32v-48H96v48c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V256c0-26.7 16.4-49.6 39.6-59.2zM128 288a32 32 0 1 0-64 0 32 32 0 1 0 64 0zm288 32a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"/></svg>
+
+    </a>
+    Autoware Universe Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/soblin/autoware.universe" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Autoware Universe Code Reading
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+      
+      
+        
+          
+            
+          
+        
+          
+        
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../map/">Map</a>
+          
+            <label for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Map
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2" >
+      
+      
+        
+          
+            
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../map/map_loader/">Map loader</a>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Map loader
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_3" >
+      
+      
+        
+          
+            
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../map/map_projection_loader/">Map projection loader</a>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2_3">
+          <span class="md-nav__icon md-icon"></span>
+          Map projection loader
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+      
+      
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../">Planning</a>
+          
+            <label for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Planning
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2" >
+      
+      
+        
+          
+            
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../behavior_path_goal_planner_module/">Behavior path goal planner module</a>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Behavior path goal planner module
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+      
+      
+        
+          
+            
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../behavior_path_planner/">Behavior path planner</a>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Behavior path planner
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+      
+      
+        
+          
+            
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../behavior_path_planner_common/">Behavior path planner common</a>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_4">
+          <span class="md-nav__icon md-icon"></span>
+          Behavior path planner common
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" checked>
+      
+      
+        
+          
+            
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index md-nav__link--active">
+          <a href="./">Behavior velocity crosswalk module</a>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_3_5">
+          <span class="md-nav__icon md-icon"></span>
+          Behavior velocity crosswalk module
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_6" >
+      
+      
+        
+          
+            
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../behavior_velocity_stop_line_module/">Behavior velocity stop line module</a>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_6">
+          <span class="md-nav__icon md-icon"></span>
+          Behavior velocity stop line module
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+      
+      
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_7" >
+      
+      
+        
+          
+            
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../behavior_velocity_traffic_light_module/">Behavior velocity traffic light module</a>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_7">
+          <span class="md-nav__icon md-icon"></span>
+          Behavior velocity traffic light module
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    起動条件
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    処理
+  </a>
+  
+    <nav class="md-nav" aria-label="処理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    停止する位置
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkstopforcrosswalkusers" class="md-nav__link">
+    歩行者に対する停止判断(checkStopForCrosswalkUsers)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkstopforstuckvehicles" class="md-nav__link">
+    横断歩道出口付近のスタック車両に対する停止判断(checkStopForStuckVehicles)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    横断歩道の形状に関わる幾何計算を行っている関数
+  </a>
+  
+    <nav class="md-nav" aria-label="横断歩道の形状に関わる幾何計算を行っている関数">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getpathendpointsoncrosswalk" class="md-nav__link">
+    getPathEndPointsOnCrosswalk
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sortcrosswalkbydistance" class="md-nav__link">
+    sortCrosswalkByDistance
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clampattentionrangebyneighborcrosswalks" class="md-nav__link">
+    clampAttentionRangeByNeighborCrosswalks
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<div><h1 id="behavior_velocity_crosswalk_module">behavior_velocity_crosswalk_module<a class="headerlink" href="#behavior_velocity_crosswalk_module" title="Permanent link">#</a></h1>
+<h2 id="_1">起動条件<a class="headerlink" href="#_1" title="Permanent link">#</a></h2>
+<p>laneletの<strong><em>Crosswalk</em></strong>とregulatory elementの<strong><em>Crosswalk</em></strong>の2種類があり，それぞれについて立ち上げる必要があるかを求めている．前者についてはpedestrianのrouting graphのうち自車経路と幾何的に重なっているものを求めている．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/util.cpp:56:90</span><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="p">,</span><span class="w"> </span><span class="n">lanelet</span><span class="o">::</span><span class="n">ConstLanelet</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">getCrosswalksOnPath</span><span class="p">(</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">geometry_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Pose</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">current_pose</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">tier4_planning_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">PathWithLaneId</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">lanelet</span><span class="o">::</span><span class="n">LaneletMapPtr</span><span class="w"> </span><span class="n">lanelet_map</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">lanelet</span><span class="o">::</span><span class="n">routing</span><span class="o">::</span><span class="n">RoutingGraphContainer</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">overall_graphs</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">lanelet</span><span class="o">::</span><span class="n">Id</span><span class="p">,</span><span class="w"> </span><span class="n">lanelet</span><span class="o">::</span><span class="n">ConstLanelet</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">crosswalks</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Add current lane id</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">nearest_lane_id</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">autoware</span><span class="o">::</span><span class="n">behavior_velocity_planner</span><span class="o">::</span><span class="n">planning_utils</span><span class="o">::</span><span class="n">getNearestLaneId</span><span class="p">(</span>
+<span class="w">      </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">lanelet_map</span><span class="p">,</span><span class="w"> </span><span class="n">current_pose</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">lanelet</span><span class="o">::</span><span class="n">Id</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unique_lane_ids</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nearest_lane_id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Add subsequent lane_ids from nearest lane_id</span>
+<span class="w">    </span><span class="n">unique_lane_ids</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">autoware</span><span class="o">::</span><span class="n">behavior_velocity_planner</span><span class="o">::</span><span class="n">planning_utils</span><span class="o">::</span><span class="n">getSubsequentLaneIdsSetOnPath</span><span class="p">(</span>
+<span class="w">        </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">nearest_lane_id</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Add all lane_ids in path</span>
+<span class="w">    </span><span class="n">unique_lane_ids</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">autoware</span><span class="o">::</span><span class="n">behavior_velocity_planner</span><span class="o">::</span><span class="n">planning_utils</span><span class="o">::</span><span class="n">getSortedLaneIdsFromPath</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">lane_id</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">unique_lane_ids</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">ll</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lanelet_map</span><span class="o">-&gt;</span><span class="n">laneletLayer</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">lane_id</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">PEDESTRIAN_GRAPH_ID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">conflicting_crosswalks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">overall_graphs</span><span class="o">-&gt;</span><span class="n">conflictingInGraph</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span><span class="w"> </span><span class="n">PEDESTRIAN_GRAPH_ID</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">crosswalk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">conflicting_crosswalks</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">crosswalks</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">lane_id</span><span class="p">,</span><span class="w"> </span><span class="n">crosswalk</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">crosswalks</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/manager.cpp:198:207@launchNewModules</span><pre><span></span><code><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">crosswalk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">crosswalk_reg_elem_map</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// NOTE: The former id is a lane id, and the latter one is a regulatory element's id.</span>
+<span class="w">    </span><span class="n">launch</span><span class="p">(</span><span class="n">crosswalk</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">id</span><span class="p">(),</span><span class="w"> </span><span class="n">crosswalk</span><span class="p">.</span><span class="n">first</span><span class="o">-&gt;</span><span class="n">crosswalkLanelet</span><span class="p">().</span><span class="n">id</span><span class="p">(),</span><span class="w"> </span><span class="n">crosswalk</span><span class="p">.</span><span class="n">first</span><span class="o">-&gt;</span><span class="n">id</span><span class="p">());</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">crosswalk_lanelets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getCrosswalksOnPath</span><span class="p">(</span>
+<span class="w">    </span><span class="n">planner_data_</span><span class="o">-&gt;</span><span class="n">current_odometry</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">,</span><span class="w"> </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">rh</span><span class="o">-&gt;</span><span class="n">getLaneletMapPtr</span><span class="p">(),</span><span class="w"> </span><span class="n">rh</span><span class="o">-&gt;</span><span class="n">getOverallGraphPtr</span><span class="p">());</span>
+
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">crosswalk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">crosswalk_lanelets</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">launch</span><span class="p">(</span><span class="n">crosswalk</span><span class="p">.</span><span class="n">first</span><span class="p">,</span><span class="w"> </span><span class="n">crosswalk</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">id</span><span class="p">(),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="_2">処理<a class="headerlink" href="#_2" title="Permanent link">#</a></h2>
+<p>経路のセグメントをイテレートし，横断歩道のポリゴンと一番初めと一番最後に交差する線分における交点をそれぞれ求めている．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:230:236@modifyPathVelocity</span><pre><span></span><code><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">path_end_points_on_crosswalk</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">getPathEndPointsOnCrosswalk</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">crosswalk_</span><span class="p">.</span><span class="n">polygon2d</span><span class="p">().</span><span class="n">basicPolygon</span><span class="p">(),</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">path_end_points_on_crosswalk</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">first_path_point_on_crosswalk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">path_end_points_on_crosswalk</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">last_path_point_on_crosswalk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">path_end_points_on_crosswalk</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/util.cpp:124:146@getPathEndPointsOnCrosswalk</span><pre><span></span><code><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Point2d</span><span class="o">&gt;</span><span class="w"> </span><span class="n">intersects</span><span class="p">{};</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">has_collision_twice</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">ego_path</span><span class="p">.</span><span class="n">points</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">p_back</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ego_path</span><span class="p">.</span><span class="n">points</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">point</span><span class="p">.</span><span class="n">pose</span><span class="p">.</span><span class="n">position</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">p_front</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ego_path</span><span class="p">.</span><span class="n">points</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">).</span><span class="n">point</span><span class="p">.</span><span class="n">pose</span><span class="p">.</span><span class="n">position</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">Line2d</span><span class="w"> </span><span class="n">segment</span><span class="p">{{</span><span class="n">p_back</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">p_back</span><span class="p">.</span><span class="n">y</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">p_front</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">p_front</span><span class="p">.</span><span class="n">y</span><span class="p">}};</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Point2d</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tmp_intersects</span><span class="p">{};</span>
+<span class="w">    </span><span class="n">bg</span><span class="o">::</span><span class="n">intersection</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="w"> </span><span class="n">polygon</span><span class="p">,</span><span class="w"> </span><span class="n">tmp_intersects</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">tmp_intersects</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">intersects</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">intersects</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">has_collision_twice</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">        </span><span class="k">break</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">has_collision_twice</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="_3">停止する位置<a class="headerlink" href="#_3" title="Permanent link">#</a></h3>
+<p>regulatory_elementに停止線が紐付けられていればそれを<code>default_stop_pose</code>として，ない場合は衝突しうる位置からある程度マージンを空けた位置を停止位置として利用する．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:245:246@modifyPathVelocity</span><pre><span></span><code><span class="w">  </span><span class="c1">// Calculate stop point with margin</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">default_stop_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getDefaultStopPose</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">first_path_point_on_crosswalk</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>checkStopForCrosswalkUsers</strong>と<strong>checkStopForStuckVehicles</strong>は停止位置の情報だけを求めている．この2つの関数はターゲットに対して停止する必要がある場合に有効値を返すようになっている．そのためこの2つが返した値はRTCのsafeの値と関係している．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:253:269@modifyPathVelocity</span><pre><span></span><code><span class="w">  </span><span class="c1">// Decide to stop for crosswalk users</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">stop_factor_for_crosswalk_users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">checkStopForCrosswalkUsers</span><span class="p">(</span>
+<span class="w">    </span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">sparse_resample_path</span><span class="p">,</span><span class="w"> </span><span class="n">first_path_point_on_crosswalk</span><span class="p">,</span><span class="w"> </span><span class="n">last_path_point_on_crosswalk</span><span class="p">,</span>
+<span class="w">    </span><span class="n">default_stop_pose</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Decide to stop for stuck vehicle</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">stop_factor_for_stuck_vehicles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">checkStopForStuckVehicles</span><span class="p">(</span>
+<span class="w">    </span><span class="n">sparse_resample_path</span><span class="p">,</span><span class="w"> </span><span class="n">objects_ptr</span><span class="o">-&gt;</span><span class="n">objects</span><span class="p">,</span><span class="w"> </span><span class="n">first_path_point_on_crosswalk</span><span class="p">,</span>
+<span class="w">    </span><span class="n">last_path_point_on_crosswalk</span><span class="p">,</span><span class="w"> </span><span class="n">default_stop_pose</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Get nearest stop factor</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">nearest_stop_factor</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">getNearestStopFactor</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">stop_factor_for_crosswalk_users</span><span class="p">,</span><span class="w"> </span><span class="n">stop_factor_for_stuck_vehicles</span><span class="p">);</span>
+<span class="w">  </span><span class="n">recordTime</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Set safe or unsafe</span>
+<span class="w">  </span><span class="n">setSafe</span><span class="p">(</span><span class="o">!</span><span class="n">nearest_stop_factor</span><span class="p">);</span>
+</code></pre></div>
+<p>RTCのdistanceの値は地図停止線があればそこを，なければ対象物に対して停止するであろう位置への距離を求める(停止するべき対象がなければ設定しない)．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:273:273@modifyPathVelocity</span><pre><span></span><code><span class="w">  </span><span class="n">setDistanceToStop</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">default_stop_pose</span><span class="p">,</span><span class="w"> </span><span class="n">nearest_stop_factor</span><span class="p">);</span>
+</code></pre></div>
+<p>RTCの承認に応じて停止・進行の判断を行う．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:275:280@modifyPathVelocity</span><pre><span></span><code><span class="w">  </span><span class="c1">// plan Go/Stop</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isActivated</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">planGo</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">nearest_stop_factor</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">planStop</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">nearest_stop_factor</span><span class="p">,</span><span class="w"> </span><span class="n">default_stop_pose</span><span class="p">,</span><span class="w"> </span><span class="n">stop_reason</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<p><strong>planGO</strong>の場合でも徐行は行われる．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:1262:1273@planGo</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">CrosswalkModule::planGo</span><span class="p">(</span>
+<span class="w">  </span><span class="n">PathWithLaneId</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ego_path</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">StopFactor</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">stop_factor</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">stop_factor</span><span class="p">.</span><span class="n">has_value</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// Plan slow down</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">target_velocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calcTargetVelocity</span><span class="p">(</span><span class="n">stop_factor</span><span class="o">-&gt;</span><span class="n">stop_pose</span><span class="p">.</span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="n">ego_path</span><span class="p">);</span>
+<span class="w">  </span><span class="n">insertDecelPointWithDebugInfo</span><span class="p">(</span>
+<span class="w">    </span><span class="n">stop_factor</span><span class="o">-&gt;</span><span class="n">stop_pose</span><span class="p">.</span><span class="n">position</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">planner_param_</span><span class="p">.</span><span class="n">min_slow_down_velocity</span><span class="p">,</span><span class="w"> </span><span class="n">target_velocity</span><span class="p">),</span><span class="w"> </span><span class="n">ego_path</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>planSTOP</strong>の場合は(関数はinsertDecelPointという名前だが)速度0を埋め込んでいる．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:1275:1296@planStop</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">CrosswalkModule::planStop</span><span class="p">(</span>
+<span class="w">  </span><span class="n">PathWithLaneId</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ego_path</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">StopFactor</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">nearest_stop_factor</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">geometry_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Pose</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">default_stop_pose</span><span class="p">,</span><span class="w"> </span><span class="n">StopReason</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stop_reason</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">stop_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">StopFactor</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nearest_stop_factor</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="n">nearest_stop_factor</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">default_stop_pose</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">createStopFactor</span><span class="p">(</span><span class="o">*</span><span class="n">default_stop_pose</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}();</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">stop_factor</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">RCLCPP_ERROR_STREAM_THROTTLE</span><span class="p">(</span><span class="n">logger_</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">clock_</span><span class="p">,</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span><span class="w"> </span><span class="s">"stop_factor is null"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// Plan stop</span>
+<span class="w">  </span><span class="n">insertDecelPointWithDebugInfo</span><span class="p">(</span><span class="n">stop_factor</span><span class="o">-&gt;</span><span class="n">stop_pose</span><span class="p">.</span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="n">ego_path</span><span class="p">);</span>
+<span class="w">  </span><span class="n">planning_utils</span><span class="o">::</span><span class="n">appendStopReason</span><span class="p">(</span><span class="o">*</span><span class="n">stop_factor</span><span class="p">,</span><span class="w"> </span><span class="n">stop_reason</span><span class="p">);</span>
+<span class="w">  </span><span class="n">velocity_factor_</span><span class="p">.</span><span class="n">set</span><span class="p">(</span>
+<span class="w">    </span><span class="n">ego_path</span><span class="p">.</span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="n">planner_data_</span><span class="o">-&gt;</span><span class="n">current_odometry</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">,</span><span class="w"> </span><span class="n">stop_factor</span><span class="o">-&gt;</span><span class="n">stop_pose</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VelocityFactor</span><span class="o">::</span><span class="n">UNKNOWN</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="checkstopforcrosswalkusers">歩行者に対する停止判断(checkStopForCrosswalkUsers)<a class="headerlink" href="#checkstopforcrosswalkusers" title="Permanent link">#</a></h3>
+<h4 id="_4">概要<a class="headerlink" href="#_4" title="Permanent link">#</a></h4>
+<p>歩行者などに対して</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/include/autoware/behavior_velocity_crosswalk_module/util.hpp:48:48</span><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">CollisionState</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">YIELD</span><span class="p">,</span><span class="w"> </span><span class="n">EGO_PASS_FIRST</span><span class="p">,</span><span class="w"> </span><span class="n">EGO_PASS_LATER</span><span class="p">,</span><span class="w"> </span><span class="n">IGNORE</span><span class="w"> </span><span class="p">};</span>
+</code></pre></div>
+<p>のうち<code>YIELD</code>と判断したものに対して衝突検知を行う．</p>
+<h4 id="_5">処理<a class="headerlink" href="#_5" title="Permanent link">#</a></h4>
+<p><strong>getAttentionRange</strong>が求める値は<strong>clampAttentionRangeByNeighborCrosswalks</strong>と同じである．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:330:334</span><pre><span></span><code><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">crosswalk_attention_range</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getAttentionRange</span><span class="p">(</span>
+<span class="w">    </span><span class="n">sparse_resample_path</span><span class="p">,</span><span class="w"> </span><span class="n">first_path_point_on_crosswalk</span><span class="p">,</span><span class="w"> </span><span class="n">last_path_point_on_crosswalk</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Get attention area, which is ego's footprints on the crosswalk</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">attention_area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getAttentionArea</span><span class="p">(</span><span class="n">sparse_resample_path</span><span class="p">,</span><span class="w"> </span><span class="n">crosswalk_attention_range</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>getAttentionArea</strong>は(計算量を下げるための)<code>sparse_resample_path</code>上に自車footprintを置いていきそれらの幾何的な集合和を求める関数である．</p>
+<p><code>sparse_resample_path</code>上で自車位置から測って<strong>getAttentionRange</strong>で求めた<code>crosswalk_attention_range</code>より後ろ，前にある経路点は除外して，それらの上にfootprintを重ねた図形の集合和を<code>attention_area</code>に累積していく．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:908:932@getAttentionArea</span><pre><span></span><code><span class="w">  </span><span class="n">Polygon2d</span><span class="w"> </span><span class="n">attention_area</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">sparse_resample_path</span><span class="p">.</span><span class="n">points</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">front_length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">length_sum</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">backward_path_length</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">back_length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">length_sum</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">backward_path_length</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">back_length</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">crosswalk_attention_range</span><span class="p">.</span><span class="n">first</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">crosswalk_attention_range</span><span class="p">.</span><span class="n">second</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">front_length</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">ego_one_step_polygon</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">createMultiStepPolygon</span><span class="p">(</span><span class="n">sparse_resample_path</span><span class="p">.</span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="n">ego_polygon</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">debug_data_</span><span class="p">.</span><span class="n">ego_polygons</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">toGeometryPointVector</span><span class="p">(</span><span class="n">ego_one_step_polygon</span><span class="p">,</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">.</span><span class="n">z</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Polygon2d</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unions</span><span class="p">;</span>
+<span class="w">    </span><span class="n">bg</span><span class="o">::</span><span class="n">union_</span><span class="p">(</span><span class="n">attention_area</span><span class="p">,</span><span class="w"> </span><span class="n">ego_one_step_polygon</span><span class="p">,</span><span class="w"> </span><span class="n">unions</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">unions</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">attention_area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unions</span><span class="p">.</span><span class="n">front</span><span class="p">();</span>
+<span class="w">      </span><span class="n">bg</span><span class="o">::</span><span class="n">correct</span><span class="p">(</span><span class="n">attention_area</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<p><strong>updateObjectState</strong>は各歩行者と自転車に対して衝突しうるかどうか判断に用いるデータを計算している．<code>ObjectInfoManager::objects</code>でオブジェクトの情報は保持されるので，前回サイクルから存在している物体についてはヒステリシスがある．</p>
+<p>今回のサイクルで存在しているuuidは<code>ObjectInfoManager::current_uuids_</code>に保存され，</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:1069:1069</span><pre><span></span><code><span class="w">  </span><span class="n">object_info_manager_</span><span class="p">.</span><span class="n">init</span><span class="p">();</span>
+</code></pre></div>
+<p>そこに含まれていないuuidのオブジェクトは<strong>ObjectInfoManager::finalize</strong>でクリアされる．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.hpp:288:302</span><pre><span></span><code><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">finalize</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// remove objects not set in current_uuids_</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">obsolete_uuids</span><span class="p">;</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">object</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">objects</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span>
+<span class="w">          </span><span class="n">std</span><span class="o">::</span><span class="n">find</span><span class="p">(</span><span class="n">current_uuids_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">current_uuids_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">object</span><span class="p">.</span><span class="n">first</span><span class="p">)</span><span class="w"> </span><span class="o">==</span>
+<span class="w">          </span><span class="n">current_uuids_</span><span class="p">.</span><span class="n">end</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">obsolete_uuids</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">object</span><span class="p">.</span><span class="n">first</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">obsolete_uuid</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">obsolete_uuids</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">objects</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">obsolete_uuid</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p>歩行者信号が赤信号でなく横断歩道を渡るタイプのオブジェクトについて</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:1065:1065</span><pre><span></span><code><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">ignore_crosswalk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">isRedSignalForPedestrians</span><span class="p">();</span>
+</code></pre></div>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:1076:1081</span><pre><span></span><code><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">isCrosswalkUserType</span><span class="p">(</span><span class="n">object</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ignore_crosswalk</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p>与えられたオブジェクトの予測パス沿いのfootprintと<code>attention_area</code>が初めて交差する場所のうち，egoに最も近くかつ<code>crosswalk_attention_range</code>内に入っている点の位置を<code>collision_point</code>として求める．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:1083:1083</span><pre><span></span><code><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">collision_point</span><span class="w"> </span><span class="o">=</span>
+</code></pre></div>
+<p><strong>getCollisionPoint</strong>は以下のようにして条件を満たすようなegoとobjectの衝突位置を<code>nearest_collision_point</code>として求める．</p>
+<p>まず予測経路沿いにオブジェクトが一番始めに<code>attention_area</code>と交差する位置を求めてその予測経路点の添字を<code>start_idx</code>として求める(<code>is_start_idx_initialized</code>がそれが見つかったフラグ)．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:676:699</span><pre><span></span><code><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">CollisionPoint</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nearest_collision_point</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">};</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">obj_path</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">object</span><span class="p">.</span><span class="n">kinematics</span><span class="p">.</span><span class="n">predicted_paths</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">start_idx</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_start_idx_initialized</span><span class="p">{</span><span class="nb">false</span><span class="p">};</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">obj_path</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// For effective computation, the point and polygon intersection is calculated first.</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">obj_one_step_polygon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">createMultiStepPolygon</span><span class="p">(</span><span class="n">obj_path</span><span class="p">.</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">obj_polygon</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">one_step_intersection_polygons</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">calcOverlappingPoints</span><span class="p">(</span><span class="n">obj_one_step_polygon</span><span class="p">,</span><span class="w"> </span><span class="n">attention_area</span><span class="p">);</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">one_step_intersection_polygons</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">is_start_idx_initialized</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">start_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">          </span><span class="n">is_start_idx_initialized</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">obj_path</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="c1">// NOTE: Even if the object path does not fully cross the ego path, the path should be</span>
+<span class="w">          </span><span class="c1">// considered.</span>
+<span class="w">          </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">is_start_idx_initialized</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+</code></pre></div>
+<p>次に<code>start_idx</code>から予測経路の現在のイテレートしている位置までの間沿いのfootprintポリゴンを生成しそれが<code>attention_area</code>と交差している位置を求める．その重心位置を<code>intersection_center_point</code>とする．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:702:721</span><pre><span></span><code><span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">start_idx_with_margin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">start_idx</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">end_idx_with_margin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">obj_path</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">object_crosswalk_passage_direction</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">findObjectPassageDirectionAlongVehicleLane</span><span class="p">(</span><span class="n">obj_path</span><span class="p">);</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">obj_multi_step_polygon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">createMultiStepPolygon</span><span class="p">(</span>
+<span class="w">        </span><span class="n">obj_path</span><span class="p">.</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">obj_polygon</span><span class="p">,</span><span class="w"> </span><span class="n">start_idx_with_margin</span><span class="p">,</span><span class="w"> </span><span class="n">end_idx_with_margin</span><span class="p">);</span>
+<span class="w">      </span><span class="n">is_start_idx_initialized</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">      </span><span class="c1">// Calculate intersection points between object and attention area</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">multi_step_intersection_polygons</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">calcOverlappingPoints</span><span class="p">(</span><span class="n">obj_multi_step_polygon</span><span class="p">,</span><span class="w"> </span><span class="n">attention_area</span><span class="p">);</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">multi_step_intersection_polygons</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="c1">// Calculate nearest collision point among collisions with a predicted path</span>
+<span class="w">      </span><span class="n">Point2d</span><span class="w"> </span><span class="n">boost_intersection_center_point</span><span class="p">;</span>
+<span class="w">      </span><span class="n">bg</span><span class="o">::</span><span class="n">centroid</span><span class="p">(</span><span class="n">multi_step_intersection_polygons</span><span class="p">.</span><span class="n">front</span><span class="p">(),</span><span class="w"> </span><span class="n">boost_intersection_center_point</span><span class="p">);</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">intersection_center_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">createPoint</span><span class="p">(</span>
+<span class="w">        </span><span class="n">boost_intersection_center_point</span><span class="p">.</span><span class="n">x</span><span class="p">(),</span><span class="w"> </span><span class="n">boost_intersection_center_point</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">.</span><span class="n">z</span><span class="p">);</span>
+</code></pre></div>
+<p>自車経路沿いでの<code>intersection_center_point</code>の位置を求めてそれが<code>crosswalk_attention_range</code>の範囲内に入っていれば<code>nearest_collision_point</code>として更新する．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:731:745</span><pre><span></span><code><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="n">dist_ego2cp</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">crosswalk_attention_range</span><span class="p">.</span><span class="n">first</span><span class="w"> </span><span class="o">||</span>
+<span class="w">        </span><span class="n">crosswalk_attention_range</span><span class="p">.</span><span class="n">second</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dist_ego2cp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="c1">// Calculate nearest collision point among predicted paths</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dist_ego2cp</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">minimum_stop_dist</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">minimum_stop_dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dist_ego2cp</span><span class="p">;</span>
+<span class="w">        </span><span class="n">nearest_collision_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">createCollisionPoint</span><span class="p">(</span>
+<span class="w">          </span><span class="n">intersection_center_point</span><span class="p">,</span><span class="w"> </span><span class="n">dist_ego2cp</span><span class="p">,</span><span class="w"> </span><span class="n">dist_obj2cp</span><span class="p">,</span><span class="w"> </span><span class="n">ego_vel</span><span class="p">,</span><span class="w"> </span><span class="n">obj_vel</span><span class="p">,</span>
+<span class="w">          </span><span class="n">object_crosswalk_passage_direction</span><span class="p">);</span>
+<span class="w">        </span><span class="n">debug_data_</span><span class="p">.</span><span class="n">obj_polygons</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span>
+<span class="w">          </span><span class="n">toGeometryPointVector</span><span class="p">(</span><span class="n">obj_multi_step_polygon</span><span class="p">,</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">.</span><span class="n">z</span><span class="p">));</span>
+<span class="w">      </span><span class="p">}</span>
+</code></pre></div>
+<p><strong>createCollisionPoint</strong>では衝突に関する位置や予想衝突時間などの詳細情報を求めている．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:758:780</span><pre><span></span><code><span class="n">CollisionPoint</span><span class="w"> </span><span class="nf">CrosswalkModule::createCollisionPoint</span><span class="p">(</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">geometry_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Point</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">nearest_collision_point</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">dist_ego2cp</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">dist_obj2cp</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">geometry_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Vector3</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ego_vel</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">geometry_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Vector3</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">obj_vel</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">object_crosswalk_passage_direction</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">estimated_velocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">hypot</span><span class="p">(</span><span class="n">obj_vel</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">obj_vel</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">velocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">planner_param_</span><span class="p">.</span><span class="n">min_object_velocity</span><span class="p">,</span><span class="w"> </span><span class="n">estimated_velocity</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">CollisionPoint</span><span class="w"> </span><span class="n">collision_point</span><span class="p">{};</span>
+<span class="w">  </span><span class="n">collision_point</span><span class="p">.</span><span class="n">collision_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nearest_collision_point</span><span class="p">;</span>
+<span class="w">  </span><span class="n">collision_point</span><span class="p">.</span><span class="n">crosswalk_passage_direction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">object_crosswalk_passage_direction</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// The decision of whether the ego vehicle or the pedestrian goes first is determined by the logic</span>
+<span class="w">  </span><span class="c1">// for ego_pass_first or yield; even the decision for ego_pass_later does not affect this sense.</span>
+<span class="w">  </span><span class="c1">// Hence, here, we use the length that would be appropriate for the ego_pass_first judge.</span>
+<span class="w">  </span><span class="n">collision_point</span><span class="p">.</span><span class="n">time_to_collision</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="n">dist_ego2cp</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">planner_data_</span><span class="o">-&gt;</span><span class="n">vehicle_info_</span><span class="p">.</span><span class="n">min_longitudinal_offset_m</span><span class="p">)</span><span class="w"> </span><span class="o">/</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">ego_vel</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">planner_param_</span><span class="p">.</span><span class="n">ego_min_assumed_speed</span><span class="p">);</span>
+<span class="w">  </span><span class="n">collision_point</span><span class="p">.</span><span class="n">time_to_vehicle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="n">dist_obj2cp</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">velocity</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">collision_point</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><code>time_to_collision</code><ul>
+<li><code>ego</code>が最低でも<code>$ego_min_assumed_speed</code>で進んだ場合の<code>nearest_collision_point</code>に到達するまでの時間</li>
+</ul>
+</li>
+<li><code>time_to_vehicle</code><ul>
+<li>オブジェクトが<code>nearest_collision_point</code>に到達するまでの時間</li>
+</ul>
+</li>
+<li><code>object_passage_direction</code><ul>
+<li><strong>findObjectPassageDirectionAlongVehicleLane</strong>で求めた，オブジェクトの予測経路が横断歩道の両端（入り口と出口ではない方の左右の端のこと）を跨ぐ場合の方向．つまり横断歩道の上を道路沿いに横切る場合の方向のこと</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:627:658</span><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CrosswalkModule</span><span class="o">::</span><span class="n">findObjectPassageDirectionAlongVehicleLane</span><span class="p">(</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">autoware_perception_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">PredictedPath</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">autoware</span><span class="o">::</span><span class="n">universe_utils</span><span class="o">::</span><span class="n">Segment2d</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">findIntersectPoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">lanelet</span><span class="o">::</span><span class="n">ConstLineString3d</span><span class="w"> </span><span class="n">line</span><span class="p">)</span>
+<span class="w">    </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="n">geometry_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Point</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">line_start</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">autoware</span><span class="o">::</span><span class="n">universe_utils</span><span class="o">::</span><span class="n">createPoint</span><span class="p">(</span><span class="n">line</span><span class="p">.</span><span class="n">front</span><span class="p">().</span><span class="n">x</span><span class="p">(),</span><span class="w"> </span><span class="n">line</span><span class="p">.</span><span class="n">front</span><span class="p">().</span><span class="n">y</span><span class="p">(),</span><span class="w"> </span><span class="n">line</span><span class="p">.</span><span class="n">front</span><span class="p">().</span><span class="n">z</span><span class="p">());</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">line_end</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">autoware</span><span class="o">::</span><span class="n">universe_utils</span><span class="o">::</span><span class="n">createPoint</span><span class="p">(</span><span class="n">line</span><span class="p">.</span><span class="n">back</span><span class="p">().</span><span class="n">x</span><span class="p">(),</span><span class="w"> </span><span class="n">line</span><span class="p">.</span><span class="n">back</span><span class="p">().</span><span class="n">y</span><span class="p">(),</span><span class="w"> </span><span class="n">line</span><span class="p">.</span><span class="n">back</span><span class="p">().</span><span class="n">z</span><span class="p">());</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">path</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">path</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">position</span><span class="p">;</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">path</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">).</span><span class="n">position</span><span class="p">;</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">intersect</span><span class="w"> </span><span class="o">=</span>
+<span class="w">            </span><span class="n">autoware</span><span class="o">::</span><span class="n">universe_utils</span><span class="o">::</span><span class="n">intersect</span><span class="p">(</span><span class="n">line_start</span><span class="p">,</span><span class="w"> </span><span class="n">line_end</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span>
+<span class="w">          </span><span class="n">intersect</span><span class="p">.</span><span class="n">has_value</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_optional</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">intersect</span><span class="p">.</span><span class="n">value</span><span class="p">()));</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">intersect_pt1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">findIntersectPoint</span><span class="p">(</span><span class="n">crosswalk_</span><span class="p">.</span><span class="n">leftBound</span><span class="p">());</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">intersect_pt2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">findIntersectPoint</span><span class="p">(</span><span class="n">crosswalk_</span><span class="p">.</span><span class="n">rightBound</span><span class="p">());</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">intersect_pt1</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">intersect_pt2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">idx1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">intersect_pt1</span><span class="p">.</span><span class="n">value</span><span class="p">().</span><span class="n">first</span><span class="p">,</span><span class="w"> </span><span class="n">idx2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">intersect_pt2</span><span class="p">.</span><span class="n">value</span><span class="p">().</span><span class="n">first</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">front</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">idx1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">idx2</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">intersect_pt2</span><span class="p">.</span><span class="n">value</span><span class="p">().</span><span class="n">second</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">intersect_pt1</span><span class="p">.</span><span class="n">value</span><span class="p">().</span><span class="n">second</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">back</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">idx1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">idx2</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">intersect_pt1</span><span class="p">.</span><span class="n">value</span><span class="p">().</span><span class="n">second</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">intersect_pt2</span><span class="p">.</span><span class="n">value</span><span class="p">().</span><span class="n">second</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">atan2</span><span class="p">(</span><span class="n">back</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">front</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">back</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">front</span><span class="p">.</span><span class="n">x</span><span class="p">);</span>
+</code></pre></div>
+<p>オブジェクトが<code>CollisionState</code>のうちどれに該当するか更新する．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:1086:1090</span><pre><span></span><code><span class="w">      </span><span class="n">obj_uuid</span><span class="p">,</span><span class="w"> </span><span class="n">obj_pos</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">hypot</span><span class="p">(</span><span class="n">obj_vel</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">obj_vel</span><span class="p">.</span><span class="n">y</span><span class="p">),</span><span class="w"> </span><span class="n">clock_</span><span class="o">-&gt;</span><span class="n">now</span><span class="p">(),</span><span class="w"> </span><span class="n">is_ego_yielding</span><span class="p">,</span>
+<span class="w">      </span><span class="n">has_traffic_light</span><span class="p">,</span><span class="w"> </span><span class="n">collision_point</span><span class="p">,</span><span class="w"> </span><span class="n">object</span><span class="p">.</span><span class="n">classification</span><span class="p">.</span><span class="n">front</span><span class="p">().</span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="n">planner_param_</span><span class="p">,</span>
+<span class="w">      </span><span class="n">crosswalk_</span><span class="p">.</span><span class="n">polygon2d</span><span class="p">().</span><span class="n">basicPolygon</span><span class="p">(),</span><span class="w"> </span><span class="n">attention_area</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">collision_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">object_info_manager_</span><span class="p">.</span><span class="n">getCollisionState</span><span class="p">(</span><span class="n">obj_uuid</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>ObjectInfoManager::update</strong>では信号のある横断歩道で横断歩道から0.5m以上離れているオブジェクトについては<code>IGNORE</code>で，それ以外については<code>YIELD</code>を初期状態として登録される．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.hpp:254:278</span><pre><span></span><code><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">stop_factor_for_crosswalk_users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">checkStopForCrosswalkUsers</span><span class="p">(</span>
+<span class="w">    </span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">sparse_resample_path</span><span class="p">,</span><span class="w"> </span><span class="n">first_path_point_on_crosswalk</span><span class="p">,</span><span class="w"> </span><span class="n">last_path_point_on_crosswalk</span><span class="p">,</span>
+<span class="w">    </span><span class="n">default_stop_pose</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Decide to stop for stuck vehicle</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">stop_factor_for_stuck_vehicles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">checkStopForStuckVehicles</span><span class="p">(</span>
+<span class="w">    </span><span class="n">sparse_resample_path</span><span class="p">,</span><span class="w"> </span><span class="n">objects_ptr</span><span class="o">-&gt;</span><span class="n">objects</span><span class="p">,</span><span class="w"> </span><span class="n">first_path_point_on_crosswalk</span><span class="p">,</span>
+<span class="w">    </span><span class="n">last_path_point_on_crosswalk</span><span class="p">,</span><span class="w"> </span><span class="n">default_stop_pose</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Get nearest stop factor</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">nearest_stop_factor</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">getNearestStopFactor</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">stop_factor_for_crosswalk_users</span><span class="p">,</span><span class="w"> </span><span class="n">stop_factor_for_stuck_vehicles</span><span class="p">);</span>
+<span class="w">  </span><span class="n">recordTime</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Set safe or unsafe</span>
+<span class="w">  </span><span class="n">setSafe</span><span class="p">(</span><span class="o">!</span><span class="n">nearest_stop_factor</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Set distance</span>
+<span class="w">  </span><span class="c1">// NOTE: If no stop point is inserted, distance to the virtual stop line has to be calculated.</span>
+<span class="w">  </span><span class="n">setDistanceToStop</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">default_stop_pose</span><span class="p">,</span><span class="w"> </span><span class="n">nearest_stop_factor</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// plan Go/Stop</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isActivated</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">planGo</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">nearest_stop_factor</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+</code></pre></div>
+<p>次に初期状態から遷移させる．</p>
+<ul>
+<li><code>IGNORE</code>でかつ速度が<code>$stop_object_velocity</code>以下<ul>
+<li><code>IGNORE</code>のまま</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.hpp:187:211</span><pre><span></span><code><span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_stopped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vel</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">planner_param</span><span class="p">.</span><span class="n">stop_object_velocity</span><span class="p">;</span>
+
+<span class="w">      </span><span class="c1">// Check if the object can be ignored</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">is_stopped</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">collision_state</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">CollisionState</span><span class="o">::</span><span class="n">IGNORE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">time_to_start_stopped</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">time_to_start_stopped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">distance_to_crosswalk</span><span class="w"> </span><span class="o">=</span>
+<span class="w">          </span><span class="n">bg</span><span class="o">::</span><span class="n">distance</span><span class="p">(</span><span class="n">crosswalk_polygon</span><span class="p">,</span><span class="w"> </span><span class="n">lanelet</span><span class="o">::</span><span class="n">BasicPoint2d</span><span class="p">(</span><span class="n">position</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="p">.</span><span class="n">y</span><span class="p">));</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">timeout_no_intention_to_walk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">InterpolateMap</span><span class="p">(</span>
+<span class="w">          </span><span class="n">planner_param</span><span class="p">.</span><span class="n">distance_set_for_no_intention_to_walk</span><span class="p">,</span>
+<span class="w">          </span><span class="n">planner_param</span><span class="p">.</span><span class="n">timeout_set_for_no_intention_to_walk</span><span class="p">,</span><span class="w"> </span><span class="n">distance_to_crosswalk</span><span class="p">);</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">intent_to_cross</span><span class="w"> </span><span class="o">=</span>
+<span class="w">          </span><span class="p">(</span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="o">*</span><span class="n">time_to_start_stopped</span><span class="p">).</span><span class="n">seconds</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">timeout_no_intention_to_walk</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">is_ego_yielding</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">intent_to_cross</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">is_object_away_from_path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">collision_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CollisionState</span><span class="o">::</span><span class="n">IGNORE</span><span class="p">;</span>
+<span class="w">          </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">time_to_start_stopped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li>速度が<code>$stop_object_velocity</code>以下かつ横断歩道から0.5m以上離れており，一定時間以上停止し続けていた場合<ul>
+<li><code>IGNORE</code>とする</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.hpp:198:208</span><pre><span></span><code><span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">distance_to_crosswalk</span><span class="w"> </span><span class="o">=</span>
+<span class="w">          </span><span class="n">bg</span><span class="o">::</span><span class="n">distance</span><span class="p">(</span><span class="n">crosswalk_polygon</span><span class="p">,</span><span class="w"> </span><span class="n">lanelet</span><span class="o">::</span><span class="n">BasicPoint2d</span><span class="p">(</span><span class="n">position</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="p">.</span><span class="n">y</span><span class="p">));</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">timeout_no_intention_to_walk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">InterpolateMap</span><span class="p">(</span>
+<span class="w">          </span><span class="n">planner_param</span><span class="p">.</span><span class="n">distance_set_for_no_intention_to_walk</span><span class="p">,</span>
+<span class="w">          </span><span class="n">planner_param</span><span class="p">.</span><span class="n">timeout_set_for_no_intention_to_walk</span><span class="p">,</span><span class="w"> </span><span class="n">distance_to_crosswalk</span><span class="p">);</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">intent_to_cross</span><span class="w"> </span><span class="o">=</span>
+<span class="w">          </span><span class="p">(</span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="o">*</span><span class="n">time_to_start_stopped</span><span class="p">).</span><span class="n">seconds</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">timeout_no_intention_to_walk</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">is_ego_yielding</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">intent_to_cross</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">is_object_away_from_path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">collision_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CollisionState</span><span class="o">::</span><span class="n">IGNORE</span><span class="p">;</span>
+<span class="w">          </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+</code></pre></div>
+<p>もし<code>collsion_point</code>が有効値を持つのであれば</p>
+<ul>
+<li>egoが衝突地点に到達する時刻 + <code>ego_pass_first_margin</code> &lt; オブジェクトが衝突地点に到達する時刻<ul>
+<li><code>EGO_PASS_FIRST</code>とする(egoが十分速い or オブジェクトが十分のろいので停止する必要がない)</li>
+</ul>
+</li>
+<li>オブジェクトが衝突地点に到達する時刻 + <code>ego_pass_later_margin</code> &lt; egoが衝突地点に到達する時刻<ul>
+<li><code>EGO_PASS_LATER</code>とする(ego十分遅い，遠い or オブジェクトが渡り終わり，十分速いので停止する必要がない)</li>
+</ul>
+</li>
+<li>それ以外なら停止する必要があるので<code>YIELD</code>とする</li>
+</ul>
+<p>以上の判定をそれぞれのオブジェクトについて行った後古いオブジェクトをクリアする．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:1115:1115</span><pre><span></span><code><span class="w">  </span><span class="n">object_info_manager_</span><span class="p">.</span><span class="n">finalize</span><span class="p">();</span>
+</code></pre></div>
+<p><strong>updateObjectState</strong>は行いつつ横断歩道手前で十分停止できなさそうであれば停止判断は行わない．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:342:351</span><pre><span></span><code><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">dist_ego2crosswalk</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">calcSignedArcLength</span><span class="p">(</span><span class="n">ego_path</span><span class="p">.</span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">,</span><span class="w"> </span><span class="n">first_path_point_on_crosswalk</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">braking_distance_opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">autoware</span><span class="o">::</span><span class="n">motion_utils</span><span class="o">::</span><span class="n">calcDecelDistWithJerkAndAccConstraints</span><span class="p">(</span>
+<span class="w">    </span><span class="n">ego_vel</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="n">ego_acc</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">min_acc_for_no_stop_decision</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">max_jerk_for_no_stop_decision</span><span class="p">,</span>
+<span class="w">    </span><span class="n">p</span><span class="p">.</span><span class="n">min_jerk_for_no_stop_decision</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">braking_distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">braking_distance_opt</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="o">*</span><span class="n">braking_distance_opt</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">dist_ego2crosswalk</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">base_link2front</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">braking_distance</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">max_offset_to_crosswalk_for_yield</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<p><code>object_info_manager_</code>の<code>YIELD</code>のもののうち一番近いものを求めて停止判断対象とする．ただしegoとほぼ同じ方向で(しきい値<code>$vehicle_object_cross_angle_threshold</code>以内)横断歩道を通過するオブジェクトについては無視する．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:360:389</span><pre><span></span><code><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">object</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">object_info_manager_</span><span class="p">.</span><span class="n">getObject</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">collision_point_opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">object</span><span class="p">.</span><span class="n">collision_point</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">collision_point_opt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">collision_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">collision_point_opt</span><span class="p">.</span><span class="n">value</span><span class="p">();</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">collision_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">object</span><span class="p">.</span><span class="n">collision_state</span><span class="p">;</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">collision_state</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CollisionState</span><span class="o">::</span><span class="n">YIELD</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="n">isVehicleType</span><span class="p">(</span><span class="n">object</span><span class="p">.</span><span class="n">classification</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">ego_crosswalk_passage_direction</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">        </span><span class="n">collision_point</span><span class="p">.</span><span class="n">crosswalk_passage_direction</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">direction_diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">autoware</span><span class="o">::</span><span class="n">universe_utils</span><span class="o">::</span><span class="n">normalizeRadian</span><span class="p">(</span>
+<span class="w">          </span><span class="n">collision_point</span><span class="p">.</span><span class="n">crosswalk_passage_direction</span><span class="p">.</span><span class="n">value</span><span class="p">()</span><span class="w"> </span><span class="o">-</span>
+<span class="w">          </span><span class="n">ego_crosswalk_passage_direction</span><span class="p">.</span><span class="n">value</span><span class="p">());</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">fabs</span><span class="p">(</span><span class="n">direction_diff</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">planner_param_</span><span class="p">.</span><span class="n">vehicle_object_cross_angle_threshold</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="n">stop_factor_points</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">object</span><span class="p">.</span><span class="n">position</span><span class="p">);</span>
+
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">dist_ego2cp</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">calcSignedArcLength</span><span class="p">(</span><span class="n">sparse_resample_path</span><span class="p">.</span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">,</span><span class="w"> </span><span class="n">collision_point</span><span class="p">.</span><span class="n">collision_point</span><span class="p">)</span><span class="w"> </span><span class="o">-</span>
+<span class="w">        </span><span class="n">planner_param_</span><span class="p">.</span><span class="n">stop_distance_from_object</span><span class="p">;</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">nearest_stop_info</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">dist_ego2cp</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">base_link2front</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">nearest_stop_info</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">nearest_stop_info</span><span class="w"> </span><span class="o">=</span>
+<span class="w">          </span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">collision_point</span><span class="p">.</span><span class="n">collision_point</span><span class="p">,</span><span class="w"> </span><span class="n">dist_ego2cp</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">base_link2front</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<p>詳細はよく分からないが以下のようにして停止位置を算出する．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:392:414</span><pre><span></span><code><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">nearest_stop_info</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// Check if the ego should stop at the stop line or the other points.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">stop_at_stop_line</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">dist_ego_to_stop</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">nearest_stop_info</span><span class="o">-&gt;</span><span class="n">second</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">    </span><span class="n">nearest_stop_info</span><span class="o">-&gt;</span><span class="n">second</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dist_ego_to_stop</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">planner_param_</span><span class="p">.</span><span class="n">far_object_threshold</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">stop_at_stop_line</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Stop at the stop line</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">default_stop_pose</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">createStopFactor</span><span class="p">(</span><span class="o">*</span><span class="n">default_stop_pose</span><span class="p">,</span><span class="w"> </span><span class="n">stop_factor_points</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">stop_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calcLongitudinalOffsetPose</span><span class="p">(</span>
+<span class="w">      </span><span class="n">ego_path</span><span class="p">.</span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="n">nearest_stop_info</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">,</span>
+<span class="w">      </span><span class="o">-</span><span class="n">base_link2front</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">planner_param_</span><span class="p">.</span><span class="n">stop_distance_from_object</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">stop_pose</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">createStopFactor</span><span class="p">(</span><span class="o">*</span><span class="n">stop_pose</span><span class="p">,</span><span class="w"> </span><span class="n">stop_factor_points</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span>
+</code></pre></div>
+<h3 id="checkstopforstuckvehicles">横断歩道出口付近のスタック車両に対する停止判断(checkStopForStuckVehicles)<a class="headerlink" href="#checkstopforstuckvehicles" title="Permanent link">#</a></h3>
+<p>todo</p>
+<h2 id="_6">横断歩道の形状に関わる幾何計算を行っている関数<a class="headerlink" href="#_6" title="Permanent link">#</a></h2>
+<h3 id="getpathendpointsoncrosswalk">getPathEndPointsOnCrosswalk<a class="headerlink" href="#getpathendpointsoncrosswalk" title="Permanent link">#</a></h3>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/util.cpp:119:122</span><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">geometry_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Point</span><span class="p">,</span><span class="w"> </span><span class="n">geometry_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Point</span><span class="o">&gt;&gt;</span>
+<span class="n">getPathEndPointsOnCrosswalk</span><span class="p">(</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">PathWithLaneId</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ego_path</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">lanelet</span><span class="o">::</span><span class="n">BasicPolygon2d</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">polygon</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">geometry_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Point</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">)</span>
+</code></pre></div>
+<p>横断歩道はほぼ長方形なので，その前提に基づいて自車経路が横断歩道に載っている区間の両端の点を求める．経路のセグメントごとにポリゴンと交差するかどうかを求めていき，2つ目の交点まで求める．当然その点は自車経路の上にあるので，egoの位置とのsigned arc lengthを求めて近い方と遠い方の点を求めて返す．</p>
+<h3 id="sortcrosswalkbydistance">sortCrosswalkByDistance<a class="headerlink" href="#sortcrosswalkbydistance" title="Permanent link">#</a></h3>
+<p><strong>getPathEndPointsOnCrosswalk</strong>を使って自車経路との一番初めの交点までの距離をベースに横断歩道をsortする．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:112:133</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">sortCrosswalksByDistance</span><span class="p">(</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">PathWithLaneId</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ego_path</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">geometry_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Point</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">,</span>
+<span class="w">  </span><span class="n">lanelet</span><span class="o">::</span><span class="n">ConstLanelets</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">crosswalks</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">compare</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">lanelet</span><span class="o">::</span><span class="n">ConstLanelet</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">l1</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">lanelet</span><span class="o">::</span><span class="n">ConstLanelet</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">l2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">l1_end_points_on_crosswalk</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">getPathEndPointsOnCrosswalk</span><span class="p">(</span><span class="n">ego_path</span><span class="p">,</span><span class="w"> </span><span class="n">l1</span><span class="p">.</span><span class="n">polygon2d</span><span class="p">().</span><span class="n">basicPolygon</span><span class="p">(),</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">);</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">l2_end_points_on_crosswalk</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">getPathEndPointsOnCrosswalk</span><span class="p">(</span><span class="n">ego_path</span><span class="p">,</span><span class="w"> </span><span class="n">l2</span><span class="p">.</span><span class="n">polygon2d</span><span class="p">().</span><span class="n">basicPolygon</span><span class="p">(),</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">l1_end_points_on_crosswalk</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">l2_end_points_on_crosswalk</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">dist_l1</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">calcSignedArcLength</span><span class="p">(</span><span class="n">ego_path</span><span class="p">.</span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="n">l1_end_points_on_crosswalk</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">dist_l2</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">calcSignedArcLength</span><span class="p">(</span><span class="n">ego_path</span><span class="p">.</span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="n">l2_end_points_on_crosswalk</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">dist_l1</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dist_l2</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+</code></pre></div>
+<h3 id="clampattentionrangebyneighborcrosswalks">clampAttentionRangeByNeighborCrosswalks<a class="headerlink" href="#clampattentionrangebyneighborcrosswalks" title="Permanent link">#</a></h3>
+<p>正直な所ソースコードレベルでは意図を幾何的に把握するのは難しいが，横断歩道の_SceneModule_が対象としているメンバ変数の<code>crosswalk_</code>とは別に自車経路と重なっている横断歩道がある場合に</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:506:525</span><pre><span></span><code><span class="w">  </span><span class="n">lanelet</span><span class="o">::</span><span class="n">ConstLanelets</span><span class="w"> </span><span class="n">crosswalks</span><span class="p">{};</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">PEDESTRIAN_GRAPH_ID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">lanelet_map_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">planner_data_</span><span class="o">-&gt;</span><span class="n">route_handler_</span><span class="o">-&gt;</span><span class="n">getLaneletMapPtr</span><span class="p">();</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">overall_graphs_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">planner_data_</span><span class="o">-&gt;</span><span class="n">route_handler_</span><span class="o">-&gt;</span><span class="n">getOverallGraphPtr</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">lane_ids</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">ll</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lanelet_map_ptr</span><span class="o">-&gt;</span><span class="n">laneletLayer</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">conflicting_crosswalks</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">overall_graphs_ptr</span><span class="o">-&gt;</span><span class="n">conflictingInGraph</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span><span class="w"> </span><span class="n">PEDESTRIAN_GRAPH_ID</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">crosswalk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">conflicting_crosswalks</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">itr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span>
+<span class="w">        </span><span class="n">crosswalks</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">crosswalks</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
+<span class="w">        </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">lanelet</span><span class="o">::</span><span class="n">ConstLanelet</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ll</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ll</span><span class="p">.</span><span class="n">id</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">crosswalk</span><span class="p">.</span><span class="n">id</span><span class="p">();</span><span class="w"> </span><span class="p">});</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">itr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">crosswalks</span><span class="p">.</span><span class="n">end</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">crosswalks</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">crosswalk</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">sortCrosswalksByDistance</span><span class="p">(</span><span class="n">ego_path</span><span class="p">,</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">,</span><span class="w"> </span><span class="n">crosswalks</span><span class="p">);</span>
+</code></pre></div>
+<p>それらを自車経路との交点までの距離を基準にソートして<code>crosswalk_</code>の前後にある2つの横断歩道を求めている．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:527:543</span><pre><span></span><code><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">lanelet</span><span class="o">::</span><span class="n">ConstLanelet</span><span class="o">&gt;</span><span class="w"> </span><span class="n">prev_crosswalk</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">};</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">lanelet</span><span class="o">::</span><span class="n">ConstLanelet</span><span class="o">&gt;</span><span class="w"> </span><span class="n">next_crosswalk</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">crosswalks</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">crosswalks</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">ll_front</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">crosswalks</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">ll_back</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">crosswalks</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ll_front</span><span class="p">.</span><span class="n">id</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">module_id_</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">ll_back</span><span class="p">.</span><span class="n">id</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">module_id_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">next_crosswalk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ll_back</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ll_front</span><span class="p">.</span><span class="n">id</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">module_id_</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">ll_back</span><span class="p">.</span><span class="n">id</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">module_id_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">prev_crosswalk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ll_front</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<p>それぞれを<code>prev_crosswalk</code>と<code>next_crosswalk</code>としており，(スクランブル交差点などを考えて？)</p>
+<ul>
+<li><code>prev_crosswalk</code>と自車経路の2つ目の交点(<code>path_end_points_on_prev_crosswalk</code>)</li>
+<li><code>crosswalk_</code>と自車経路の初めのの交点</li>
+</ul>
+<p>のうちegoから遠い方までの距離を<code>clamped_near_attention_range</code>，</p>
+<ul>
+<li><code>next_crosswalk</code>と自車経路の1つ目の交点</li>
+<li><code>crosswalk_</code>と自車経路の初めのの交点</li>
+</ul>
+<p>のうちegoから近い方までの距離を<code>clamped_far_attention_range</code>としている．</p>
+<div class="highlight"><span class="filename">autoware_behavior_crosswalk_module/src/scene_crosswalk.cpp:545:576</span><pre><span></span><code><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">clamped_near_attention_range</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">prev_crosswalk</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">near_attention_range</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">reverse_ego_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ego_path</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">reverse</span><span class="p">(</span><span class="n">reverse_ego_path</span><span class="p">.</span><span class="n">points</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">reverse_ego_path</span><span class="p">.</span><span class="n">points</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">path_end_points_on_prev_crosswalk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getPathEndPointsOnCrosswalk</span><span class="p">(</span>
+<span class="w">      </span><span class="n">reverse_ego_path</span><span class="p">,</span><span class="w"> </span><span class="n">prev_crosswalk</span><span class="o">-&gt;</span><span class="n">polygon2d</span><span class="p">().</span><span class="n">basicPolygon</span><span class="p">(),</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">path_end_points_on_prev_crosswalk</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">near_attention_range</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">dist_to_prev_crosswalk</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">calcSignedArcLength</span><span class="p">(</span><span class="n">ego_path</span><span class="p">.</span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">,</span><span class="w"> </span><span class="n">path_end_points_on_prev_crosswalk</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">near_attention_range</span><span class="p">,</span><span class="w"> </span><span class="n">dist_to_prev_crosswalk</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}();</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">clamped_far_attention_range</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">next_crosswalk</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">far_attention_range</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">path_end_points_on_next_crosswalk</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">getPathEndPointsOnCrosswalk</span><span class="p">(</span><span class="n">ego_path</span><span class="p">,</span><span class="w"> </span><span class="n">next_crosswalk</span><span class="o">-&gt;</span><span class="n">polygon2d</span><span class="p">().</span><span class="n">basicPolygon</span><span class="p">(),</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">path_end_points_on_next_crosswalk</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">far_attention_range</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">dist_to_next_crosswalk</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">calcSignedArcLength</span><span class="p">(</span><span class="n">ego_path</span><span class="p">.</span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="n">ego_pos</span><span class="p">,</span><span class="w"> </span><span class="n">path_end_points_on_next_crosswalk</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">far_attention_range</span><span class="p">,</span><span class="w"> </span><span class="n">dist_to_next_crosswalk</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}();</span>
+</code></pre></div></div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            ページトップへ戻る
+          </button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="フッター" >
+        
+          
+          <a href="../behavior_path_planner_common/" class="md-footer__link md-footer__link--prev" aria-label="前: behavior_path_planner_common" rel="prev">
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                前
+              </span>
+              <div class="md-ellipsis">
+                behavior_path_planner_common
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../behavior_velocity_stop_line_module/" class="md-footer__link md-footer__link--next" aria-label="次: behavior_velcoity_stop_line_module" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                次
+              </span>
+              <div class="md-ellipsis">
+                behavior_velcoity_stop_line_module
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.expand", "navigation.indexes", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.footer"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+        
+          <script src="../../docs/assets/js/mathjax.js"></script>
+        
+      
+        
+          <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        
+      
+        
+          <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        
+      
+    
+  </body>
+</html>
