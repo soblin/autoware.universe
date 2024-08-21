@@ -16,15 +16,15 @@
 
 BehaviorPathPlannerが初期化の際にプラグインのリストを読み込むので，そこで`manager_ptrs_`が初期化されて以降は`manager_ptrs_`は不変
 
-```cpp title="behavior_path_planner/src/behavior_path_planner_node.cpp:138:143@BehaviorPathPlannerNode"
+```cpp title="autoware_behavior_path_planner/src/behavior_path_planner_node.cpp:76:83@BehaviorPathPlannerNode"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/behavior_path_planner_node.cpp:138:143
+planning/behavior_path_planner/autoware_behavior_path_planner/src/behavior_path_planner_node.cpp:76:83
 --8<--
 ```
 
-```cpp title="behavior_path_planner/src/planner_manager.cpp:44:59"
+```cpp title="autoware_behavior_path_planner/src/planner_manager.cpp:47:60"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:44:59
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:47:60
 --8<--
 ```
 
@@ -47,15 +47,15 @@ planning/behavior_path_planner/autoware_behavior_path_planner_common/include/beh
 
 *start_planner*の設定は以下のようになっている．
 
-```cpp title="planning/behavior_path_start_planner_module/src/manager.cpp:736:763"
+```cpp title="autoware_behavior_path_start_planner_module/src/manager.cpp:737:763"
 --8<--
-planning/behavior_path_start_planner_module/src/manager.cpp:736:763
+planning/behavior_path_planner/autoware_behavior_path_start_planner_module/src/manager.cpp:737:763
 --8<--
 ```
 
-```cpp title="planning/behavior_path_start_planner_module/src/manager.cpp:765:791"
+```cpp title="autoware_behavior_path_start_planner_module/src/manager.cpp:766:792"
 --8<--
-planning/behavior_path_start_planner_module/src/manager.cpp:765:791
+planning/behavior_path_planner/autoware_behavior_path_start_planner_module/src/manager.cpp:766:792
 --8<--
 ```
 
@@ -65,6 +65,13 @@ planning/behavior_path_start_planner_module/src/manager.cpp:765:791
 
 /// tip | 注意
 ただし（おそらく実装都合で）`candidate_module_ptrs_`の中に同じ名前のモジュールがあれば`request_modules`の中に`shared_ptr`のコピーが追加され，この関数を呼んだ直後では同じインスタンスを共有した状態になる．**runRequestModules()**の中の**updateCandidateModules()**でこの共有状態は解消される．
+
+```cpp title="autoware_behavior_path_planner/src/planner_manager.cpp:388:400"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:388:400
+--8<--
+```
+
 ///
 
 moduleをrunさせることはないのでmoduleの状態遷移などには全く影響しない．
@@ -76,12 +83,6 @@ moduleをrunさせることはないのでmoduleの状態遷移などには全�
 ### 処理
 
 conditionsの両方に`not getManager(m)->isAlwaysExecutable() &&`が記述されているので，それよりsuppが大きい**hasNonAlwaysExecutableApproveModules()**（「どれかのapproved modulesが**not isAlwaysExecutable**である」）は不要ではある．
-
-```cpp title="behavior_path_planner/src/planner_manager.cpp:271:271@getRequestModules"
---8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:271:271
---8<--
-```
 
 `manager_ptrs_`の中の各`manager_ptr`について
 
@@ -116,9 +117,9 @@ approvedなkeep last moduleをbootstrap実行する．逆に**runApprovedModules
 
 `approved_module_ptr_`のうち**isKeepLast()**であるものを実行する．
 
-```cpp title="behavior_path_planner/src/planner_manager.cpp:405:412"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:428:438"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:405:412
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:428:438
 --8<--
 ```
 
@@ -166,15 +167,15 @@ planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manage
 
 次に`executable_modules`の出力を得る（ここではbootstrapはせず独立に出力を格納する）．**executbale_modulesと**`candidate_module_ptrs_`**は重複しているので，ここで**`candidate_module`**を間接的に実行していることになる**．
 
-```cpp title="behavior_path_planner/src/planner_manager.cpp:559:567@runRequetsModules"
+```cpp title="autoware_behavior_path_planner/src/planner_manager.cpp:595:607@runRequetsModules"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:559:567
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:595:607
 --8<--
 ```
 
-```cpp title="behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:276:301"
+```cpp title="include/autoware/behavior_path_planner/planner_manager.hpp:288:312"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:276:301
+planning/behavior_path_planner/autoware_behavior_path_planner/include/autoware/behavior_path_planner/planner_manager.hpp:288:312
 --8<--
 ```
 
@@ -182,17 +183,17 @@ run()すると各モジュールの結果が分かるので，`getCurrentStauts(
 
 もし`executable_modules`が空であれば**clearCandidateModule()**をしてreturn．この時点で`executable_modules`は`IDLE`か`RUNNING`か`WAITING_APPROVAL`のどれかである（todo: `IDLE`状態で**updateCurrentStatus()**を呼ぶと必ず`RUNNING`になるので，`RUNNING`のはず）．
 
-```cpp
+```cpp title="include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:78:84"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner_common/include/behavior_path_planner_common/interface/scene_module_interface.hpp:74:80
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:78:84
 --8<--
 ```
 
 `waiting_approved_modules`と`already_approved_modules`に分類する．
 
-```cpp title="behavior_path_planner/src/planner_manager.cpp:607:613@runRequestModules"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:646:652@runRequestModules"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:607:613
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:646:652
 --8<--
 ```
 
@@ -224,21 +225,21 @@ planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manage
 
 `highest_priority_module`かつ**not isWaitingApproval()**であるモジュールはcandidateを経ずに直接`approved_module_ptrs_`に入るようになっている．そのため既存の`candidate_module_ptrs_`から削除し，追加もされないようにしている．
 
-```cpp title="behavior_path_planner/src/planner_manager.cpp:855:870@runRequestModules"
+```cpp title="autoware_behavior_path_planner/src/planner_manager.cpp:901:916@updateCandidateModules"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:855:870
---8<--
-```
-
-```cpp title="behavior_path_planner/src/planner_manager.cpp:876:891@runRequestModules"
---8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:876:891
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:901:916
 --8<--
 ```
 
-```cpp title="behavior_path_planner/src/planner_manager.cpp:170:178@runRequestModules"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:922:931@updateCandidateModules"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:170:178
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:922:931
+--8<--
+```
+
+```cpp title="autoware_behavior_path_planner/src/planner_manager.cpp:181:189@run"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:181:189
 --8<--
 ```
 
@@ -258,9 +259,25 @@ planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manage
 
 出力の初期値は以下である．
 
-```cpp title="behavior_path_planner/src/planner_manager.cpp:641:641"
+```cpp title="autoware_behavior_path_planner/src/planner_manager.cpp:681:681"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:641:641
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:681:681
+--8<--
+```
+
+これは例えば路肩にゴールを置いたがまだgoal_plannerがIDLEである時に生成される幅寄せをしない経路である．実際，渡されているのは`current_route_lanelet_`(路肩を含まない)であり，
+
+```cpp title="autoware_behavior_path_planner/src/planner_manager.cpp:475:478"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:475:478
+--8<--
+```
+
+`no_shift_pose`への経路が生成されている．
+
+```cpp title="autoware_behavior_path_planner_common/src/utils/path_utils.cpp:610:611"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/src/utils/path_utils.cpp:610:611
 --8<--
 ```
 
@@ -268,37 +285,41 @@ planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manage
 
 そうでない場合，まず`approved_module_ptrs_`のうち`is_keep_last`のものを昇順で最後尾に移し(low -> high)，`is_keep_last`でないものをbootstrapで実行して結果を保持する．
 
-```cpp title="behavior_path_planner/src/planner_manager.cpp:701:706"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:701:746"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:701:706
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:701:746
 --8<--
 ```
 
 次に，`is_keep_last`でないもののうち**isWaitingApproval()**に戻ったものがいた場合，**clearCandidateModules()**してから再度そのモジュールだけを`candidate_module_ptrs_`に戻して`approve_module_ptrs_`からは削除し，`results`からはそのモジュール以降の全てのモジュールの結果を削除する．
 
-```cpp title="behavior_path_planner/src/planner_manager.cpp:730:740"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:756:783"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:730:740
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:756:783
 --8<--
 ```
 
 次に`FAILURE`だったものがいた場合，それとそれ以降を全て**deleteExpiredModules()**し，**clearCandidateModules()**し，そのモジュール以降を`approve_module_ptrs_`から削除する．
 
-`result`に結果が残っているものがapprovedかつvalidなモジュールであるので，`approved_module_ptrs_`を逆向きにiterateして`result`に結果が残っているものを見つけたらそれを求める．
-
-`SUCCESS`のものを`approved_module_ptrs_`の後尾に移す．
-
-```cpp title="behavior_path_planner/src/planner_manager.cpp:793:815"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:791:811"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:793:815
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:791:811
 --8<--
 ```
 
-successしたモジュールは末尾に揃えられているので，それらを`approved_module_ptrs_`から削除する.
+`result`に結果が残っているものがapprovedかつvalidなモジュールであるので，`approved_module_ptrs_`を逆向きにiterateして`result`に結果が残っているものを見つけたらそれを求める．
 
-```cpp title="behavior_path_planner/src/planner_manager.cpp:817:834"
+```cpp title="behavior_path_planner/src/planner_manager.cpp:813:828"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:817:834
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:813:828
+--8<--
+```
+
+`SUCCESS`のものを`approved_module_ptrs_`の後尾に移し，それらを`approved_module_ptrs_`から削除する.
+
+```cpp title="behavior_path_planner/src/planner_manager.cpp:855:876"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:855:876
 --8<--
 ```
 
@@ -323,8 +344,8 @@ succcessしたモジュールを削除しているだけなので，ここであ
 
 candidateがapproveされるとapproved modulesの一番最後に入る
 
-```cpp title="behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:344:351"
+```cpp title="behavior_path_planner/include/autoware/behavior_path_planner/planner_manager.hpp:360:367"
 --8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:344:351
+planning/behavior_path_planner/autoware_behavior_path_planner/include/autoware/behavior_path_planner/planner_manager.hpp:360:367
 --8<--
 ```

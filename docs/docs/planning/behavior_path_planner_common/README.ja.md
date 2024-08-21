@@ -5,6 +5,145 @@
 - **PlannerManager**が`manager_ptrs_`として持っているのが，**SceneModuleManagerInterface**のshared_ptr
 - **PlannerManager**が`approved_module_ptrs_`などとして持っているのが，**SceneModuleInterface**のshared_ptr
 
+## 各モジュールへのCooperateCommandステータスの反映，Commandに応じたplanningとCooperateStatusの設定，状態遷移が行われる箇所
+
+privateな方の**PlannerManager::run**で全て行われるのでこの関数が最も重要である．
+
+```cpp title="autoware_behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:288:312"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner/include/autoware/behavior_path_planner/planner_manager.hpp:288:312
+--8<--
+```
+
+## モジュールのRTCステータスが送られるサイクル
+
+RTCを利用する以上
+
+- 各モジュールへのRTC-CooperateCommandがサービスでセットされる
+- 各モジュールがRTC-CooperateCommandに応じて動作（もしIDLEでなければ）
+- 各モジュールがRTC-CooperateStatusをセット
+- 各モジュールのRTC-CooperateStatusをpublishする
+
+の各ステップが行われている．
+
+### 各モジュールへのRTC-CooperateCommandがサービスでセットされる
+
+各SceneModuleIntefaceは`rtc_interface_ptr_map_`として(todo: 自分以外のモジュールも含めた？)`RTCInterface`を所持しており，`RTCInterface`はタイマーにより非同期に**RTCInterface::onCooperateCommandService**のコールバックでユーザーからの承認状態を`stored_commands_`にセットされる．
+
+```cpp title="autoware_rtc_interface/src/rtc_interface.cpp:154:167"
+--8<--
+planning/autoware_rtc_interface/src/rtc_interface.cpp:154:167
+--8<--
+```
+
+privateな方の**PlannerManager::run**で
+
+```cpp title="autoware_behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:298:298"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner/include/autoware/behavior_path_planner/planner_manager.hpp:298:298
+--8<--
+```
+
+すると
+
+```cpp title="behavior_path_planner_common/scene_module_interface_interface.cpp:223:230"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:223:230
+--8<--
+```
+
+により**RTCInterface::lockCommandUpdate**が呼ばれて
+
+```cpp title="autoware_rtc_interface/src/rtc_interface.cpp:413:416"
+--8<--
+planning/autoware_rtc_interface/src/rtc_interface.cpp:413:416
+--8<--
+```
+
+となり**RTCInterface::onCooperateCommandService**のコールバックでは`stored_commands_`を蓄積するだけになる．
+
+```cpp title="autoware_rtc_interface/src/rtc_interface.cpp:154:165"
+--8<--
+planning/autoware_rtc_interface/src/rtc_interface.cpp:154:165
+--8<--
+```
+
+`module_ptr->lockRTCCommand();`してから`module_ptr_->run();`しているのは**RTCInterface::isActivated()**などを計算する際に`registered_status_`への競合を防ぐためである．`module_ptr_->run();`してから`module_ptr->unlockRTCCommand();`すると
+
+```cpp title="behavior_path_planner_common/scene_module_interface_interface.cpp:232:239"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:232:239
+--8<--
+```
+
+`is_locked_`していた間に蓄積された`stored_commands_`が反映される．
+
+```cpp title="autoware_rtc_interface/src/rtc_interface.cpp:418:422"
+--8<--
+planning/autoware_rtc_interface/src/rtc_interface.cpp:418:42
+--8<--
+```
+
+**RTCInterface::updateCooperateCommandStatus**で`registered_status_`を更新する．
+
+```cpp title="autoware_rtc_interface/src/rtc_interface.cpp:206:221"
+--8<--
+planning/autoware_rtc_interface/src/rtc_interface.cpp:206:221
+--8<--
+```
+
+### 各モジュールがRTC-CooperateCommandに応じて動作
+
+**RTCInterface::isActivated**の計算に`registered_status_`の値が利用される．
+
+### 各モジュールがRTC-CooperateStatusをセット
+
+以下のモジュール
+
+- avoidance_by_lane_change
+- goal_planner
+- lane_change
+- start_planer
+
+では**SceneModuleInterface::updateRTCStatus**が使われている．
+
+```cpp title="behavior_path_planner_common/scene_module_interface.hpp:507:517"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:507:517
+--8<--
+```
+
+ただし以下のモジュール
+
+- avoidance_by_lane_change
+- static_avoidance
+
+は`rtc_interface_ptr_map_`で**updateCooperateStatus**を用いて直接値を操作している．
+
+### 各モジュールのRTC-CooperateStatusをpublishする
+
+publicな方の**PlannerManager::run**の一番最後
+
+```cpp title="autoware_behavior_path_planner/src/planner_manager.cpp:205:207"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:205:207
+--8<--
+```
+
+で**SceneModuleInterface::publishRTCStatus**を呼んでいる．
+
+```cpp title="behavior_path_planner_common/scene_module_manager_interface.hpp:103:110"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_manager_interface.hpp:103:110
+--8<--
+```
+
+```cpp title="autoware_rtc_interface/src/rtc_interface.cpp:147:152"
+--8<--
+planning/autoware_rtc_interface/src/rtc_interface.cpp:147:152
+--8<--
+```
+
 ## モジュールのライフサイクル
 
 純粋仮想関数の場合は**GoalPlanner**を例に用いる．
@@ -117,6 +256,10 @@ planning/behavior_path_planner/autoware_behavior_path_start_planner_module/src/s
 --8<--
 ```
 
+/// info | 重要
+全てのSceneModuleは**PlannerManager::updateIdleModuleInstance**を経由して，**SceneModuleInterface::onEntry**を経由して**SceneModuleInterface::processOnEntry**を呼ばれる
+///
+
 **SceneModuleInterface::createNewSceneModuleInstance()**は純粋仮想関数で，各サブモジュールが共変値として自身をインスタンス化して返す．
 
 ```cpp title="behavior_path_goal_planner_module/include/manager.hpp:37:42"
@@ -186,12 +329,6 @@ planning/behavior_path_planner/autoware_behavior_path_planner_common/include/aut
 ```cpp title="autoware_behavior_path_planner/src/planner_manager.cpp:606:606@runRequestModules"
 --8<--
 planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manager.cpp:606:606
---8<--
-```
-
-```cpp title="autoware_behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:288:312"
---8<--
-planning/behavior_path_planner/autoware_behavior_path_planner/include/autoware/behavior_path_planner/planner_manager.hpp:288:312
 --8<--
 ```
 
