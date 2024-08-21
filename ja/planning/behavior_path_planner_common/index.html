@@ -871,6 +871,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#cooperatecommandcommandplanningcooperatestatus" class="md-nav__link">
+    各モジュールへのCooperateCommandステータスの反映，Commandに応じたplanningとCooperateStatusの設定，状態遷移が行われる箇所
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rtc" class="md-nav__link">
+    モジュールのRTCステータスが送られるサイクル
+  </a>
+  
+    <nav class="md-nav" aria-label="モジュールのRTCステータスが送られるサイクル">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rtc-cooperatecommand" class="md-nav__link">
+    各モジュールへのRTC-CooperateCommandがサービスでセットされる
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rtc-cooperatecommand_1" class="md-nav__link">
+    各モジュールがRTC-CooperateCommandに応じて動作
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rtc-cooperatestatus" class="md-nav__link">
+    各モジュールがRTC-CooperateStatusをセット
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rtc-cooperatestatuspublish" class="md-nav__link">
+    各モジュールのRTC-CooperateStatusをpublishする
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
     モジュールのライフサイクル
   </a>
@@ -928,6 +976,176 @@
 <li><strong>PlannerManager</strong>が<code>manager_ptrs_</code>として持っているのが，<strong>SceneModuleManagerInterface</strong>のshared_ptr</li>
 <li><strong>PlannerManager</strong>が<code>approved_module_ptrs_</code>などとして持っているのが，<strong>SceneModuleInterface</strong>のshared_ptr</li>
 </ul>
+<h2 id="cooperatecommandcommandplanningcooperatestatus">各モジュールへのCooperateCommandステータスの反映，Commandに応じたplanningとCooperateStatusの設定，状態遷移が行われる箇所<a class="headerlink" href="#cooperatecommandcommandplanningcooperatestatus" title="Permanent link">#</a></h2>
+<p>privateな方の<strong>PlannerManager::run</strong>で全て行われるのでこの関数が最も重要である．</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:288:312</span><pre><span></span><code><span class="w">  </span><span class="n">BehaviorModuleOutput</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">SceneModulePtr</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">module_ptr</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PlannerData</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">planner_data</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BehaviorModuleOutput</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">previous_module_output</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">universe_utils</span><span class="o">::</span><span class="n">ScopedTimeTrack</span><span class="w"> </span><span class="n">st</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"=&gt;run"</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">getTimeKeeper</span><span class="p">());</span>
+<span class="w">    </span><span class="n">stop_watch_</span><span class="p">.</span><span class="n">tic</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">());</span>
+
+<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">setData</span><span class="p">(</span><span class="n">planner_data</span><span class="p">);</span>
+<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">setPreviousModuleOutput</span><span class="p">(</span><span class="n">previous_module_output</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">lockRTCCommand</span><span class="p">();</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">run</span><span class="p">();</span>
+<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">unlockRTCCommand</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">postProcess</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">updateCurrentState</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">publishSteeringFactor</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">publishObjectsOfInterestMarker</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">processing_time_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">())</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">stop_watch_</span><span class="p">.</span><span class="n">toc</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">(),</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+</code></pre></div>
+<h2 id="rtc">モジュールのRTCステータスが送られるサイクル<a class="headerlink" href="#rtc" title="Permanent link">#</a></h2>
+<p>RTCを利用する以上</p>
+<ul>
+<li>各モジュールへのRTC-CooperateCommandがサービスでセットされる</li>
+<li>各モジュールがRTC-CooperateCommandに応じて動作（もしIDLEでなければ）</li>
+<li>各モジュールがRTC-CooperateStatusをセット</li>
+<li>各モジュールのRTC-CooperateStatusをpublishする</li>
+</ul>
+<p>の各ステップが行われている．</p>
+<h3 id="rtc-cooperatecommand">各モジュールへのRTC-CooperateCommandがサービスでセットされる<a class="headerlink" href="#rtc-cooperatecommand" title="Permanent link">#</a></h3>
+<p>各SceneModuleIntefaceは<code>rtc_interface_ptr_map_</code>として(todo: 自分以外のモジュールも含めた？)<code>RTCInterface</code>を所持しており，<code>RTCInterface</code>はタイマーにより非同期に<strong>RTCInterface::onCooperateCommandService</strong>のコールバックでユーザーからの承認状態を<code>stored_commands_</code>にセットされる．</p>
+<div class="highlight"><span class="filename">autoware_rtc_interface/src/rtc_interface.cpp:154:167</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">RTCInterface::onCooperateCommandService</span><span class="p">(</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CooperateCommands</span><span class="o">::</span><span class="n">Request</span><span class="o">::</span><span class="n">SharedPtr</span><span class="w"> </span><span class="n">request</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CooperateCommands</span><span class="o">::</span><span class="n">Response</span><span class="o">::</span><span class="n">SharedPtr</span><span class="w"> </span><span class="n">responses</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lock</span><span class="p">(</span><span class="n">mutex_</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">responses</span><span class="o">-&gt;</span><span class="n">responses</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">validateCooperateCommands</span><span class="p">(</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">commands</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isLocked</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">stored_commands_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">request</span><span class="o">-&gt;</span><span class="n">commands</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">updateCooperateCommandStatus</span><span class="p">(</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">commands</span><span class="p">);</span>
+</code></pre></div>
+<p>privateな方の<strong>PlannerManager::run</strong>で</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:298:298</span><pre><span></span><code><span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">lockRTCCommand</span><span class="p">();</span>
+</code></pre></div>
+<p>すると</p>
+<div class="highlight"><span class="filename">behavior_path_planner_common/scene_module_interface_interface.cpp:223:230</span><pre><span></span><code><span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">lockRTCCommand</span><span class="p">()</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">[</span><span class="n">module_name</span><span class="p">,</span><span class="w"> </span><span class="n">ptr</span><span class="p">]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">rtc_interface_ptr_map_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">lockCommandUpdate</span><span class="p">();</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<p>により<strong>RTCInterface::lockCommandUpdate</strong>が呼ばれて</p>
+<div class="highlight"><span class="filename">autoware_rtc_interface/src/rtc_interface.cpp:413:416</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">RTCInterface::lockCommandUpdate</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">is_locked_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>となり<strong>RTCInterface::onCooperateCommandService</strong>のコールバックでは<code>stored_commands_</code>を蓄積するだけになる．</p>
+<div class="highlight"><span class="filename">autoware_rtc_interface/src/rtc_interface.cpp:154:165</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">RTCInterface::onCooperateCommandService</span><span class="p">(</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CooperateCommands</span><span class="o">::</span><span class="n">Request</span><span class="o">::</span><span class="n">SharedPtr</span><span class="w"> </span><span class="n">request</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CooperateCommands</span><span class="o">::</span><span class="n">Response</span><span class="o">::</span><span class="n">SharedPtr</span><span class="w"> </span><span class="n">responses</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lock</span><span class="p">(</span><span class="n">mutex_</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">responses</span><span class="o">-&gt;</span><span class="n">responses</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">validateCooperateCommands</span><span class="p">(</span><span class="n">request</span><span class="o">-&gt;</span><span class="n">commands</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isLocked</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">stored_commands_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">request</span><span class="o">-&gt;</span><span class="n">commands</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<p><code>module_ptr-&gt;lockRTCCommand();</code>してから<code>module_ptr_-&gt;run();</code>しているのは<strong>RTCInterface::isActivated()</strong>などを計算する際に<code>registered_status_</code>への競合を防ぐためである．<code>module_ptr_-&gt;run();</code>してから<code>module_ptr-&gt;unlockRTCCommand();</code>すると</p>
+<div class="highlight"><span class="filename">behavior_path_planner_common/scene_module_interface_interface.cpp:232:239</span><pre><span></span><code><span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">unlockRTCCommand</span><span class="p">()</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">[</span><span class="n">module_name</span><span class="p">,</span><span class="w"> </span><span class="n">ptr</span><span class="p">]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">rtc_interface_ptr_map_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">unlockCommandUpdate</span><span class="p">();</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<p><code>is_locked_</code>していた間に蓄積された<code>stored_commands_</code>が反映される．</p>
+<div class="highlight"><span class="filename">autoware_rtc_interface/src/rtc_interface.cpp:418:422</span><pre><span></span><code>
+</code></pre></div>
+<p><strong>RTCInterface::updateCooperateCommandStatus</strong>で<code>registered_status_</code>を更新する．</p>
+<div class="highlight"><span class="filename">autoware_rtc_interface/src/rtc_interface.cpp:206:221</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">RTCInterface::updateCooperateCommandStatus</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CooperateCommand</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">commands</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">commands</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">itr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span>
+<span class="w">      </span><span class="n">registered_status_</span><span class="p">.</span><span class="n">statuses</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">registered_status_</span><span class="p">.</span><span class="n">statuses</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
+<span class="w">      </span><span class="p">[</span><span class="n">command</span><span class="p">](</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">uuid</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">command</span><span class="p">.</span><span class="n">uuid</span><span class="p">;</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">    </span><span class="c1">// Update command if the command has been already received</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">itr</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">registered_status_</span><span class="p">.</span><span class="n">statuses</span><span class="p">.</span><span class="n">end</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">itr</span><span class="o">-&gt;</span><span class="n">state</span><span class="p">.</span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">State</span><span class="o">::</span><span class="n">WAITING_FOR_EXECUTION</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">itr</span><span class="o">-&gt;</span><span class="n">state</span><span class="p">.</span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">State</span><span class="o">::</span><span class="n">RUNNING</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">itr</span><span class="o">-&gt;</span><span class="n">command_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">command</span><span class="p">.</span><span class="n">command</span><span class="p">;</span>
+<span class="w">        </span><span class="n">itr</span><span class="o">-&gt;</span><span class="n">auto_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="rtc-cooperatecommand_1">各モジュールがRTC-CooperateCommandに応じて動作<a class="headerlink" href="#rtc-cooperatecommand_1" title="Permanent link">#</a></h3>
+<p><strong>RTCInterface::isActivated</strong>の計算に<code>registered_status_</code>の値が利用される．</p>
+<h3 id="rtc-cooperatestatus">各モジュールがRTC-CooperateStatusをセット<a class="headerlink" href="#rtc-cooperatestatus" title="Permanent link">#</a></h3>
+<p>以下のモジュール</p>
+<ul>
+<li>avoidance_by_lane_change</li>
+<li>goal_planner</li>
+<li>lane_change</li>
+<li>start_planer</li>
+</ul>
+<p>では<strong>SceneModuleInterface::updateRTCStatus</strong>が使われている．</p>
+<div class="highlight"><span class="filename">behavior_path_planner_common/scene_module_interface.hpp:507:517</span><pre><span></span><code><span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateRTCStatus</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">start_distance</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">finish_distance</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">[</span><span class="n">module_name</span><span class="p">,</span><span class="w"> </span><span class="n">ptr</span><span class="p">]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">rtc_interface_ptr_map_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">isWaitingApproval</span><span class="p">()</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">State</span><span class="o">::</span><span class="n">WAITING_FOR_EXECUTION</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">State</span><span class="o">::</span><span class="n">RUNNING</span><span class="p">;</span>
+<span class="w">        </span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">updateCooperateStatus</span><span class="p">(</span>
+<span class="w">          </span><span class="n">uuid_map_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">module_name</span><span class="p">),</span><span class="w"> </span><span class="n">isExecutionReady</span><span class="p">(),</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">start_distance</span><span class="p">,</span><span class="w"> </span><span class="n">finish_distance</span><span class="p">,</span>
+<span class="w">          </span><span class="n">clock_</span><span class="o">-&gt;</span><span class="n">now</span><span class="p">());</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<p>ただし以下のモジュール</p>
+<ul>
+<li>avoidance_by_lane_change</li>
+<li>static_avoidance</li>
+</ul>
+<p>は<code>rtc_interface_ptr_map_</code>で<strong>updateCooperateStatus</strong>を用いて直接値を操作している．</p>
+<h3 id="rtc-cooperatestatuspublish">各モジュールのRTC-CooperateStatusをpublishする<a class="headerlink" href="#rtc-cooperatestatuspublish" title="Permanent link">#</a></h3>
+<p>publicな方の<strong>PlannerManager::run</strong>の一番最後</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_planner/src/planner_manager.cpp:205:207</span><pre><span></span><code><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">for_each</span><span class="p">(</span><span class="n">manager_ptrs_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">manager_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">m</span><span class="o">-&gt;</span><span class="n">updateObserver</span><span class="p">();</span>
+<span class="w">    </span><span class="n">m</span><span class="o">-&gt;</span><span class="n">publishRTCStatus</span><span class="p">();</span>
+</code></pre></div>
+<p>で<strong>SceneModuleInterface::publishRTCStatus</strong>を呼んでいる．</p>
+<div class="highlight"><span class="filename">behavior_path_planner_common/scene_module_manager_interface.hpp:103:110</span><pre><span></span><code><span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">publishRTCStatus</span><span class="p">()</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">[</span><span class="n">module_name</span><span class="p">,</span><span class="w"> </span><span class="n">ptr</span><span class="p">]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">rtc_interface_ptr_map_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">removeExpiredCooperateStatus</span><span class="p">();</span>
+<span class="w">        </span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">publishCooperateStatus</span><span class="p">(</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Clock</span><span class="p">(</span><span class="n">RCL_ROS_TIME</span><span class="p">).</span><span class="n">now</span><span class="p">());</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><span class="filename">autoware_rtc_interface/src/rtc_interface.cpp:147:152</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">RTCInterface::publishCooperateStatus</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">stamp</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lock</span><span class="p">(</span><span class="n">mutex_</span><span class="p">);</span>
+<span class="w">  </span><span class="n">registered_status_</span><span class="p">.</span><span class="n">stamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stamp</span><span class="p">;</span>
+<span class="w">  </span><span class="n">pub_statuses_</span><span class="o">-&gt;</span><span class="n">publish</span><span class="p">(</span><span class="n">registered_status_</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
 <h2 id="_1">モジュールのライフサイクル<a class="headerlink" href="#_1" title="Permanent link">#</a></h2>
 <p>純粋仮想関数の場合は<strong>GoalPlanner</strong>を例に用いる．</p>
 <h3 id="idle">IDLE状態<a class="headerlink" href="#idle" title="Permanent link">#</a></h3>
@@ -1103,6 +1321,10 @@
 <span class="w">  </span><span class="n">initVariables</span><span class="p">();</span>
 <span class="p">}</span>
 </code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">重要</p>
+<p>全てのSceneModuleは<strong>PlannerManager::updateIdleModuleInstance</strong>を経由して，<strong>SceneModuleInterface::onEntry</strong>を経由して<strong>SceneModuleInterface::processOnEntry</strong>を呼ばれる</p>
+</div>
 <p><strong>SceneModuleInterface::createNewSceneModuleInstance()</strong>は純粋仮想関数で，各サブモジュールが共変値として自身をインスタンス化して返す．</p>
 <div class="highlight"><span class="filename">behavior_path_goal_planner_module/include/manager.hpp:37:42</span><pre><span></span><code><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">SceneModuleInterface</span><span class="o">&gt;</span><span class="w"> </span><span class="n">createNewSceneModuleInstance</span><span class="p">()</span><span class="w"> </span><span class="k">override</span>
 <span class="w">  </span><span class="p">{</span>
@@ -1214,32 +1436,6 @@
 <div class="highlight"><span class="filename">autoware_behavior_path_planner_common/scene_module_interface.hpp:449:449</span><pre><span></span><code><span class="w">  </span><span class="n">ModuleStatus</span><span class="w"> </span><span class="n">current_state_</span><span class="p">{</span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">IDLE</span><span class="p">};</span>
 </code></pre></div>
 <div class="highlight"><span class="filename">autoware_behavior_path_planner/src/planner_manager.cpp:606:606@runRequestModules</span><pre><span></span><code><span class="w">    </span><span class="n">results</span><span class="p">.</span><span class="n">emplace</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">(),</span><span class="w"> </span><span class="n">run</span><span class="p">(</span><span class="n">module_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">previous_module_output</span><span class="p">));</span>
-</code></pre></div>
-<div class="highlight"><span class="filename">autoware_behavior_path_planner/include/behavior_path_planner/planner_manager.hpp:288:312</span><pre><span></span><code><span class="w">  </span><span class="n">BehaviorModuleOutput</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">SceneModulePtr</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">module_ptr</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PlannerData</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">planner_data</span><span class="p">,</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BehaviorModuleOutput</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">previous_module_output</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="n">universe_utils</span><span class="o">::</span><span class="n">ScopedTimeTrack</span><span class="w"> </span><span class="n">st</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"=&gt;run"</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">getTimeKeeper</span><span class="p">());</span>
-<span class="w">    </span><span class="n">stop_watch_</span><span class="p">.</span><span class="n">tic</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">());</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">setData</span><span class="p">(</span><span class="n">planner_data</span><span class="p">);</span>
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">setPreviousModuleOutput</span><span class="p">(</span><span class="n">previous_module_output</span><span class="p">);</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">lockRTCCommand</span><span class="p">();</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">run</span><span class="p">();</span>
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">unlockRTCCommand</span><span class="p">();</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">postProcess</span><span class="p">();</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">updateCurrentState</span><span class="p">();</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">publishSteeringFactor</span><span class="p">();</span>
-
-<span class="w">    </span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">publishObjectsOfInterestMarker</span><span class="p">();</span>
-
-<span class="w">    </span><span class="n">processing_time_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">())</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">stop_watch_</span><span class="p">.</span><span class="n">toc</span><span class="p">(</span><span class="n">module_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">(),</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
 </code></pre></div>
 <p><strong>SceneModuleInterface::updateCurrentStatus</strong>，<strong>SceneModuleInterface::updateState</strong>
 ，<strong>SceneModuleInterface::setInitState</strong>を追うと分かるように，<code>IDLE</code>状態でこの関数が呼ばれると必ず<code>RUNNING</code>に遷移するようになっている．</p>
