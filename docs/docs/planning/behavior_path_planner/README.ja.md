@@ -181,7 +181,7 @@ planning/behavior_path_planner/autoware_behavior_path_planner/include/autoware/b
 
 run()すると各モジュールの結果が分かるので，`getCurrentStauts() == ModuleStatus::FAILURE`または`getCurrentStauts() == ModuleStatus::SUCCESS`のモジュールは**deleteExpiredModules()**したうえで`executable_modules`からも削除する．
 
-もし`executable_modules`が空であれば**clearCandidateModule()**をしてreturn．この時点で`executable_modules`は`IDLE`か`RUNNING`か`WAITING_APPROVAL`のどれかである（todo: `IDLE`状態で**updateCurrentStatus()**を呼ぶと必ず`RUNNING`になるので，`RUNNING`のはず）．
+もし`executable_modules`が空であれば**clearCandidateModule()**をしてreturn．この時点で`executable_modules`は`RUNNING`である（`IDLE`状態で**updateCurrentStatus()**を呼ぶと必ず`RUNNING`になるため）．
 
 ```cpp title="include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:78:84"
 --8<--

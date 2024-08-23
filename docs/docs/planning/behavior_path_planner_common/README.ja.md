@@ -1,6 +1,6 @@
 # behavior_path_planner_common
 
-**SceneModuleManagerInterface**はidle状態の**SceneModuleInterface**を生成したり，_candidate_/_approved_ に昇格してRUNNING状態のモジュールインスタンスをweak_ptrとして間接的に管理する役割を持つ．
+**SceneModuleManagerInterface**はidle状態の**SceneModuleInterface**を生成したり，candidate/approvedに昇格してRUNNING状態のモジュールインスタンスをweak_ptrとして間接的に管理する役割を持つ．
 
 - **PlannerManager**が`manager_ptrs_`として持っているのが，**SceneModuleManagerInterface**のshared_ptr
 - **PlannerManager**が`approved_module_ptrs_`などとして持っているのが，**SceneModuleInterface**のshared_ptr
@@ -28,7 +28,7 @@ RTCを利用する以上
 
 ### 各モジュールへのRTC-CooperateCommandがサービスでセットされる
 
-各SceneModuleIntefaceは`rtc_interface_ptr_map_`として(todo: 自分以外のモジュールも含めた？)`RTCInterface`を所持しており，`RTCInterface`はタイマーにより非同期に**RTCInterface::onCooperateCommandService**のコールバックでユーザーからの承認状態を`stored_commands_`にセットされる．
+各SceneModuleIntefaceは`rtc_interface_ptr_map_`として`RTCInterface`を所持しており(モジュールによっては`lane_change_left`と`lane_change_right`のようにパラメーターは共有しつつ左右で異なるサブモジュールがあったりするため`map`になっている)，`RTCInterface`はタイマーにより非同期に**RTCInterface::onCooperateCommandService**のコールバックでユーザーからの承認状態を`stored_commands_`にセットされる．
 
 ```cpp title="autoware_rtc_interface/src/rtc_interface.cpp:154:167"
 --8<--
@@ -68,7 +68,7 @@ planning/autoware_rtc_interface/src/rtc_interface.cpp:154:165
 --8<--
 ```
 
-`module_ptr->lockRTCCommand();`してから`module_ptr_->run();`しているのは**RTCInterface::isActivated()**などを計算する際に`registered_status_`への競合を防ぐためである．`module_ptr_->run();`してから`module_ptr->unlockRTCCommand();`すると
+`module_ptr->lockRTCCommand();`してから`module_ptr_->run();`しているのは**RTCInterface::isActivated()**などを計算する際に`registered_status_`への競合を防ぐためである(とはいえ非同期に`stored_commands_`を更新している間に`lockCommandUpdate()`を呼んでlockしたつもりにできてしまうので結局競合は起きているはず)．`module_ptr_->run();`してから`module_ptr->unlockRTCCommand();`すると
 
 ```cpp title="behavior_path_planner_common/scene_module_interface_interface.cpp:232:239"
 --8<--
@@ -80,7 +80,7 @@ planning/behavior_path_planner/autoware_behavior_path_planner_common/include/aut
 
 ```cpp title="autoware_rtc_interface/src/rtc_interface.cpp:418:422"
 --8<--
-planning/autoware_rtc_interface/src/rtc_interface.cpp:418:42
+planning/autoware_rtc_interface/src/rtc_interface.cpp:418:422
 --8<--
 ```
 
@@ -96,13 +96,25 @@ planning/autoware_rtc_interface/src/rtc_interface.cpp:206:221
 
 **RTCInterface::isActivated**の計算に`registered_status_`の値が利用される．
 
+**SceneModuleInterface::run**ではsafetyの値に応じて**planWaitingApproval**または**plan**が呼ばれる．
+
+```cpp title="behavior_path_planner_common/scene_module_interface.hpp:146:156"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:146:156
+--8<--
+```
+
+/// tip | 注意点
+実際はモジュールがAUTOモードで動いていて自分で計算したsafetyの値に応じて危険判断をしている場合も`WAITING_APPROVAL`として表現されて手動で動いているようなニュアンスを相手に与えるので少し注意が必要
+///
+
 ### 各モジュールがRTC-CooperateStatusをセット
 
 以下のモジュール
 
 - avoidance_by_lane_change
-- goal_planner
-- lane_change
+- goal_planner(**GoalPlannerModule::postProcess**において)
+- lane_change(**LaneChangeInterface::plan**など色々な箇所で)
 - start_planer
 
 では**SceneModuleInterface::updateRTCStatus**が使われている．
@@ -208,6 +220,14 @@ planning/behavior_path_planner/autoware_behavior_path_planner_common/include/aut
 
 `rtc_type`はほとんどのモジュールでは空だが，lane_changeのみ`{rtc_type: "left", snake_case_name: "lane_change_left"}`という具合で利用されている．
 
+ここで`SceneModuleManagerInterface`の`rtc_interface_ptr_map_`が初期化され，`SceneModuleInterface`が構築される際はこれがコピーされて渡される．
+
+```cpp title="autoware_behavior_path_planner_common/include/scene_module_interface.hpp:89:107"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:89:107
+--8<--
+```
+
 **_BehaviorPathPlanner_**では各モジュールは毎フレームで自分自身が立ち上がる必要があるかどうかを判断している．
 
 ```cpp title="autoware_behavior_path_planner/src/planner_manager.cpp:350:364@getRequestModule"
@@ -234,7 +254,7 @@ planning/behavior_path_planner/autoware_behavior_path_planner_common/include/aut
 --8<--
 ```
 
-**SceneModuleManagerInterface::updateIdleModuleInstance()**では`idle_module_ptr_`のインスタンス化（初回，または前サイクルでモジュールが _isExecutionReady_ に昇格した場合）または既存の`idle_module_ptr_`の更新を行う．
+**SceneModuleManagerInterface::updateIdleModuleInstance()**では`idle_module_ptr_`のインスタンス化（初回，または前サイクルでモジュールが _isExecutionRequested_ に昇格した場合）または既存の`idle_module_ptr_`の更新を行う．
 
 ```cpp title="autoware_behavior_path_planner_common/include/scene_module_manager_interface.hpp:60:68"
 --8<--
@@ -278,7 +298,7 @@ planning/behavior_path_planner/autoware_behavior_path_planner_common/include/aut
 
 ### IDLEからの昇格以降のモジュール数とobserver
 
-_observer_ は生成した`idle_module_ptr_`で外部に保有されている個数を管理しており，**PlannerManager::runRequestModules()**（**PlannerManager::getRequestModules()**で求めたものから次の _candidate_ を求める関数）でexecutableになった`idle_module_ptr_`が**SceneModuleManagerInterface::registerNewModule()**で _observer_ として登録される．
+_observer_ は生成した`idle_module_ptr_`で外部に保有されている個数を管理しており，**PlannerManager::runRequestModules()**（**PlannerManager::getRequestModules()**で求めたものから次のcandidateを求める関数）でexecutableになった`idle_module_ptr_`が**SceneModuleManagerInterface::registerNewModule()**でobserverとして登録される．
 
 ```cpp title="autoware_behavior_path_planner/src/planner_manager.cpp:598:607@runRequestModules"
 --8<--
@@ -292,7 +312,7 @@ planning/behavior_path_planner/autoware_behavior_path_planner_common/include/aut
 --8<--
 ```
 
-またそのうち _candidate_/_approved_ としての計算ですでに _FAILURE_ / _SUCCESS_ であるモジュールは _expired module_ として _observer_ からも削除する．
+またそのうちcandidate/approvedとしての計算ですでにFAILURE/SUCCESSであるモジュールはexpired moduleとしてobserverからも削除する．
 
 ```cpp title="autoware_behavior_path_planner/src/planner_manager.cpp:613:632@runRequestModules"
 --8<--
@@ -312,9 +332,33 @@ planning/behavior_path_planner/autoware_behavior_path_planner/src/planner_manage
 --8<--
 ```
 
-### モジュールの状態遷移とRTCによる承認・isWaitingApprovalについて
+### モジュールの状態遷移とRTCによる承認
 
-`IDLE`が初期ノード
+`IDLE`が初期ノードであり，一度でもPlannerManagerにおいてcandidteかapprovedに昇格したら`IDLE`ではなくなる．
+
+各SceneModuleInterfaceは**SceneModuleInterface::updateRTCStatus**のsafetyの値としては**isExecutionReady**を送っている．
+
+```cpp title="autoware_behavior_path_planner_common/scene_module_interface.hpp:597:517"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:507:517
+--8<--
+```
+
+AUTOモードの場合はモジュール自身が上で送ったsafetyの値が，MANUALモードの場合はユーザーが送ったsafetyの値が利用されることで，`RUNNING`の時にRTC非承認状態だと**canTransitWaitingApprovalState()**により`WAITING_APPROVAL`に，`WAITING_APPROVAL`の時に**canTransitWaitingApprovalToRunningState()**により`RUNNING`に遷移する．
+
+```cpp title="behavior_path_planner_common/scene_module_interface.hpp:149:149"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:149:149
+--8<--
+```
+
+#### SUCCESSから
+
+`SUCCESS`は終端ノード
+
+#### FAILUREから
+
+`FAILURE`は終端ノード
 
 #### IDLEからRUNNING
 
@@ -353,18 +397,121 @@ planning/behavior_path_planner/autoware_behavior_path_planner_common/include/aut
 --8<--
 ```
 
-#### RUNNINGから
+なので**SceneModuleInterface::isExecutionRequested** = trueを返したモジュールは必ずcandidateかapprovedとして一度は`RUNNING`を経由する．
 
-todo
+#### RUNNING/WAITING_APPROVALから
 
-#### WAITING_APPROVALから
+どちらとも
 
-todo
+- **canTransitSuccessState**なら`SUCCESS`
+- **canTransitFailureState**なら`FAILURE`
 
-#### SUCCESSから
+を優先するのは共通している．そこから先は`RUNNING`からは
 
-`SUCCESS`は終端ノード
+```cpp title="autoware_behavior_path_planner_common/scene_module_interface.hpp:393:411"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:393:411
+--8<--
+```
 
-#### FAILUREから
+- **canTransitWaitingApprovalState**なら`WAITING_APPROVAL`
+- いずれでもなければ`RUNNING`のまま
 
-`FAILURE`は終端ノード
+`WAITING_APPROVAL`からは
+
+```cpp title="autoware_behavior_path_planner_common/scene_module_interface.hpp:413:430"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:413:430
+--8<--
+```
+
+- **canTransitWaitingApprovalToRunningState**なら`RUNNING`
+- いずれでもなければ`WAITING_APPROVAL`のまま
+
+である．
+
+### canTransit\*\*\*系の実装
+
+**canTransitSuccessState**と**canTransitFailrureState**は純粋仮想関数になっている．これは各モジュールで終了条件が異なるためである．
+
+```cpp title="autoware_behavior_path_planner_common/scene_module_interface.hpp:461:468"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:461:468
+--8<--
+```
+
+`WaitingApproval`からは仮想関数ではなく，**RTCの状態のみから遷移が決定する**．
+
+```cpp title="autoware_behavior_path_planner_common/scene_module_interface.hpp:327:374"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_planner_common/include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:327:374
+--8<--
+```
+
+## 各モジュールの状態遷移の例
+
+todo: isExecutionReadyの処理内容自体は意外とどれも短く書けているのでもう少し詳細な内容を解読する
+
+### start_planner
+
+**StartPlannerModule::canTransitFailureState**は常にfalseを返すようになっているため， _StartPlanner_ は必ず`SUCCESS`を返さないと終了しない．
+
+freespaceが**StartPlannerModule::hasReachedFreespaceEnd**したり，バック走行が終わったりする必要のない状態でかつ幅寄せ経路が見つかり，**StartPlannerModule::hasReachedPulloutEnd**であれば**StartPlannerModule::canTransitSuccessState**trueを返す．
+
+```cpp title="autoware_behavior_path_start_planner/src/start_planner_module.cpp:586:617"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_start_planner_module/src/start_planner_module.cpp:586:617
+--8<--
+```
+
+#### isExecutionReadyの値の決まり方
+
+_StartPlanner_ モジュール自身によるシーンの安全判断結果は以下のように計算している．
+
+```cpp title="autoware_behavior_path_start_planner/src/start_planner_module.cpp:547:563"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_start_planner_module/src/start_planner_module.cpp:547:563
+--8<--
+```
+
+### goal_planner
+
+**GoalPlannerModule::canTransitSuccessState**/**GoalPlannerModule::canTransitFailureState**は常にfalseを返すようになっているため _GoalPlanner_ は終了しない．
+
+```cpp title="autoware_behavior_path_goal_planner/include/goal_planner_module.hpp:434:458"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_goal_planner_module/include/autoware/behavior_path_goal_planner_module/goal_planner_module.hpp:434:458
+--8<--
+```
+
+そのため一旦は`RUNNING`となり，経路が確定するまでは`RUNNING`として動作するが**not hasDecidedPath()**であるため，**GoalPlannerModule::postProcess()**で**updateRTCStatus**を呼んでRTCの情報を送ったりはしないため承認の候補とはならない．
+
+```cpp title="autoware_behavior_path_goal_planner/src/goal_planner_module.cpp:810:814"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_goal_planner_module/src/goal_planner_module.cpp:810:814
+--8<--
+```
+
+```cpp title="autoware_behavior_path_goal_planner/src/goal_planner_module.cpp:1358:1364"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_goal_planner_module/src/goal_planner_module.cpp:1358:1363
+--8<--
+```
+
+```cpp title="autoware_behavior_path_goal_planner/src/goal_planner_module.cpp:1476:1492"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_goal_planner_module/src/goal_planner_module.cpp:1476:1492
+--8<--
+```
+
+ようになっており経路が確定してから安全確認ができるようになるとRTCの情報を送るようになるため，危険だったりすると`WAITING_APPROVAL`に遷移したりするようになる．
+
+#### isExecutionReadyの値の決まり方
+
+_GoalPlanner_ モジュール自身によるシーンの安全判断結果は以下のように計算している．
+
+```cpp title="autoware_behavior_path_goal_planner/src/goal_planner_module.cpp:618:630"
+--8<--
+planning/behavior_path_planner/autoware_behavior_path_goal_planner_module/src/goal_planner_module.cpp:618:630
+--8<--
+```
