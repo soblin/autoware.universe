@@ -941,8 +941,35 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#rtciswaitingapproval" class="md-nav__link">
-    モジュールの状態遷移とRTCによる承認・isWaitingApprovalについて
+  <a href="#rtc_1" class="md-nav__link">
+    モジュールの状態遷移とRTCによる承認
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cantransit" class="md-nav__link">
+    canTransit***系の実装
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    各モジュールの状態遷移の例
+  </a>
+  
+    <nav class="md-nav" aria-label="各モジュールの状態遷移の例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal_planner" class="md-nav__link">
+    goal_planner
   </a>
   
 </li>
@@ -971,7 +998,7 @@
 
 
 <div><h1 id="behavior_path_planner_common">behavior_path_planner_common<a class="headerlink" href="#behavior_path_planner_common" title="Permanent link">#</a></h1>
-<p><strong>SceneModuleManagerInterface</strong>はidle状態の<strong>SceneModuleInterface</strong>を生成したり，<em>candidate</em>/<em>approved</em> に昇格してRUNNING状態のモジュールインスタンスをweak_ptrとして間接的に管理する役割を持つ．</p>
+<p><strong>SceneModuleManagerInterface</strong>はidle状態の<strong>SceneModuleInterface</strong>を生成したり，candidate/approvedに昇格してRUNNING状態のモジュールインスタンスをweak_ptrとして間接的に管理する役割を持つ．</p>
 <ul>
 <li><strong>PlannerManager</strong>が<code>manager_ptrs_</code>として持っているのが，<strong>SceneModuleManagerInterface</strong>のshared_ptr</li>
 <li><strong>PlannerManager</strong>が<code>approved_module_ptrs_</code>などとして持っているのが，<strong>SceneModuleInterface</strong>のshared_ptr</li>
@@ -1014,7 +1041,7 @@
 </ul>
 <p>の各ステップが行われている．</p>
 <h3 id="rtc-cooperatecommand">各モジュールへのRTC-CooperateCommandがサービスでセットされる<a class="headerlink" href="#rtc-cooperatecommand" title="Permanent link">#</a></h3>
-<p>各SceneModuleIntefaceは<code>rtc_interface_ptr_map_</code>として(todo: 自分以外のモジュールも含めた？)<code>RTCInterface</code>を所持しており，<code>RTCInterface</code>はタイマーにより非同期に<strong>RTCInterface::onCooperateCommandService</strong>のコールバックでユーザーからの承認状態を<code>stored_commands_</code>にセットされる．</p>
+<p>各SceneModuleIntefaceは<code>rtc_interface_ptr_map_</code>として<code>RTCInterface</code>を所持しており(モジュールによっては<code>lane_change_left</code>と<code>lane_change_right</code>のようにパラメーターは共有しつつ左右で異なるサブモジュールがあったりするため<code>map</code>になっている)，<code>RTCInterface</code>はタイマーにより非同期に<strong>RTCInterface::onCooperateCommandService</strong>のコールバックでユーザーからの承認状態を<code>stored_commands_</code>にセットされる．</p>
 <div class="highlight"><span class="filename">autoware_rtc_interface/src/rtc_interface.cpp:154:167</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">RTCInterface::onCooperateCommandService</span><span class="p">(</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CooperateCommands</span><span class="o">::</span><span class="n">Request</span><span class="o">::</span><span class="n">SharedPtr</span><span class="w"> </span><span class="n">request</span><span class="p">,</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CooperateCommands</span><span class="o">::</span><span class="n">Response</span><span class="o">::</span><span class="n">SharedPtr</span><span class="w"> </span><span class="n">responses</span><span class="p">)</span>
@@ -1063,7 +1090,7 @@
 <span class="w">    </span><span class="k">return</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 </code></pre></div>
-<p><code>module_ptr-&gt;lockRTCCommand();</code>してから<code>module_ptr_-&gt;run();</code>しているのは<strong>RTCInterface::isActivated()</strong>などを計算する際に<code>registered_status_</code>への競合を防ぐためである．<code>module_ptr_-&gt;run();</code>してから<code>module_ptr-&gt;unlockRTCCommand();</code>すると</p>
+<p><code>module_ptr-&gt;lockRTCCommand();</code>してから<code>module_ptr_-&gt;run();</code>しているのは<strong>RTCInterface::isActivated()</strong>などを計算する際に<code>registered_status_</code>への競合を防ぐためである(とはいえ非同期に<code>stored_commands_</code>を更新している間に<code>lockCommandUpdate()</code>を呼んでlockしたつもりにできてしまうので結局競合は起きているはず)．<code>module_ptr_-&gt;run();</code>してから<code>module_ptr-&gt;unlockRTCCommand();</code>すると</p>
 <div class="highlight"><span class="filename">behavior_path_planner_common/scene_module_interface_interface.cpp:232:239</span><pre><span></span><code><span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">unlockRTCCommand</span><span class="p">()</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">[</span><span class="n">module_name</span><span class="p">,</span><span class="w"> </span><span class="n">ptr</span><span class="p">]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">rtc_interface_ptr_map_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -1074,7 +1101,11 @@
 <span class="w">  </span><span class="p">}</span>
 </code></pre></div>
 <p><code>is_locked_</code>していた間に蓄積された<code>stored_commands_</code>が反映される．</p>
-<div class="highlight"><span class="filename">autoware_rtc_interface/src/rtc_interface.cpp:418:422</span><pre><span></span><code>
+<div class="highlight"><span class="filename">autoware_rtc_interface/src/rtc_interface.cpp:418:422</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">RTCInterface::unlockCommandUpdate</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">is_locked_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="n">updateCooperateCommandStatus</span><span class="p">(</span><span class="n">stored_commands_</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre></div>
 <p><strong>RTCInterface::updateCooperateCommandStatus</strong>で<code>registered_status_</code>を更新する．</p>
 <div class="highlight"><span class="filename">autoware_rtc_interface/src/rtc_interface.cpp:206:221</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">RTCInterface::updateCooperateCommandStatus</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CooperateCommand</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">commands</span><span class="p">)</span>
@@ -1096,6 +1127,23 @@
 </code></pre></div>
 <h3 id="rtc-cooperatecommand_1">各モジュールがRTC-CooperateCommandに応じて動作<a class="headerlink" href="#rtc-cooperatecommand_1" title="Permanent link">#</a></h3>
 <p><strong>RTCInterface::isActivated</strong>の計算に<code>registered_status_</code>の値が利用される．</p>
+<p><strong>SceneModuleInterface::run</strong>ではsafetyの値に応じて<strong>planWaitingApproval</strong>または<strong>plan</strong>が呼ばれる．</p>
+<div class="highlight"><span class="filename">behavior_path_planner_common/scene_module_interface.hpp:146:156</span><pre><span></span><code><span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">BehaviorModuleOutput</span><span class="w"> </span><span class="nf">run</span><span class="p">()</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">updateData</span><span class="p">();</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">isWaitingApproval</span><span class="p">()</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">planWaitingApproval</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">plan</span><span class="p">();</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">autoware</span><span class="o">::</span><span class="n">motion_utils</span><span class="o">::</span><span class="n">validateNonEmpty</span><span class="p">(</span><span class="n">output</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">points</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">exception</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">"["</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name_</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"]"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="n">what</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">output</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">注意点</p>
+<p>実際はモジュールがAUTOモードで動いていて自分で計算したsafetyの値に応じて危険判断をしている場合も<code>WAITING_APPROVAL</code>として表現されて手動で動いているようなニュアンスを相手に与えるので少し注意が必要</p>
+</div>
 <h3 id="rtc-cooperatestatus">各モジュールがRTC-CooperateStatusをセット<a class="headerlink" href="#rtc-cooperatestatus" title="Permanent link">#</a></h3>
 <p>以下のモジュール</p>
 <ul>
@@ -1263,6 +1311,27 @@
 <span class="w">  </span><span class="p">}</span>
 </code></pre></div>
 <p><code>rtc_type</code>はほとんどのモジュールでは空だが，lane_changeのみ<code>{rtc_type: "left", snake_case_name: "lane_change_left"}</code>という具合で利用されている．</p>
+<p>ここで<code>SceneModuleManagerInterface</code>の<code>rtc_interface_ptr_map_</code>が初期化され，<code>SceneModuleInterface</code>が構築される際はこれがコピーされて渡される．</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_planner_common/include/scene_module_interface.hpp:89:107</span><pre><span></span><code><span class="w">  </span><span class="n">SceneModuleInterface</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Node</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">node</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">RTCInterface</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">rtc_interface_ptr_map</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ObjectsOfInterestMarkerInterface</span><span class="o">&gt;&gt;</span>
+<span class="w">      </span><span class="n">objects_of_interest_marker_interface_ptr_map</span><span class="p">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">name_</span><span class="p">{</span><span class="n">name</span><span class="p">},</span>
+<span class="w">    </span><span class="n">logger_</span><span class="p">{</span><span class="n">node</span><span class="p">.</span><span class="n">get_logger</span><span class="p">().</span><span class="n">get_child</span><span class="p">(</span><span class="n">name</span><span class="p">)},</span>
+<span class="w">    </span><span class="n">clock_</span><span class="p">{</span><span class="n">node</span><span class="p">.</span><span class="n">get_clock</span><span class="p">()},</span>
+<span class="w">    </span><span class="n">rtc_interface_ptr_map_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">rtc_interface_ptr_map</span><span class="p">)),</span>
+<span class="w">    </span><span class="n">objects_of_interest_marker_interface_ptr_map_</span><span class="p">(</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">objects_of_interest_marker_interface_ptr_map</span><span class="p">)),</span>
+<span class="w">    </span><span class="n">steering_factor_interface_ptr_</span><span class="p">(</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">SteeringFactorInterface</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">utils</span><span class="o">::</span><span class="n">convertToSnakeCase</span><span class="p">(</span><span class="n">name</span><span class="p">))),</span>
+<span class="w">    </span><span class="n">time_keeper_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">universe_utils</span><span class="o">::</span><span class="n">TimeKeeper</span><span class="o">&gt;</span><span class="p">())</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">[</span><span class="n">module_name</span><span class="p">,</span><span class="w"> </span><span class="n">ptr</span><span class="p">]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">rtc_interface_ptr_map_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">uuid_map_</span><span class="p">.</span><span class="n">emplace</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span><span class="w"> </span><span class="n">generateUUID</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
 <p><strong><em>BehaviorPathPlanner</em></strong>では各モジュールは毎フレームで自分自身が立ち上がる必要があるかどうかを判断している．</p>
 <div class="highlight"><span class="filename">autoware_behavior_path_planner/src/planner_manager.cpp:350:364@getRequestModule</span><pre><span></span><code><span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">manager_ptr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">();</span>
 <span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">find_same_name_module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">name</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">m</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">name</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
@@ -1337,7 +1406,7 @@
 <div class="highlight"><span class="filename">autoware_behavior_path_planner_common/interface/scene_module_manager_interface.hpp:218:218</span><pre><span></span><code><span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">canLaunchNewModule</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">observers_</span><span class="p">.</span><span class="n">empty</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
 <h3 id="idleobserver">IDLEからの昇格以降のモジュール数とobserver<a class="headerlink" href="#idleobserver" title="Permanent link">#</a></h3>
-<p><em>observer</em> は生成した<code>idle_module_ptr_</code>で外部に保有されている個数を管理しており，<strong>PlannerManager::runRequestModules()</strong>（<strong>PlannerManager::getRequestModules()</strong>で求めたものから次の <em>candidate</em> を求める関数）でexecutableになった<code>idle_module_ptr_</code>が<strong>SceneModuleManagerInterface::registerNewModule()</strong>で <em>observer</em> として登録される．</p>
+<p><em>observer</em> は生成した<code>idle_module_ptr_</code>で外部に保有されている個数を管理しており，<strong>PlannerManager::runRequestModules()</strong>（<strong>PlannerManager::getRequestModules()</strong>で求めたものから次のcandidateを求める関数）でexecutableになった<code>idle_module_ptr_</code>が<strong>SceneModuleManagerInterface::registerNewModule()</strong>でobserverとして登録される．</p>
 <div class="highlight"><span class="filename">autoware_behavior_path_planner/src/planner_manager.cpp:598:607@runRequestModules</span><pre><span></span><code><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">module_ptr</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">executable_modules</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">manager_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getManager</span><span class="p">(</span><span class="n">module_ptr</span><span class="p">);</span>
 
@@ -1363,7 +1432,7 @@
 
 <span class="w">    </span><span class="n">observers_</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">observer</span><span class="p">);</span>
 </code></pre></div>
-<p>またそのうち <em>candidate</em>/<em>approved</em> としての計算ですでに <em>FAILURE</em> / <em>SUCCESS</em> であるモジュールは <em>expired module</em> として <em>observer</em> からも削除する．</p>
+<p>またそのうちcandidate/approvedとしての計算ですでにFAILURE/SUCCESSであるモジュールはexpired moduleとしてobserverからも削除する．</p>
 <div class="highlight"><span class="filename">autoware_behavior_path_planner/src/planner_manager.cpp:613:632@runRequestModules</span><pre><span></span><code><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">remove_expired_modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">getCurrentStatus</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">FAILURE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="n">deleteExpiredModules</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
@@ -1429,8 +1498,28 @@
 
 <span class="w">    </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">itr</span><span class="p">,</span><span class="w"> </span><span class="n">approved_module_ptrs_</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
 </code></pre></div>
-<h3 id="rtciswaitingapproval">モジュールの状態遷移とRTCによる承認・isWaitingApprovalについて<a class="headerlink" href="#rtciswaitingapproval" title="Permanent link">#</a></h3>
-<p><code>IDLE</code>が初期ノード</p>
+<h3 id="rtc_1">モジュールの状態遷移とRTCによる承認<a class="headerlink" href="#rtc_1" title="Permanent link">#</a></h3>
+<p><code>IDLE</code>が初期ノードであり，一度でもPlannerManagerにおいてcandidteかapprovedに昇格したら<code>IDLE</code>ではなくなる．</p>
+<p>各SceneModuleInterfaceは<strong>SceneModuleInterface::updateRTCStatus</strong>のsafetyの値としては<strong>isExecutionReady</strong>を送っている．</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_planner_common/scene_module_interface.hpp:597:517</span><pre><span></span><code><span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateRTCStatus</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">start_distance</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">finish_distance</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">[</span><span class="n">module_name</span><span class="p">,</span><span class="w"> </span><span class="n">ptr</span><span class="p">]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">rtc_interface_ptr_map_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">isWaitingApproval</span><span class="p">()</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">State</span><span class="o">::</span><span class="n">WAITING_FOR_EXECUTION</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">State</span><span class="o">::</span><span class="n">RUNNING</span><span class="p">;</span>
+<span class="w">        </span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">updateCooperateStatus</span><span class="p">(</span>
+<span class="w">          </span><span class="n">uuid_map_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">module_name</span><span class="p">),</span><span class="w"> </span><span class="n">isExecutionReady</span><span class="p">(),</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">start_distance</span><span class="p">,</span><span class="w"> </span><span class="n">finish_distance</span><span class="p">,</span>
+<span class="w">          </span><span class="n">clock_</span><span class="o">-&gt;</span><span class="n">now</span><span class="p">());</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<p>AUTOモードの場合はモジュール自身が上で送ったsafetyの値が，MANUALモードの場合はユーザーが送ったsafetyの値が利用されることで，<code>RUNNING</code>の時にRTC非承認状態だと<strong>canTransitWaitingApprovalState()</strong>により<code>WAITING_APPROVAL</code>に，<code>WAITING_APPROVAL</code>の時に<strong>canTransitWaitingApprovalToRunningState()</strong>により<code>RUNNING</code>に遷移する．</p>
+<div class="highlight"><span class="filename">behavior_path_planner_common/scene_module_interface.hpp:149:149</span><pre><span></span><code><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">isWaitingApproval</span><span class="p">()</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">planWaitingApproval</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">plan</span><span class="p">();</span>
+</code></pre></div>
+<h4 id="success">SUCCESSから<a class="headerlink" href="#success" title="Permanent link">#</a></h4>
+<p><code>SUCCESS</code>は終端ノード</p>
+<h4 id="failure">FAILUREから<a class="headerlink" href="#failure" title="Permanent link">#</a></h4>
+<p><code>FAILURE</code>は終端ノード</p>
 <h4 id="idlerunning">IDLEからRUNNING<a class="headerlink" href="#idlerunning" title="Permanent link">#</a></h4>
 <p><strong>getRequestModules</strong>で生成された<code>module_ptr</code>はIDLE状態であり，<strong>runRequestModules</strong>でprivateの方の<strong>PlannerManager::run</strong>内で<strong>updateCurrentStatus</strong>を呼ばれることで<code>RUNNING</code>状態に移る．</p>
 <div class="highlight"><span class="filename">autoware_behavior_path_planner_common/scene_module_interface.hpp:449:449</span><pre><span></span><code><span class="w">  </span><span class="n">ModuleStatus</span><span class="w"> </span><span class="n">current_state_</span><span class="p">{</span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">IDLE</span><span class="p">};</span>
@@ -1463,14 +1552,186 @@
 </code></pre></div>
 <div class="highlight"><span class="filename">autoware_behavior_path_planner_common/scene_module_interface.hpp:473:473</span><pre><span></span><code><span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="w"> </span><span class="nf">setInitState</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">RUNNING</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
-<h4 id="running">RUNNINGから<a class="headerlink" href="#running" title="Permanent link">#</a></h4>
-<p>todo</p>
-<h4 id="waiting_approval">WAITING_APPROVALから<a class="headerlink" href="#waiting_approval" title="Permanent link">#</a></h4>
-<p>todo</p>
-<h4 id="success">SUCCESSから<a class="headerlink" href="#success" title="Permanent link">#</a></h4>
-<p><code>SUCCESS</code>は終端ノード</p>
-<h4 id="failure">FAILUREから<a class="headerlink" href="#failure" title="Permanent link">#</a></h4>
-<p><code>FAILURE</code>は終端ノード</p></div>
+<p>なので<strong>SceneModuleInterface::isExecutionReady</strong>を返したモジュールは必ずcandidateかapprovedとして一度は<code>RUNNING</code>を経由する．</p>
+<h4 id="runningwaiting_approval">RUNNING/WAITING_APPROVALから<a class="headerlink" href="#runningwaiting_approval" title="Permanent link">#</a></h4>
+<p>どちらとも</p>
+<ul>
+<li><strong>canTransitSuccessState</strong>なら<code>SUCCESS</code></li>
+<li><strong>canTransitFailureState</strong>なら<code>FAILURE</code></li>
+</ul>
+<p>を優先するのは共通している．そこから先は<code>RUNNING</code>からは</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_planner_common/scene_module_interface.hpp:393:411</span><pre><span></span><code><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">current_state_</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">RUNNING</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">canTransitSuccessState</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">log_debug_throttled</span><span class="p">(</span><span class="s">"transiting from RUNNING to SUCCESS"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">canTransitFailureState</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">log_debug_throttled</span><span class="p">(</span><span class="s">"transiting from RUNNING to FAILURE"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">FAILURE</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">canTransitWaitingApprovalState</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">log_debug_throttled</span><span class="p">(</span><span class="s">"transiting from RUNNING to WAITING_APPROVAL"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">WAITING_APPROVAL</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="n">log_debug_throttled</span><span class="p">(</span><span class="s">"transiting from RUNNING to RUNNING"</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">RUNNING</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><strong>canTransitWaitingApprovalState</strong>なら<code>WAITING_APPROVAL</code></li>
+<li>いずれでもなければ<code>RUNNING</code>のまま</li>
+</ul>
+<p><code>WAITING_APPROVAL</code>からは</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_planner_common/scene_module_interface.hpp:413:430</span><pre><span></span><code><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">current_state_</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">WAITING_APPROVAL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">canTransitSuccessState</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">log_debug_throttled</span><span class="p">(</span><span class="s">"transiting from WAITING_APPROVAL to SUCCESS"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">canTransitFailureState</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">log_debug_throttled</span><span class="p">(</span><span class="s">"transiting from WAITING_APPROVAL to FAILURE"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">FAILURE</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">canTransitWaitingApprovalToRunningState</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">log_debug_throttled</span><span class="p">(</span><span class="s">"transiting from WAITING_APPROVAL to RUNNING"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">RUNNING</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="n">log_debug_throttled</span><span class="p">(</span><span class="s">"transiting from WAITING_APPROVAL to WAITING APPROVAL"</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">WAITING_APPROVAL</span><span class="p">;</span>
+</code></pre></div>
+<ul>
+<li><strong>canTransitWaitingApprovalToRunningState</strong>なら<code>RUNNING</code></li>
+<li>いずれでもなければ<code>WAITING_APPROVAL</code>のまま</li>
+</ul>
+<p>である．</p>
+<h3 id="cantransit">canTransit***系の実装<a class="headerlink" href="#cantransit" title="Permanent link">#</a></h3>
+<p><strong>canTransitSuccessState</strong>と<strong>canTransitFailrureState</strong>は純粋仮想関数になっている．これは各モジュールで終了条件が異なるためである．</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_planner_common/scene_module_interface.hpp:461:468</span><pre><span></span><code><span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="err">@</span><span class="n">brief</span><span class="w"> </span><span class="n">State</span><span class="w"> </span><span class="n">transition</span><span class="w"> </span><span class="n">condition</span><span class="w"> </span><span class="n">ANY</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">SUCCESS</span>
+<span class="w">   </span><span class="o">*/</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">canTransitSuccessState</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * @brief State transition condition ANY -&gt; FAILURE</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">canTransitFailureState</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</code></pre></div>
+<p><code>WaitingApproval</code>からは仮想関数ではなく，<strong>RTCの状態のみから遷移が決定する</strong>．</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_planner_common/scene_module_interface.hpp:327:374</span><pre><span></span><code><span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">existRegisteredRequest</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">any_of</span><span class="p">(</span>
+<span class="w">      </span><span class="n">rtc_interface_ptr_map_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">rtc_interface_ptr_map_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
+<span class="w">      </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">rtc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">rtc</span><span class="p">.</span><span class="n">second</span><span class="o">-&gt;</span><span class="n">isRegistered</span><span class="p">(</span><span class="n">uuid_map_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">rtc</span><span class="p">.</span><span class="n">first</span><span class="p">));</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">existApprovedRequest</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">any_of</span><span class="p">(</span>
+<span class="w">      </span><span class="n">rtc_interface_ptr_map_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">rtc_interface_ptr_map_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">rtc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">rtc</span><span class="p">.</span><span class="n">second</span><span class="o">-&gt;</span><span class="n">isRegistered</span><span class="p">(</span><span class="n">uuid_map_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">rtc</span><span class="p">.</span><span class="n">first</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rtc</span><span class="p">.</span><span class="n">second</span><span class="o">-&gt;</span><span class="n">isTerminated</span><span class="p">(</span><span class="n">uuid_map_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">rtc</span><span class="p">.</span><span class="n">first</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">rtc</span><span class="p">.</span><span class="n">second</span><span class="o">-&gt;</span><span class="n">isActivated</span><span class="p">(</span><span class="n">uuid_map_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">rtc</span><span class="p">.</span><span class="n">first</span><span class="p">));</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">existNotApprovedRequest</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">any_of</span><span class="p">(</span>
+<span class="w">      </span><span class="n">rtc_interface_ptr_map_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">rtc_interface_ptr_map_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">rtc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">rtc</span><span class="p">.</span><span class="n">second</span><span class="o">-&gt;</span><span class="n">isRegistered</span><span class="p">(</span><span class="n">uuid_map_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">rtc</span><span class="p">.</span><span class="n">first</span><span class="p">))</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">               </span><span class="o">!</span><span class="n">rtc</span><span class="p">.</span><span class="n">second</span><span class="o">-&gt;</span><span class="n">isActivated</span><span class="p">(</span><span class="n">uuid_map_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">rtc</span><span class="p">.</span><span class="n">first</span><span class="p">))</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">               </span><span class="o">!</span><span class="n">rtc</span><span class="p">.</span><span class="n">second</span><span class="o">-&gt;</span><span class="n">isTerminated</span><span class="p">(</span><span class="n">uuid_map_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">rtc</span><span class="p">.</span><span class="n">first</span><span class="p">));</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">canTransitWaitingApprovalState</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">existRegisteredRequest</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">existNotApprovedRequest</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">canTransitWaitingApprovalToRunningState</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">existRegisteredRequest</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">existApprovedRequest</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<h2 id="_2">各モジュールの状態遷移の例<a class="headerlink" href="#_2" title="Permanent link">#</a></h2>
+<h3 id="goal_planner">goal_planner<a class="headerlink" href="#goal_planner" title="Permanent link">#</a></h3>
+<p><strong>GoalPlannerModule::canTransitSuccessState</strong>/<strong>GoalPlannerModule::canTransitFailureState</strong>は常にfalseを返すようになっているため <em>GoalPlanner</em> は終了しない．</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_goal_planner/include/goal_planner_module.hpp:434:458</span><pre><span></span><code><span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="n">transitions</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">plan</span><span class="w"> </span><span class="n">function</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="n">state</span>
+<span class="w">   </span><span class="o">*</span>
+<span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="o">+--------------------------+</span>
+<span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RUNNING</span><span class="w">                  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">planPullOverAsCandidate</span><span class="p">()</span><span class="o">|</span>
+<span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="o">+------------+-------------+</span>
+<span class="w">   </span><span class="o">*</span><span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="n">hasDecidedPath</span><span class="p">()</span>
+<span class="w">   </span><span class="o">*</span><span class="w">  </span><span class="mi">2</span><span class="w">           </span><span class="n">v</span>
+<span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="o">+--------------------------+</span>
+<span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">WAITING_APPROVAL</span><span class="w">         </span><span class="o">|</span>
+<span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">planPullOverAsCandidate</span><span class="p">()</span><span class="o">|</span>
+<span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="o">+------------+-------------+</span>
+<span class="w">   </span><span class="o">*</span><span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="n">isActivated</span><span class="p">()</span>
+<span class="w">   </span><span class="o">*</span><span class="w">  </span><span class="mi">3</span><span class="w">           </span><span class="n">v</span>
+<span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="o">+--------------------------+</span>
+<span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RUNNING</span><span class="w">                  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">planPullOverAsOutput</span><span class="p">()</span><span class="w">   </span><span class="o">|</span>
+<span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="o">+--------------------------+</span>
+<span class="w">   </span><span class="o">*/</span>
+
+<span class="w">  </span><span class="c1">// The start_planner activates when it receives a new route,</span>
+<span class="w">  </span><span class="c1">// so there is no need to terminate the goal planner.</span>
+<span class="w">  </span><span class="c1">// If terminating it, it may switch to lane following and could generate an inappropriate path.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">canTransitSuccessState</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">canTransitFailureState</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<p>そのため一旦は<code>RUNNING</code>となり，経路が確定するまでは<code>RUNNING</code>として動作するが<strong>GoalPlannerModule::postProcess()</strong>で<strong>updateRTCStatus</strong>を呼んでRTCの情報を送ったりしない</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_goal_planner/src/goal_planner_module.cpp:810:814</span><pre><span></span><code><span class="n">BehaviorModuleOutput</span><span class="w"> </span><span class="nf">GoalPlannerModule::plan</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">utils</span><span class="o">::</span><span class="n">isAllowedGoalModification</span><span class="p">(</span><span class="n">planner_data_</span><span class="o">-&gt;</span><span class="n">route_handler</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">planPullOver</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><span class="filename">autoware_behavior_path_goal_planner/src/goal_planner_module.cpp:1358:1364</span><pre><span></span><code><span class="n">BehaviorModuleOutput</span><span class="w"> </span><span class="nf">GoalPlannerModule::planPullOver</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">hasDecidedPath</span><span class="p">(</span>
+<span class="w">        </span><span class="n">planner_data_</span><span class="p">,</span><span class="w"> </span><span class="n">occupancy_grid_map_</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">parameters_</span><span class="p">,</span><span class="w"> </span><span class="n">ego_predicted_path_params_</span><span class="p">,</span>
+<span class="w">        </span><span class="n">objects_filtering_params_</span><span class="p">,</span><span class="w"> </span><span class="n">safety_check_params_</span><span class="p">,</span><span class="w"> </span><span class="n">goal_searcher_</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">planPullOverAsCandidate</span><span class="p">();</span>
+</code></pre></div>
+<div class="highlight"><span class="filename">autoware_behavior_path_goal_planner/src/goal_planner_module.cpp:1476:1492</span><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">GoalPlannerModule::postProcess</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">thread_safe_data_</span><span class="p">.</span><span class="n">foundPullOverPath</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">distance_to_path_change</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calcDistanceToPathChange</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// TODO(Mamoru Sobue): repetitive call to checkDecidingPathStatus() in the main thread is a</span>
+<span class="w">  </span><span class="c1">// waste of time because it gives same result throughout the main thread.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">has_decided_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hasDecidedPath</span><span class="p">(</span>
+<span class="w">    </span><span class="n">planner_data_</span><span class="p">,</span><span class="w"> </span><span class="n">occupancy_grid_map_</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">parameters_</span><span class="p">,</span><span class="w"> </span><span class="n">ego_predicted_path_params_</span><span class="p">,</span>
+<span class="w">    </span><span class="n">objects_filtering_params_</span><span class="p">,</span><span class="w"> </span><span class="n">safety_check_params_</span><span class="p">,</span><span class="w"> </span><span class="n">goal_searcher_</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">has_decided_path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">updateRTCStatus</span><span class="p">(</span><span class="n">distance_to_path_change</span><span class="p">.</span><span class="n">first</span><span class="p">,</span><span class="w"> </span><span class="n">distance_to_path_change</span><span class="p">.</span><span class="n">second</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<p>ようになっており，経路が確定してから安全確認ができるようになるとRTCの情報を送るようになるため危険だったりすると<code>WAITING_APPROVAL</code>に遷移したりするようになる．</p></div>
 
 
 
