@@ -968,6 +968,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#start_planner" class="md-nav__link">
+    start_planner
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#goal_planner" class="md-nav__link">
     goal_planner
   </a>
@@ -1148,8 +1155,8 @@
 <p>以下のモジュール</p>
 <ul>
 <li>avoidance_by_lane_change</li>
-<li>goal_planner</li>
-<li>lane_change</li>
+<li>goal_planner(<strong>GoalPlannerModule::postProcess</strong>において)</li>
+<li>lane_change(<strong>LaneChangeInterface::plan</strong>など色々な箇所で)</li>
 <li>start_planer</li>
 </ul>
 <p>では<strong>SceneModuleInterface::updateRTCStatus</strong>が使われている．</p>
@@ -1364,7 +1371,7 @@
 </div>
 <div class="highlight"><span class="filename">autoware_behavior_path_planner_common/include/scene_module_manager_interface.hpp:277:277</span><pre><span></span><code><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SceneModuleInterface</span><span class="o">&gt;</span><span class="w"> </span><span class="n">getIdleModule</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">idle_module_ptr_</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
-<p><strong>SceneModuleManagerInterface::updateIdleModuleInstance()</strong>では<code>idle_module_ptr_</code>のインスタンス化（初回，または前サイクルでモジュールが <em>isExecutionReady</em> に昇格した場合）または既存の<code>idle_module_ptr_</code>の更新を行う．</p>
+<p><strong>SceneModuleManagerInterface::updateIdleModuleInstance()</strong>では<code>idle_module_ptr_</code>のインスタンス化（初回，または前サイクルでモジュールが <em>isExecutionRequested</em> に昇格した場合）または既存の<code>idle_module_ptr_</code>の更新を行う．</p>
 <div class="highlight"><span class="filename">autoware_behavior_path_planner_common/include/scene_module_manager_interface.hpp:60:68</span><pre><span></span><code><span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateIdleModuleInstance</span><span class="p">()</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">idle_module_ptr_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -1552,7 +1559,7 @@
 </code></pre></div>
 <div class="highlight"><span class="filename">autoware_behavior_path_planner_common/scene_module_interface.hpp:473:473</span><pre><span></span><code><span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="w"> </span><span class="nf">setInitState</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ModuleStatus</span><span class="o">::</span><span class="n">RUNNING</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
-<p>なので<strong>SceneModuleInterface::isExecutionReady</strong>を返したモジュールは必ずcandidateかapprovedとして一度は<code>RUNNING</code>を経由する．</p>
+<p>なので<strong>SceneModuleInterface::isExecutionRequested</strong> = trueを返したモジュールは必ずcandidateかapprovedとして一度は<code>RUNNING</code>を経由する．</p>
 <h4 id="runningwaiting_approval">RUNNING/WAITING_APPROVALから<a class="headerlink" href="#runningwaiting_approval" title="Permanent link">#</a></h4>
 <p>どちらとも</p>
 <ul>
@@ -1671,6 +1678,63 @@
 <span class="w">  </span><span class="p">}</span>
 </code></pre></div>
 <h2 id="_2">各モジュールの状態遷移の例<a class="headerlink" href="#_2" title="Permanent link">#</a></h2>
+<p>todo: isExecutionReadyの処理内容自体は意外とどれも短く書けているのでもう少し詳細な内容を解読する</p>
+<h3 id="start_planner">start_planner<a class="headerlink" href="#start_planner" title="Permanent link">#</a></h3>
+<p><strong>StartPlannerModule::canTransitFailureState</strong>は常にfalseを返すようになっているため， <em>StartPlanner</em> は必ず<code>SUCCESS</code>を返さないと終了しない．</p>
+<p>freespaceが<strong>StartPlannerModule::hasReachedFreespaceEnd</strong>したり，バック走行が終わったりする必要のない状態でかつ幅寄せ経路が見つかり，<strong>StartPlannerModule::hasReachedPulloutEnd</strong>であれば<strong>StartPlannerModule::canTransitSuccessState</strong>trueを返す．</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_start_planner/src/start_planner_module.cpp:586:617</span><pre><span></span><code><span class="kt">bool</span><span class="w"> </span><span class="nf">StartPlannerModule::canTransitSuccessState</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// Freespace Planner:</span>
+<span class="w">  </span><span class="c1">// - Can transit to success if the goal position is reached.</span>
+<span class="w">  </span><span class="c1">// - Cannot transit to success if the goal position is not reached.</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status_</span><span class="p">.</span><span class="n">planner_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">PlannerType</span><span class="o">::</span><span class="n">FREESPACE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">hasReachedFreespaceEnd</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">RCLCPP_DEBUG</span><span class="p">(</span>
+<span class="w">        </span><span class="n">getLogger</span><span class="p">(),</span><span class="w"> </span><span class="s">"Transit to success: Freespace planner reached the end point of the path."</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// Other Planners:</span>
+<span class="w">  </span><span class="c1">// - Cannot transit to success if the vehicle is driving in reverse.</span>
+<span class="w">  </span><span class="c1">// - Cannot transit to success if a safe path cannot be found due to:</span>
+<span class="w">  </span><span class="c1">//   - Insufficient margin against static objects.</span>
+<span class="w">  </span><span class="c1">//   - No path found that stays within the lane.</span>
+<span class="w">  </span><span class="c1">//   In such cases, a stop point needs to be embedded and keep running start_planner.</span>
+<span class="w">  </span><span class="c1">// - Can transit to success if the end point of the pullout path is reached.</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">status_</span><span class="p">.</span><span class="n">driving_forward</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">status_</span><span class="p">.</span><span class="n">found_pull_out_path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">hasReachedPullOutEnd</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">RCLCPP_DEBUG</span><span class="p">(</span><span class="n">getLogger</span><span class="p">(),</span><span class="w"> </span><span class="s">"Transit to success: Reached the end point of the pullout path."</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="isexecutionready">isExecutionReadyの値の決まり方<a class="headerlink" href="#isexecutionready" title="Permanent link">#</a></h4>
+<p><em>StartPlanner</em> モジュール自身によるシーンの安全判断結果は以下のように計算している．</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_start_planner/src/start_planner_module.cpp:547:563</span><pre><span></span><code><span class="kt">bool</span><span class="w"> </span><span class="nf">StartPlannerModule::isStopped</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">odometry_buffer_</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">planner_data_</span><span class="o">-&gt;</span><span class="n">self_odometry</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// Delete old data in buffer</span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">rclcpp</span><span class="o">::</span><span class="n">ok</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">time_diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Time</span><span class="p">(</span><span class="n">odometry_buffer_</span><span class="p">.</span><span class="n">back</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">)</span><span class="w"> </span><span class="o">-</span>
+<span class="w">                           </span><span class="n">rclcpp</span><span class="o">::</span><span class="n">Time</span><span class="p">(</span><span class="n">odometry_buffer_</span><span class="p">.</span><span class="n">front</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">time_diff</span><span class="p">.</span><span class="n">seconds</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">parameters_</span><span class="o">-&gt;</span><span class="n">th_stopped_time</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">odometry_buffer_</span><span class="p">.</span><span class="n">pop_front</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="o">!</span><span class="n">std</span><span class="o">::</span><span class="n">any_of</span><span class="p">(</span>
+<span class="w">    </span><span class="n">odometry_buffer_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">odometry_buffer_</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">odometry</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">utils</span><span class="o">::</span><span class="n">l2Norm</span><span class="p">(</span><span class="n">odometry</span><span class="o">-&gt;</span><span class="n">twist</span><span class="p">.</span><span class="n">twist</span><span class="p">.</span><span class="n">linear</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">parameters_</span><span class="o">-&gt;</span><span class="n">th_stopped_velocity</span><span class="p">;</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div>
 <h3 id="goal_planner">goal_planner<a class="headerlink" href="#goal_planner" title="Permanent link">#</a></h3>
 <p><strong>GoalPlannerModule::canTransitSuccessState</strong>/<strong>GoalPlannerModule::canTransitFailureState</strong>は常にfalseを返すようになっているため <em>GoalPlanner</em> は終了しない．</p>
 <div class="highlight"><span class="filename">autoware_behavior_path_goal_planner/include/goal_planner_module.hpp:434:458</span><pre><span></span><code><span class="w">   </span><span class="o">*</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="n">transitions</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">plan</span><span class="w"> </span><span class="n">function</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="n">state</span>
@@ -1699,7 +1763,7 @@
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">canTransitSuccessState</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">canTransitFailureState</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
-<p>そのため一旦は<code>RUNNING</code>となり，経路が確定するまでは<code>RUNNING</code>として動作するが<strong>GoalPlannerModule::postProcess()</strong>で<strong>updateRTCStatus</strong>を呼んでRTCの情報を送ったりしない</p>
+<p>そのため一旦は<code>RUNNING</code>となり，経路が確定するまでは<code>RUNNING</code>として動作するが<strong>not hasDecidedPath()</strong>であるため，<strong>GoalPlannerModule::postProcess()</strong>で<strong>updateRTCStatus</strong>を呼んでRTCの情報を送ったりはしないため承認の候補とはならない．</p>
 <div class="highlight"><span class="filename">autoware_behavior_path_goal_planner/src/goal_planner_module.cpp:810:814</span><pre><span></span><code><span class="n">BehaviorModuleOutput</span><span class="w"> </span><span class="nf">GoalPlannerModule::plan</span><span class="p">()</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">utils</span><span class="o">::</span><span class="n">isAllowedGoalModification</span><span class="p">(</span><span class="n">planner_data_</span><span class="o">-&gt;</span><span class="n">route_handler</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
@@ -1731,7 +1795,23 @@
 <span class="w">    </span><span class="n">updateRTCStatus</span><span class="p">(</span><span class="n">distance_to_path_change</span><span class="p">.</span><span class="n">first</span><span class="p">,</span><span class="w"> </span><span class="n">distance_to_path_change</span><span class="p">.</span><span class="n">second</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
 </code></pre></div>
-<p>ようになっており，経路が確定してから安全確認ができるようになるとRTCの情報を送るようになるため危険だったりすると<code>WAITING_APPROVAL</code>に遷移したりするようになる．</p></div>
+<p>ようになっており経路が確定してから安全確認ができるようになるとRTCの情報を送るようになるため，危険だったりすると<code>WAITING_APPROVAL</code>に遷移したりするようになる．</p>
+<h4 id="isexecutionready_1">isExecutionReadyの値の決まり方<a class="headerlink" href="#isexecutionready_1" title="Permanent link">#</a></h4>
+<p><em>GoalPlanner</em> モジュール自身によるシーンの安全判断結果は以下のように計算している．</p>
+<div class="highlight"><span class="filename">autoware_behavior_path_goal_planner/src/goal_planner_module.cpp:618:630</span><pre><span></span><code><span class="kt">bool</span><span class="w"> </span><span class="nf">GoalPlannerModule::isExecutionReady</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">parameters_</span><span class="o">-&gt;</span><span class="n">safety_check_params</span><span class="p">.</span><span class="n">enable_safety_check</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">isWaitingApproval</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">isSafePath</span><span class="p">(</span>
+<span class="w">           </span><span class="n">planner_data_</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">parameters_</span><span class="p">,</span><span class="w"> </span><span class="n">ego_predicted_path_params_</span><span class="p">,</span><span class="w"> </span><span class="n">objects_filtering_params_</span><span class="p">,</span>
+<span class="w">           </span><span class="n">safety_check_params_</span><span class="p">)</span>
+<span class="w">           </span><span class="p">.</span><span class="n">first</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">RCLCPP_ERROR_THROTTLE</span><span class="p">(</span><span class="n">getLogger</span><span class="p">(),</span><span class="w"> </span><span class="o">*</span><span class="n">clock_</span><span class="p">,</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span><span class="w"> </span><span class="s">"Path is not safe against dynamic objects"</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 
 

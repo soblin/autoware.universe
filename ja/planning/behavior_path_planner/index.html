@@ -1366,7 +1366,7 @@
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
 </code></pre></div>
 <p>run()すると各モジュールの結果が分かるので，<code>getCurrentStauts() == ModuleStatus::FAILURE</code>または<code>getCurrentStauts() == ModuleStatus::SUCCESS</code>のモジュールは<strong>deleteExpiredModules()</strong>したうえで<code>executable_modules</code>からも削除する．</p>
-<p>もし<code>executable_modules</code>が空であれば<strong>clearCandidateModule()</strong>をしてreturn．この時点で<code>executable_modules</code>は<code>IDLE</code>か<code>RUNNING</code>か<code>WAITING_APPROVAL</code>のどれかである（todo: <code>IDLE</code>状態で<strong>updateCurrentStatus()</strong>を呼ぶと必ず<code>RUNNING</code>になるので，<code>RUNNING</code>のはず）．</p>
+<p>もし<code>executable_modules</code>が空であれば<strong>clearCandidateModule()</strong>をしてreturn．この時点で<code>executable_modules</code>は<code>RUNNING</code>である（<code>IDLE</code>状態で<strong>updateCurrentStatus()</strong>を呼ぶと必ず<code>RUNNING</code>になるため）．</p>
 <div class="highlight"><span class="filename">include/autoware/behavior_path_planner_common/interface/scene_module_interface.hpp:78:84</span><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ModuleStatus</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">IDLE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
 <span class="w">  </span><span class="n">RUNNING</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
